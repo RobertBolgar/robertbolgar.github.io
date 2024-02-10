@@ -37,7 +37,7 @@ function generateReferralLink(walletAddress) {
 }
 
 async function generateOrDisplayReferralLink() {
-  const baseUrl = "https://www.yourdapp.com/referral";
+  const baseUrl = "https://www.plrtoken.com/referral";
   let referralLink;
 
   if (window.ethereum) {
