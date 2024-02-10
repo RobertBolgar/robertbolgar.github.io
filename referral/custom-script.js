@@ -26,6 +26,46 @@ async function connectToMetaMask() {
   }
 }
 
+// Assuming Web3 has been initialized and the user has MetaMask installed
+
+// Add your smart contract ABI and address here
+const contractABI = YOUR_ABI;
+const contractAddress = "YOUR_CONTRACT_ADDRESS";
+
+// Creating the contract instance with Web3
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+// The claimRewards function to be called on button click
+async function claimRewards() {
+    try {
+        // Get the user's account address
+        const accounts = await web3.eth.getAccounts();
+        const userAccount = accounts[0];
+
+        if (!userAccount) {
+            throw new Error("No Ethereum account found. Please ensure MetaMask is connected.");
+        }
+
+        // Call the claimRewards function from the smart contract
+        await contract.methods.claimRewards().send({ from: userAccount });
+
+        // If no error occurs, update the status message
+        document.getElementById('claim-status-message').innerText = 'Rewards claimed successfully!';
+    } catch (error) {
+        console.error("Error claiming rewards:", error);
+        document.getElementById('claim-status-message').innerText = 'Error claiming rewards. See console for details.';
+    }
+}
+
+// Ensure the window.ethereum object is available and request account access
+if (window.ethereum) {
+    window.ethereum.request({ method: 'eth_requestAccounts' });
+} else {
+    console.error('MetaMask is not installed. Please install it to use this feature.');
+    document.getElementById('claim-status-message').innerText = 'MetaMask is not installed.';
+}
+
+
 function followOnTwitter() {
     window.open('https://twitter.com/plrtoken', '_blank');
 }
