@@ -26,6 +26,17 @@ async function connectToMetaMask() {
   }
 }
 
+function followOnTwitter() {
+    window.open('https://twitter.com/plrtoken', '_blank');
+}
+
+function shareOnTwitter() {
+    const text = "Unlock rewards with a single click! 🌟 Join me on PLRT, where we're transforming the game of content monetization and ownership through innovative NFTs. Connect now and start earning! #PLRT #NFTs #EarnRewards";
+    const url = document.getElementById('referral-link').value;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank');
+}
+
 function updateReferralLink(walletAddress) {
   const referralLink = generateReferralLink(walletAddress);
   const referralLinkElement = document.getElementById("referral-link");
