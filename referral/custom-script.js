@@ -84,3 +84,4 @@ window.addEventListener("load", async () => {
   // Generate or display referral link regardless of MetaMask installation
   generateOrDisplayReferralLink();
 });
+
