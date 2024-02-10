@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLRT: Revolutionize Content Ownership & Earn Rewards</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Join the Content Revolution: NFTs, Rewards, and Beyond!</h1>
+    </header>
+
+    <main>
+        <section class="user-info">
+            <h2>Transform Your Content into Assets with PLRT</h2>
+            <p>PLRT is not just a token; it's a gateway to innovating how PLR content is owned, traded, and valued:</p>
+<ul>
+    <li><strong>Connect Your Wallet:</strong> Step into a future where your content and referrals unlock new dimensions of rewards.</li>
+    <li><strong>Instant Reward:</strong> Receive 1 PLRT token instantly upon connecting.</li>
+    <li><strong>Grow the Community:</strong> Earn 3 more PLRT tokens for every new visionary joining us through your referral.</li>
+    <li><strong>Start Your Journey:</strong> The journey to redefine digital ownership and rewards starts now!</li>
+</ul>
+
+            <div class="info-item">
+                <label>🔗 Your Key to the Future - Your Referral Link:</label>
+                <input type="text" id="referral-link" value="https://www.plrtoken.com/ref?user=example" readonly>
+                <button onclick="copyLink()" class="button">Copy Link</button>
+            </div>
+            <p>Stay ahead with updates and join a community reshaping the digital landscape.</p>
+            <button onclick="followOnTwitter()" class="button">Follow Our Innovation</button>
+            <button onclick="shareOnTwitter()" class="button">Expand Our Horizon</button>
+            <p class="share-incentive"><strong>Seize the Moment:</strong> With a 3 million token reserve for our pioneers, your early actions forge your legacy in the PLRT ecosystem.</p>
+        </section>
+        
+        <section class="referral-stats">
+            <h2>Track Your Digital Footprint</h2>
+            <div class="stats-item">
+                <p>👥 Community Growth:</p>
+                <span>0</span> <!-- Dynamically update this based on actual data -->
+            </div>
+            <div class="stats-item">
+                <p>💰 Reward Vault:</p>
+                <span>0 PLRT</span> <!-- Dynamically update this based on actual data -->
+            </div>
+        </section>
+
+        <section class="tips">
+            <h2>Maximize Your Impact in the PLRT Ecosystem</h2>
+            <ul>
+                <li>Personalize your referral approach; share how PLRT is revolutionizing content monetization and ownership through NFTs.</li>
+                <li>Leverage every social platform to broadcast the paradigm shift PLRT brings to digital content and rewards.</li>
+                <li>Maintain active engagement; your insights and updates can inspire action and participation within your network.</li>
+            </ul>
+        </section>
+        <script src="custom-script.js"></script>
+        <script>
+            window.addEventListener("load", async () => {
+                const isMetaMaskInstalled = await detectMetaMask();
+                if (isMetaMaskInstalled) {
+                    await connectToMetaMask();
+                }
+                generateOrDisplayReferralLink();
+            });
+        </script>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 PLRT Token. Redefining Digital Content & Rewards.</p>
+    </footer>
+</body>
+</html>
