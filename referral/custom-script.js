@@ -91,6 +91,12 @@ async function connectToMetaMask() {
             document.getElementById('withdrawalStatus').innerText = 'Withdrawal failed. See console for details.';
         }
     }
+document.addEventListener('DOMContentLoaded', (event) => {
+  const connectWalletButton = document.getElementById('connectWalletButton');
+  if(connectWalletButton) {
+    connectWalletButton.addEventListener('click', connectToMetaMask);
+  }
+});
 
     document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
     document.getElementById('withdrawTokensButton').addEventListener('click', withdrawTokens);
