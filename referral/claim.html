@@ -1,54 +1,78 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta viewport="content="width=device-width, initial-scale=1.0">
-    <title>Claim Your $PLRT Team Vesting Rewards</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLRT Token Withdrawal</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider@1.0.0/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>Claim Your $PLRT Referral Rewards</h1>
+        <h1>Withdraw Your Vested PLRT Tokens</h1>
     </header>
 
     <main>
-        <section class="claim-area">
-            <h2>Ready to Reap Your Rewards?</h2>
-            <p>Thank you for being a valued part of the $PLRT community. Your contribution through referrals has been instrumental to our growth. The time has come to claim the rewards you've earned.</p>
-
-            <div class="claim-instructions">
-                <p>Follow the simple steps below to claim your $PLRT tokens:</p>
-                <ol>
-                    <li>Ensure your wallet is connected and you are on the correct network.</li>
-                    <li>Click the "Claim Rewards" button to initiate the transaction.</li>
-                    <li>Confirm the transaction in your wallet to receive your tokens.</li>
-                </ol>
+        <section class="wallet-connect">
+            <h2>Connect Your Wallet to Withdraw PLRT Tokens</h2>
+            <button id="connectWalletButton" class="button">Connect Wallet</button>
+            <div id="walletAddressDisplay" class="info-item" style="display: none;">
+                <label>Your Connected Wallet Address:</label>
+                <span id="walletAddress"></span>
             </div>
-
-            <div class="claim-controls">
-                <button onclick="claimRewards()" class="button">Claim Rewards</button>
-            </div>
-
-            <div class="claim-status">
-                <p><strong>Status:</strong> <span id="claim-status-message">Awaiting claim...</span></p>
-            </div>
+            <button id="withdrawTokensButton" class="button" style="display: none;">Withdraw Tokens</button>
+            <p id="withdrawalStatus"></p>
         </section>
-
-        <!-- Insert additional sections here -->
-
+        
         <script src="custom-script.js"></script>
         <script>
-            // custom-script.js will contain the JavaScript needed to interact with the smart contract
-            // Functions such as claimRewards() will be defined here
-            window.addEventListener("load", async () => {
-                // Additional logic to handle loading and interacting with the smart contract
+            const contractAddress = "YOUR_SMART_CONTRACT_ADDRESS";
+            const contractABI = ABI_OF_YOUR_CONTRACT;
+
+            async function connectWallet() {
+                const provider = await detectEthereumProvider();
+                if (provider) {
+                    try {
+                        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                        const account = accounts[0];
+                        document.getElementById('walletAddress').innerText = account;
+                        document.getElementById('walletAddressDisplay').style.display = 'block';
+                        document.getElementById('withdrawTokensButton').style.display = 'block';
+                    } catch (error) {
+                        console.error(error);
+                    }
+                } else {
+                    console.log('Please install MetaMask!');
+                }
+            }
+
+            async function withdrawTokens() {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+                try {
+                    const tx = await contract.withdrawTokens(); // Assuming `withdrawTokens` is the function in your contract
+                    await tx.wait();
+                    document.getElementById('withdrawalStatus').innerText = 'Withdrawal successful!';
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('withdrawalStatus').innerText = 'Withdrawal failed. See console for details.';
+                }
+            }
+
+            document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+            document.getElementById('withdrawTokensButton').addEventListener('click', withdrawTokens);
+
+            window.addEventListener('load', async () => {
+                // Additional initialization if needed
             });
         </script>
     </main>
 
     <footer>
-        <p>&copy; 2024 PLRT Token. Claim Your Stake in the Future.</p>
+        <p>&copy; 2024 PLRT Token. Redefining Digital Content & Rewards.</p>
     </footer>
 </body>
 </html>
