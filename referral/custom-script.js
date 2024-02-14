@@ -26,6 +26,18 @@
         {"inputs": [], "name": "WITHDRAWAL_RATE", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}
     ];
 
+async function detectMetaMask() {
+  const provider = await detectEthereumProvider();
+  if (provider && provider === window.ethereum) {
+    console.log("MetaMask is installed!");
+    return true;
+  } else {
+    console.log("MetaMask is not installed!");
+    return false;
+  }
+}
+
+
     async function connectWallet() {
         const provider = await detectEthereumProvider();
         if (provider) {
