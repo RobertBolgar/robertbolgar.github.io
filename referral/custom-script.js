@@ -37,6 +37,28 @@ async function detectMetaMask() {
   }
 }
 
+async function connectToMetaMask() {
+  try {
+    const provider = await detectEthereumProvider();
+    if (provider) {
+      await provider.request({ method: 'eth_requestAccounts' });
+      const accounts = await provider.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        const walletAddress = accounts[0];
+        document.getElementById('walletAddress').innerText = walletAddress;
+        document.getElementById('walletAddressDisplay').style.display = 'block';
+        document.getElementById('withdrawTokensButton').style.display = 'block';
+      } else {
+        console.log('MetaMask is locked or the user has not connected any accounts');
+      }
+    } else {
+      console.log('MetaMask is not installed or not accessible.');
+    }
+  } catch (error) {
+    console.error('Error connecting to MetaMask:', error);
+  }
+}
+
 
     async function connectWallet() {
         const provider = await detectEthereumProvider();
