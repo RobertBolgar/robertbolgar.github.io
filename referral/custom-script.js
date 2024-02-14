@@ -1,7 +1,5 @@
-// Add ethers.js CDN in your HTML file to use this library
-// <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+
 <script>
     const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
     const contractABI = [
