@@ -45,7 +45,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const details = await contract.vestingDetails(walletAddress);
         
-        // Update UI with the fetched details
         document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
         
@@ -58,6 +57,17 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const timeSinceLastWithdrawal = now - details.lastWithdrawal.toNumber();
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
         const isEligibleToWithdraw = timeSinceLastWithdrawal > VESTING_PERIOD;
+        
+        // Update button text based on withdrawal eligibility
+        const withdrawButton = document.getElementById('withdrawTokensButton');
+        if (isEligibleToWithdraw) {
+            withdrawButton.innerText = 'Withdraw Tokens';
+            withdrawButton.disabled = false; // Enable the button if withdrawal is possible
+        } else {
+            withdrawButton.innerText = 'Unable to Withdraw'; // Change text to indicate withdrawal is not possible
+            withdrawButton.disabled = true; // Optionally disable the button to prevent clicks
+        }
+
         document.getElementById('availableToWithdraw').innerText = isEligibleToWithdraw ? 'Yes' : 'No';
 
         const daysUntilNextWithdrawal = isEligibleToWithdraw ? 0 : (VESTING_PERIOD - timeSinceLastWithdrawal) / (60 * 60 * 24);
@@ -70,6 +80,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
+
 
 // Handles the withdrawal button click. This function remains the same.
 async function handleWithdrawButtonClick() {
