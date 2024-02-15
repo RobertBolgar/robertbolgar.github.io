@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideElement('loadingIndicator'); // Hide loading once task is done
 
             // Display a success message
-            displayMessage('messageBox', 'Action completed successfully!', true);
+            displayMessage('messageBox', 'Success!', true);
         } catch (error) {
             // If there's an error, hide the loading indicator and show an error message
             hideElement('loadingIndicator');
@@ -78,6 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     });
+});
+
+document.getElementById('withdrawTokensButton').addEventListener('click', async () => {
+    showElement('loadingIndicator'); // Show loading indicator
+    try {
+        // Assume performWithdrawal is an async function that attempts the withdrawal
+        // It should resolve if successful, and reject if the vesting period is not met
+        await performWithdrawal(); // You'll need to implement this based on your contract interaction
+        
+        // If the promise resolves, withdrawal was initiated successfully
+        displayMessage('messageBox', 'Withdrawal initiated successfully.', true);
+    } catch (error) {
+        // If the promise rejects, check if it's due to the vesting period not being met
+        if (error.message.includes("vesting period not met")) {
+            displayMessage('messageBox', 'Vesting period not met.', false);
+        } else {
+            // For other errors, display a generic error message
+            displayMessage('messageBox', 'Withdrawal failed. Please try again.', false);
+        }
+    } finally {
+        hideElement('loadingIndicator'); // Hide loading indicator
+    }
 });
 
 
