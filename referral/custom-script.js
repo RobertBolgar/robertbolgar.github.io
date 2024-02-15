@@ -31,20 +31,22 @@ document.addEventListener('DOMContentLoaded', detectAndConnectMetaMask);
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
     try {
+        // Assume these functions exist and correctly fetch data from your contract
         const details = await contract.vestingDetails(walletAddress);
-        // Format details for display
-        const totalAllocationFormatted = ethers.utils.formatUnits(details.totalAllocation, 18); // Adjust the '18' based on your token's decimals
-        const amountWithdrawnFormatted = ethers.utils.formatUnits(details.amountWithdrawn, 18);
-
-        document.getElementById('totalAllocation').innerText = totalAllocationFormatted + ' PLRT';
-        document.getElementById('amountWithdrawn').innerText = amountWithdrawnFormatted + ' PLRT';
+        
+        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+        document.getElementById('availableToWithdraw').innerText = await calculateAvailableToWithdraw(walletAddress) + ' PLRT'; // Implement this based on your contract logic
         document.getElementById('vestingStart').innerText = new Date(details.vestingStart * 1000).toLocaleString();
         document.getElementById('lastWithdrawal').innerText = new Date(details.lastWithdrawal * 1000).toLocaleString();
 
-        // Show vesting details section
+        // Make the vesting details visible
         document.getElementById('vestingDetailsDisplay').style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching vesting details:', error);
+    }
+
 
         // Check if the user is eligible to withdraw yet
         const timeNow = Date.now() / 1000; // Current time in seconds
