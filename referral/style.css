@@ -172,4 +172,11 @@ input[type="text"] {
     flex-direction: column; /* Stack label and input vertically on smaller screens */
     align-items: flex-start; /* Align to the start for a cleaner look */
   }
+
+  /* Add this new section for #walletAddress */
+  #walletAddress {
+    font-size: 14px; /* Adjust the font size as needed to fit the screen */
+    word-wrap: break-word; /* Ensures long addresses wrap and don't overflow */
+  }
 }
+
