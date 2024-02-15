@@ -62,6 +62,7 @@ async function performWithdrawal() {
 // Function to fetch and display vesting details
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
     try {
         const details = await contract.vestingDetails(walletAddress);
