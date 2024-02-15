@@ -67,8 +67,6 @@ function hideLoading() {
     hideElement('loadingIndicator');
 }
 
-
-
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
@@ -88,12 +86,12 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const isEligibleToWithdraw = timeSinceLastWithdrawal >= VESTING_PERIOD;
 
         // Update the text elements with the formatted details
-        document.getElementById('availableToWithdraw').innerText = `Available to Withdraw: ${isEligibleToWithdraw ? 'Y' : 'N'}`;
-        document.getElementById('daysUntilNextWithdrawal').innerText = `Days until next withdrawal: ${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
+        document.getElementById('availableToWithdraw').innerText = `${isEligibleToWithdraw ? 'Y' : 'N'}`;
+        document.getElementById('daysUntilNextWithdrawal').innerText = `${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
 
         // Format and display "Vesting Start" and "Last Withdrawal" dates
-        document.getElementById('vestingStart').innerText = `Vesting Start: ${new Date(vestingStart * 1000).toLocaleString()}`;
-        document.getElementById('lastWithdrawal').innerText = `Last Withdrawal: ${new Date(lastWithdrawal * 1000).toLocaleString()}`;
+        document.getElementById('vestingStart').innerText = `${new Date(vestingStart * 1000).toLocaleString()}`;
+        document.getElementById('lastWithdrawal').innerText = `${new Date(lastWithdrawal * 1000).toLocaleString()}`;
 
         // Make the vesting details visible
         document.getElementById('vestingDetailsDisplay').style.display = 'block';
