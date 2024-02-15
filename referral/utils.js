@@ -1,7 +1,7 @@
 // utils.js
 
 // Function to show an element by its ID
-function showElement(id) {
+export function showElement(id) {
     const element = document.getElementById(id);
     if (element) {
         element.style.display = 'block';
@@ -9,7 +9,7 @@ function showElement(id) {
 }
 
 // Function to hide an element by its ID
-function hideElement(id) {
+export function hideElement(id) {
     const element = document.getElementById(id);
     if (element) {
         element.style.display = 'none';
@@ -17,7 +17,7 @@ function hideElement(id) {
 }
 
 // Function to display a message with a specific color
-function displayMessage(id, message, isSuccess = true) {
+export function displayMessage(id, message, isSuccess = true) {
     const element = document.getElementById(id);
     if (element) {
         element.innerText = message;
@@ -25,6 +25,3 @@ function displayMessage(id, message, isSuccess = true) {
         element.style.color = isSuccess ? 'green' : 'red';
     }
 }
-
-// Optionally, if using ES6 modules, export these functions
-// export { showElement, hideElement, displayMessage };
