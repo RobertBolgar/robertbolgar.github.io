@@ -25,8 +25,13 @@ async function detectAndConnectMetaMask() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', detectAndConnectMetaMask);
 
+
+// Automatically try to connect to MetaMask when the page loads
+document.addEventListener('DOMContentLoaded', detectAndConnectMetaMaskAutomatically);
+
+    }
+}
 
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
@@ -153,10 +158,5 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     }
 }
 
-// Automatically try to connect to MetaMask when the page loads
-document.addEventListener('DOMContentLoaded', detectAndConnectMetaMaskAutomatically);
-
-    }
-}
 
 
