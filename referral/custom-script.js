@@ -80,27 +80,39 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 // Function to handle withdrawal button click
 async function handleWithdrawButtonClick() {
     showElement('loadingIndicator');
-    try {
-        await performWithdrawal();
+    const result = await performWithdrawal(); // Call and wait for the result
+    
+    if (result.success) {
         displayMessage('messageBox', 'Withdrawal initiated successfully.', true);
-    } catch (error) {
-        if (error.message.includes("vesting period not met")) {
+    } else {
+        // Handle different types of errors based on result.error
+        if (result.error.message.includes("vesting period not met")) {
             displayMessage('messageBox', 'Vesting period not met.', false);
+        } else if (result.error.code === -32603) {
+            // Handle internal JSON-RPC error specifically
+            console.log('Internal JSON-RPC error data:', result.error.data);
+            displayMessage('messageBox', 'Blockchain error. See console for details.', false);
         } else {
             displayMessage('messageBox', 'Withdrawal failed. Please try again.', false);
         }
-    } finally {
-        hideElement('loadingIndicator');
     }
+
+    hideElement('loadingIndicator');
 }
 
 async function performWithdrawal() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner(); // Ensure signer is defined in this scope
+    const signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
     
-    const tx = await contract.withdrawTokens();
-    await tx.wait();
+    try {
+        const tx = await contract.withdrawTokens(); // Example function call
+        await tx.wait();
+        return { success: true }; // Indicate success
+    } catch (error) {
+        console.error("Withdrawal transaction failed:", error);
+        return { success: false, error }; // Return error information
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
