@@ -104,16 +104,24 @@ async function performWithdrawal() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
-    
+
+    // Example: Specifying a gas limit and gas price for the transaction
+    const gasLimit = ethers.utils.hexlify(100000); // Example gas limit
+    const gasPrice = ethers.utils.parseUnits('10', 'gwei'); // Example gas price
+
     try {
-        const tx = await contract.withdrawTokens(); // Example function call
+        const tx = await contract.withdrawTokens({
+            gasLimit: gasLimit,
+            gasPrice: gasPrice
+        });
         await tx.wait();
-        return { success: true }; // Indicate success
+        return { success: true };
     } catch (error) {
         console.error("Withdrawal transaction failed:", error);
-        return { success: false, error }; // Return error information
+        return { success: false, error };
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     detectAndConnectMetaMaskAutomatically();
