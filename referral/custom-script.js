@@ -28,12 +28,15 @@ async function detectAndConnectMetaMask() {
 document.addEventListener('DOMContentLoaded', detectAndConnectMetaMask);
 
 
+
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(contractAddress, contractABI, provider);
+    const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
     try {
         // Assume these functions exist and correctly fetch data from your contract
         const details = await contract.vestingDetails(walletAddress);
+
+ document.getElementById('totalAllocation').innerText = ethers.utils.formatUnits(details.totalAllocation, 'ether') + ' PLRT';
         
         document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
