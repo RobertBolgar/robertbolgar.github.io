@@ -22,6 +22,7 @@ async function detectAndConnectMetaMaskAutomatically() {
 
             // Hide the "Connect Your Wallet" text
             document.getElementById('connectWalletText').style.display = 'none';
+            document.getElementById('connectWalletButton').style.display = 'none';
 
             // Fetch and display vesting details
             await fetchAndDisplayVestingDetails(address);
