@@ -20,7 +20,7 @@ async function detectAndConnectMetaMaskAutomatically() {
             document.getElementById('walletAddressDisplay').style.display = 'block';
             document.getElementById('withdrawTokensButton').style.display = 'block';
 
-            // Hide the "Connect Your Wallet" text
+            // Hide the "Connect Your Wallet" text and button
             document.getElementById('connectWalletText').style.display = 'none';
             document.getElementById('connectWalletButton').style.display = 'none';
 
