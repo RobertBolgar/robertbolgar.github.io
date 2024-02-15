@@ -125,12 +125,11 @@ async function performWithdrawal() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const connectWalletButton = document.getElementById('connectWalletButton');
-
+async function connectWallet() {
+const connectWalletButton = document.getElementById('connectWalletButton');
 connectWalletButton.addEventListener('click', async () => {
   // Show loading state
   connectWalletButton.textContent = 'Connecting...';
-    await detectAndConnectMetaMaskAutomatically();
 
   try {
     await connectWallet();
@@ -157,9 +156,11 @@ connectWalletButton.addEventListener('click', async () => {
   }
 });
 
-async function connectWallet() {
+
   // Use `detectAndConnectMetaMaskAutomatically` or explore third-party libraries
   // ...
+      await detectAndConnectMetaMaskAutomatically();
+
 }
 
 // ... other functions ...
