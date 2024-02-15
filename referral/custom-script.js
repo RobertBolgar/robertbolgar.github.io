@@ -39,6 +39,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
     try {
         const details = await contract.vestingDetails(walletAddress);
+        console.log(details); 
+    
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
         const lastWithdrawal = details.lastWithdrawal.toNumber();
         const timeSinceLastWithdrawal = now - lastWithdrawal;
