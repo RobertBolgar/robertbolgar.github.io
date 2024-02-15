@@ -72,6 +72,9 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
          
         availableToWithdraw = availableToWithdraw || ethers.utils.parseEther("0");
+
+          // Ensure the display includes the calculation, accounting for no available tokens
+       document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
         
         // Update button text based on withdrawal eligibility
         const withdrawButton = document.getElementById('withdrawTokensButton');
@@ -89,12 +92,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         document.getElementById('daysUntilNextWithdrawal').innerText = Math.ceil(daysUntilNextWithdrawal) + ' days';
 
         showElement('vestingDetailsDisplay');
-
-        
-        // Ensure the display includes the calculation, accounting for no available tokens
-       document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
-
-
 
     } catch (error) {
         console.error('Error fetching vesting details:', error);
