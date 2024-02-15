@@ -126,6 +126,45 @@ async function performWithdrawal() {
 document.addEventListener('DOMContentLoaded', () => {
     detectAndConnectMetaMaskAutomatically();
 
+    const connectWalletButton = document.getElementById('connectWalletButton');
+
+connectWalletButton.addEventListener('click', async () => {
+  // Show loading state
+  connectWalletButton.textContent = 'Connecting...';
+
+  try {
+    await connectWallet();
+    // Update UI to connected state
+    connectWalletButton.textContent = 'Connected';
+    showElement('walletAddressDisplay');
+    showElement('withdrawTokensButton');
+    hideElement('connectWalletText');
+    hideElement('connectWalletButton');
+
+    // Fetch and display vesting details using the connected wallet
+    await fetchAndDisplayVestingDetails(connectedWalletAddress);
+  } catch (error) {
+    // Handle error appropriately, display user-friendly message
+    if (error.message.includes('MetaMask not installed')) {
+      connectWalletButton.textContent = 'Install MetaMask';
+      displayMessage('messageBox', 'Please install MetaMask to connect.', false);
+    } else {
+      // Handle other errors
+      console.error('Error connecting:', error);
+      connectWalletButton.textContent = 'Connection Error';
+      displayMessage('messageBox', 'Failed to connect. Please try again.', false);
+    }
+  }
+});
+
+async function connectWallet() {
+  // Use `detectAndConnectMetaMaskAutomatically` or explore third-party libraries
+  // ...
+}
+
+// ... other functions ...
+
+
     const withdrawButton = document.getElementById('withdrawTokensButton');
     if (withdrawButton) {
         withdrawButton.addEventListener('click', handleWithdrawButtonClick);
