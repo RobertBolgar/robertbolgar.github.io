@@ -16,7 +16,7 @@ async function detectAndConnectMetaMaskAutomatically() {
             const address = await signer.getAddress();
 
             // Display connected wallet address
-            document.getElementById('walletAddress').innerText = `Wallet address: ${address}`;
+            document.getElementById('walletAddress').innerText = `${address}`;
             document.getElementById('walletAddressDisplay').style.display = 'block';
             document.getElementById('withdrawTokensButton').style.display = 'block';
 
