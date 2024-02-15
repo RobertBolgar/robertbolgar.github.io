@@ -76,6 +76,21 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
         showElement('vestingDetailsDisplay');
 
+        // Calculate the available tokens for withdrawal based on the contract logic
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        const timeElapsed = now - details.lastWithdrawal.toNumber();
+        const periodsElapsed = Math.floor(timeElapsed / VESTING_PERIOD);
+        let availableToWithdraw = details.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
+
+        if (availableToWithdraw.add(details.amountWithdrawn) > details.totalAllocation) {
+            availableToWithdraw = details.totalAllocation.sub(details.amountWithdrawn);
+        }
+
+        // Ensure the display includes the calculation, accounting for no available tokens
+        document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
+
+
+
     } catch (error) {
         console.error('Error fetching vesting details:', error);
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
