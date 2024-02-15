@@ -47,8 +47,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
        
         document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation);
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
-
-    
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
         const lastWithdrawal = new Date(details.lastWithdrawal * 1000).toLocaleString();
@@ -61,11 +59,19 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
         const isEligibleToWithdraw = timeSinceLastWithdrawal.gte(VESTING_PERIOD);
 
-          // Example placeholder logic:
-        let availableToWithdraw; // Calculate based on contract logic
-        // Example: If no tokens are available to withdraw, ensure it defaults to "0.0"
+        const VESTING_PERIOD_SECONDS = (await contract.VESTING_PERIOD()).toNumber();
+        const WITHDRAWAL_RATE = (await contract.WITHDRAWAL_RATE()).toNumber();
+
+         // Calculate periods elapsed since the last withdrawal or vesting start
+        const periodsElapsedSinceLastWithdrawal = Math.floor((now - details.lastWithdrawal.toNumber()) / VESTING_PERIOD_SECONDS);
+        const totalWithdrawableNow = details.totalAllocation.mul(WITHDRAWAL_RATE).div(100).mul(periodsElapsedSinceLastWithdrawal);
+        let availableToWithdraw = totalWithdrawableNow.sub(details.amountWithdrawn);
+
+         // Ensure availableToWithdraw is not negative and does not exceed totalAllocation
+        availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
+        availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
+         
         availableToWithdraw = availableToWithdraw || ethers.utils.parseEther("0");
-        
         
         // Update button text based on withdrawal eligibility
         const withdrawButton = document.getElementById('withdrawTokensButton');
@@ -86,9 +92,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
         
         // Ensure the display includes the calculation, accounting for no available tokens
-        document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
-
-         
+       document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
 
 
 
