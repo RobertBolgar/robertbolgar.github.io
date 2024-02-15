@@ -58,8 +58,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const timeSinceLastWithdrawal = now - details.lastWithdrawal.toNumber();
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
         const isEligibleToWithdraw = timeSinceLastWithdrawal > VESTING_PERIOD;
-
-     
         
         // Update button text based on withdrawal eligibility
         const withdrawButton = document.getElementById('withdrawTokensButton');
@@ -143,4 +141,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Withdraw Tokens Button not found');
     }
 });
-
