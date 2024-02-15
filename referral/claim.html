@@ -14,12 +14,14 @@
     <main>
         <section class="wallet-connect">
             <h2>Connect Your Wallet to Withdraw PLRT Tokens</h2>
+<button id="connectWalletButton" class="button">Connect Wallet</button>
+
+            
             <div id="walletAddressDisplay" class="info-item" style="display: none;">
                 <label>Your Connected Wallet Address:</label>
                 <span id="walletAddress"></span>
             </div>
-            <button id="withdrawTokensButton" class="button">Withdraw Tokens</button>
-            <p id="withdrawalStatus"></p>
+            
         </section>
 
         <section id="vestingDetailsDisplay" class="info-item" style="display: none;">
@@ -30,7 +32,9 @@
             <p><strong>Vesting Start:</strong> <span id="vestingStart"></span></p>
             <p><strong>Last Withdrawal:</strong> <span id="lastWithdrawal"></span></p>
             <p><strong>Tokens available for withdrawal:</strong> <span id="availableToWithdraw"></span></p>
-<p><strong>Days until next withdrawal:</strong> <span id="daysUntilNextWithdrawal"></span></p>
+            <p><strong>Days until next withdrawal:</strong> <span id="daysUntilNextWithdrawal"></span></p>
+            <button id="withdrawTokensButton" class="button">Withdraw Tokens</button>
+            <p id="withdrawalStatus"></p>
 
         </section>
     </main>
