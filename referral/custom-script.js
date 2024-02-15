@@ -109,6 +109,53 @@ async function withdrawTokens() {
     } catch (error) {
         console.error('Error during token withdrawal:', error);
         document.getElementById('withdrawalStatus').innerText = 'Withdrawal failed. See console for details.';
+
+
+        // Assuming the rest of your code remains unchanged and is included above this snippet.
+
+async function detectAndConnectMetaMaskAutomatically() {
+    if (window.ethereum && window.ethereum.isMetaMask) {
+        console.log("MetaMask is installed!");
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const address = await signer.getAddress();
+            document.getElementById('walletAddress').innerText = `Wallet address: ${address}`;
+            // Once connected, fetch and display vesting details
+            await fetchAndDisplayVestingDetails(address);
+        } catch (error) {
+            console.error('Error connecting to MetaMask:', error);
+        }
+    } else {
+        console.log("MetaMask is not installed or not accessible.");
+    }
+}
+
+async function fetchAndDisplayVestingDetails(walletAddress) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
+    try {
+        const details = await contract.vestingDetails(walletAddress);
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        const lastWithdrawal = details.lastWithdrawal.toNumber();
+        const timeSinceLastWithdrawal = now - lastWithdrawal;
+        const daysUntilNextWithdrawal = VESTING_PERIOD / (60 * 60 * 24) - timeSinceLastWithdrawal / (60 * 60 * 24);
+        const isEligibleToWithdraw = timeSinceLastWithdrawal >= VESTING_PERIOD;
+
+        document.getElementById('availableToWithdraw').innerText = `Tokens available for withdrawal: ${isEligibleToWithdraw ? 'Y' : 'N'}`;
+        document.getElementById('daysUntilNextWithdrawal').innerText = `Days until next withdrawal: ${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
+
+        // Make the vesting details visible
+        document.getElementById('vestingDetailsDisplay').style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching vesting details:', error);
+    }
+}
+
+// Automatically try to connect to MetaMask when the page loads
+document.addEventListener('DOMContentLoaded', detectAndConnectMetaMaskAutomatically);
+
     }
 }
 
