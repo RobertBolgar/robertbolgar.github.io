@@ -71,7 +71,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
         availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
          
-        availableToWithdraw = availableToWithdraw || ethers.utils.parseEther("0");
+       
 
           // Ensure the display includes the calculation, accounting for no available tokens
        document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
