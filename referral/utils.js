@@ -25,3 +25,11 @@ export function displayMessage(id, message, isSuccess = true) {
         element.style.color = isSuccess ? 'green' : 'red';
     }
 }
+        
+        // Set a timeout to hide the element after 5000 milliseconds (5 seconds)
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 5000);
+    }
+}
+
