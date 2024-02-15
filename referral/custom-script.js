@@ -47,8 +47,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const daysUntilNextWithdrawal = (VESTING_PERIOD / (60 * 60 * 24)) - (timeSinceLastWithdrawal / (60 * 60 * 24));
         const isEligibleToWithdraw = timeSinceLastWithdrawal >= VESTING_PERIOD;
 
-        document.getElementById('availableToWithdraw').innerText = `Tokens available for withdrawal: ${isEligibleToWithdraw ? 'Y' : 'N'}`;
-        document.getElementById('daysUntilNextWithdrawal').innerText = `Days until next withdrawal: ${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
+        document.getElementById('availableToWithdraw').innerText = `${isEligibleToWithdraw ? 'Y' : 'N'}`;
+        document.getElementById('daysUntilNextWithdrawal').innerText = `${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
 
         // Make the vesting details visible
         document.getElementById('vestingDetailsDisplay').style.display = 'block';
