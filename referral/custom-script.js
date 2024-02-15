@@ -36,10 +36,6 @@ async function detectAndConnectMetaMaskAutomatically() {
     }
 }
 
-// At the top of the file
-import { showElement, hideElement, displayMessage } from './utils.js';
-
-// Define your main application logic in functions
 async function fetchDataAndDisplay() {
     try {
         showElement('loadingIndicator');
