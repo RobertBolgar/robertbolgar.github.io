@@ -1,5 +1,7 @@
 // Import ethers from CDN or local installation
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
+// Import utils.js 
+import { showElement, hideElement, displayMessage } from './utils.js';
 
 const contractABI = [ { "inputs": [ { "internalType": "contract IERC20", "name": "_tokenAddress", "type": "address" }, { "internalType": "address", "name": "initialOwner", "type": "address" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "inputs": [ { "internalType": "address", "name": "owner", "type": "address" } ], "name": "OwnableInvalidOwner", "type": "error" }, { "inputs": [ { "internalType": "address", "name": "account", "type": "address" } ], "name": "OwnableUnauthorizedAccount", "type": "error" }, { "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "OwnershipTransferred", "type": "event" }, { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "oldAddress", "type": "address" }, { "internalType": "address", "name": "newAddress", "type": "address" } ], "name": "updateTeamMemberAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "withdrawTokens", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "plrToken", "outputs": [ { "internalType": "contract IERC20", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "name": "teamMembers", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "VESTING_PERIOD", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "", "type": "address" } ], "name": "vestingDetails", "outputs": [ { "internalType": "uint256", "name": "totalAllocation", "type": "uint256" }, { "internalType": "uint256", "name": "amountWithdrawn", "type": "uint256" }, { "internalType": "uint256", "name": "vestingStart", "type": "uint256" }, { "internalType": "uint256", "name": "lastWithdrawal", "type": "uint256" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "WITHDRAWAL_RATE", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" } ];
 const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
@@ -33,6 +35,43 @@ async function detectAndConnectMetaMaskAutomatically() {
         console.log("MetaMask is not installed or not accessible.");
     }
 }
+
+// At the top of the file
+import { showElement, hideElement, displayMessage } from './utils.js';
+
+// Define your main application logic in functions
+async function fetchDataAndDisplay() {
+    try {
+        showElement('loadingIndicator');
+        // Simulate fetching data or any async operation
+        await fetchData(); // Assume this function is defined elsewhere to fetch your data
+        hideElement('loadingIndicator');
+        displayMessage('messageBox', 'Successfully connected', true);
+        // Further processing and displaying data
+    } catch (error) {
+        hideElement('loadingIndicator');
+        displayMessage('messageBox', 'Failed to connect', false);
+        console.error(error);
+    }
+}
+
+// Event listeners or direct calls to initiate parts of your app
+document.addEventListener('DOMContentLoaded', () => {
+    // You can call fetchDataAndDisplay here if you want to auto-fetch data
+    // Or set up event listeners for user actions
+    document.getElementById('fetchButton').addEventListener('click', fetchDataAndDisplay);
+});
+
+// Optionally, you might have other functions that directly use the imported utilities
+function showLoading() {
+    showElement('loadingIndicator');
+}
+
+function hideLoading() {
+    hideElement('loadingIndicator');
+}
+
+
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
