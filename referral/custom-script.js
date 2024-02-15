@@ -38,11 +38,13 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress, contractABI, provider.getSigner());
     try {
+        // Fetch vesting details from the contract for the given wallet address
         const details = await contract.vestingDetails(walletAddress);
-        console.log(details); 
-    
+        console.log(details); // Debug: See the retrieved details
+
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
-        const lastWithdrawal = details.lastWithdrawal.toNumber();
+        const lastWithdrawal = details.lastWithdrawal.toNumber(); // Convert BigNumber to number
+        const vestingStart = details.vestingStart.toNumber(); // Convert BigNumber to number for vestingStart
         const timeSinceLastWithdrawal = now - lastWithdrawal;
         
         // Fetch the VESTING_PERIOD directly from the contract
@@ -50,8 +52,13 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const daysUntilNextWithdrawal = (VESTING_PERIOD / (60 * 60 * 24)) - (timeSinceLastWithdrawal / (60 * 60 * 24));
         const isEligibleToWithdraw = timeSinceLastWithdrawal >= VESTING_PERIOD;
 
-        document.getElementById('availableToWithdraw').innerText = `${isEligibleToWithdraw ? 'Y' : 'N'}`;
-        document.getElementById('daysUntilNextWithdrawal').innerText = `${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
+        // Update the text elements with the formatted details
+        document.getElementById('availableToWithdraw').innerText = `Available to Withdraw: ${isEligibleToWithdraw ? 'Y' : 'N'}`;
+        document.getElementById('daysUntilNextWithdrawal').innerText = `Days until next withdrawal: ${Math.max(0, Math.ceil(daysUntilNextWithdrawal))}`;
+
+        // Format and display "Vesting Start" and "Last Withdrawal" dates
+        document.getElementById('vestingStart').innerText = `Vesting Start: ${new Date(vestingStart * 1000).toLocaleString()}`;
+        document.getElementById('lastWithdrawal').innerText = `Last Withdrawal: ${new Date(lastWithdrawal * 1000).toLocaleString()}`;
 
         // Make the vesting details visible
         document.getElementById('vestingDetailsDisplay').style.display = 'block';
