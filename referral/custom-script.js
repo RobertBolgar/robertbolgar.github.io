@@ -22,12 +22,17 @@ async function detectAndConnectMetaMaskAutomatically() {
             hideElement('connectWalletText');
             hideElement('connectWalletButton');
 
-            await fetchAndDisplayVestingDetails(address); // Ensure this function's implementation matches your requirements
+            // Optional: Change the button text to "Connected" or similar to indicate success
+            document.getElementById('connectWalletButton').innerText = 'Connected';
+            await fetchAndDisplayVestingDetails(address);
         } catch (error) {
             console.error('Error connecting to MetaMask:', error);
         }
     } else {
         console.log("MetaMask is not installed or not accessible.");
+        // Change the button text to indicate MetaMask is not detected
+        document.getElementById('connectWalletButton').innerText = 'MetaMask Not Detected';
+        displayMessage('messageBox', 'MetaMask is not installed. Please install MetaMask to connect.', false);
     }
 }
 
