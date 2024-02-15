@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hideElement('loadingIndicator'); // Hide loading once task is done
 
             // Display a success message
-            displayMessage('messageBox', 'Action completed successfully!', true);
+            displayMessage('messageBox', 'Success!', true);
         } catch (error) {
             // If there's an error, hide the loading indicator and show an error message
             hideElement('loadingIndicator');
