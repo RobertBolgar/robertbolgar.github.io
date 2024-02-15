@@ -9,18 +9,23 @@ const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
 // Function to detect and connect MetaMask automatically
 async function detectAndConnectMetaMaskAutomatically() {
     if (window.ethereum && window.ethereum.isMetaMask) {
+        console.log("MetaMask is installed!");
         try {
+            // Request accounts from MetaMask
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const address = await signer.getAddress();
+            const signer = provider.getSigner(); // Define signer here, obtaining it from the provider
+            const address = await signer.getAddress(); // Use signer to get the address
 
+            // Now that signer is defined, the rest of your function can proceed using it
             document.getElementById('walletAddress').innerText = address;
             showElement('walletAddressDisplay');
             showElement('withdrawTokensButton');
             hideElement('connectWalletText');
             hideElement('connectWalletButton');
 
-            await fetchAndDisplayVestingDetails(address);
+            // If you need to use the signer for further operations, make sure it's accessible in the scope of those operations
+            await fetchAndDisplayVestingDetails(address, signer); // Pass signer as an argument if needed
         } catch (error) {
             console.error('Error connecting to MetaMask:', error);
         }
