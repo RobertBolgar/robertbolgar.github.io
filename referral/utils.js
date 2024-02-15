@@ -16,15 +16,13 @@ export function hideElement(id) {
     }
 }
 
-// Function to display a message with a specific color
+// Function to display a message with a specific color and auto-hide it
 export function displayMessage(id, message, isSuccess = true) {
     const element = document.getElementById(id);
     if (element) {
         element.innerText = message;
         element.style.display = 'block';
         element.style.color = isSuccess ? 'green' : 'red';
-    }
-}
         
         // Set a timeout to hide the element after 5000 milliseconds (5 seconds)
         setTimeout(() => {
@@ -32,4 +30,3 @@ export function displayMessage(id, message, isSuccess = true) {
         }, 5000);
     }
 }
-
