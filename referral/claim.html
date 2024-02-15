@@ -18,15 +18,17 @@
                 <label>Your Connected Wallet Address:</label>
                 <span id="walletAddress"></span>
             </div>
-            <button id="withdrawTokensButton" class="button" style="display: none;">Withdraw Tokens</button>
+            <!-- Update: Button initially visible; visibility adjusted by script based on wallet connection -->
+            <button id="withdrawTokensButton" class="button">Withdraw Tokens</button>
             <p id="withdrawalStatus"></p>
         </section>
 
-        <!-- Vesting Details Display -->
+        <!-- Updated: Vesting Details Display to include Available to Withdraw -->
         <section id="vestingDetailsDisplay" class="info-item" style="display: none;">
             <h3>Vesting Details:</h3>
             <p><strong>Total Allocation:</strong> <span id="totalAllocation"></span> PLRT</p>
             <p><strong>Amount Withdrawn:</strong> <span id="amountWithdrawn"></span> PLRT</p>
+            <p><strong>Available to Withdraw:</strong> <span id="availableToWithdraw"></span> PLRT</p>
             <p><strong>Vesting Start:</strong> <span id="vestingStart"></span></p>
             <p><strong>Last Withdrawal:</strong> <span id="lastWithdrawal"></span></p>
         </section>
@@ -36,8 +38,7 @@
         <p>&copy; 2024 PLRT Token. Redefining Digital Content & Rewards.</p>
     </footer>
 
-    <!-- Reference to External Custom Script -->
-    <!-- Ensure custom-script.js is treated as a module -->
+    <!-- Reference to External Custom Script as a Module -->
     <script type="module" src="custom-script.js"></script>
 </body>
 </html>
