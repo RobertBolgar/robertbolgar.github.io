@@ -45,9 +45,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const details = await contract.vestingDetails(walletAddress);
        
-        // Correctly setting the text for totalAllocation and amountWithdrawn without duplicating "PLRT"
-document.getElementById('totalAllocation').innerText = individualAllocation.toFixed(2) + ' PLRT';
-document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
 
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
