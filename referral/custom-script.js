@@ -20,6 +20,9 @@ async function detectAndConnectMetaMaskAutomatically() {
             document.getElementById('walletAddressDisplay').style.display = 'block';
             document.getElementById('withdrawTokensButton').style.display = 'block';
 
+            // Hide the "Connect Your Wallet" text
+            document.getElementById('connectWalletText').style.display = 'none';
+
             // Fetch and display vesting details
             await fetchAndDisplayVestingDetails(address);
         } catch (error) {
