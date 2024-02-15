@@ -58,6 +58,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('fetchButton').addEventListener('click', fetchDataAndDisplay);
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.getElementById('actionButton');
+    
+    button.addEventListener('click', async () => {
+        try {
+            showElement('loadingIndicator'); // Show loading
+            // Simulate a task (e.g., fetching data or processing something)
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulated delay
+            hideElement('loadingIndicator'); // Hide loading once task is done
+
+            // Display a success message
+            displayMessage('messageBox', 'Action completed successfully!', true);
+        } catch (error) {
+            // If there's an error, hide the loading indicator and show an error message
+            hideElement('loadingIndicator');
+            displayMessage('messageBox', 'Action failed. Please try again.', false);
+            console.error(error);
+        }
+    });
+});
+
+
 // Optionally, you might have other functions that directly use the imported utilities
 function showLoading() {
     showElement('loadingIndicator');
