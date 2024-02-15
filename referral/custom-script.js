@@ -59,11 +59,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
         const isEligibleToWithdraw = timeSinceLastWithdrawal > VESTING_PERIOD;
 
-        // This should calculate how many tokens are currently available for withdrawal for the connected wallet
-        const tokensAvailable = calculateTokensAvailableForWithdrawal(details); // Implement this based on your logic
-
-        // Ensure there's a default value displayed, even if it's zero
-        document.getElementById('tokensAvailableForWithdrawal').innerText = `${tokensAvailable.toFixed(2)} PLRT`;
+     
         
         // Update button text based on withdrawal eligibility
         const withdrawButton = document.getElementById('withdrawTokensButton');
