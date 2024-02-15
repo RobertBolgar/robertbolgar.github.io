@@ -1,38 +1,49 @@
-Given your smart contract for team vesting, we can now accurately adjust the JavaScript function to fetch and display the correct "Tokens available for withdrawal" based on the contract's logic. The contract specifies that withdrawals can occur every 10 days with 10% of the total allocation available each period after the vesting start.
+Reviewing your JavaScript code and considering the scenario where only the wallet address is displayed upon connection, without updating other details, let's address a few potential issues directly related to your `fetchAndDisplayVestingDetails` function and overall script setup:
 
-To calculate and display the tokens available for withdrawal in your web interface, you can follow these steps:
+### Review and Potential Fixes
 
-1. **Calculate the Time Since the Last Withdrawal**: Determine how much time has passed since the last withdrawal or the vesting start date, whichever is applicable.
+1. **Contract Interaction and BigNumber Handling**:
+   - Your code correctly uses ethers.js for interaction with the Ethereum blockchain. However, when dealing with Smart Contract functions that return `BigNumber` types (like `totalAllocation`, `amountWithdrawn`), ensure all BigNumber operations are handled properly.
+   - When calculating `availableToWithdraw`, your code snippet within the catch block seems misplaced or potentially incorrect due to direct arithmetic operations on BigNumbers without using ethers.js BigNumber methods. JavaScript doesn't directly support these operations on BigNumbers returned by ethers.js.
 
-2. **Determine the Available Amount for Withdrawal**: Use the `WITHDRAWAL_RATE` and `VESTING_PERIOD` from your contract to calculate how much of the total allocation is available for withdrawal at the current time, considering the amount already withdrawn.
+2. **Ensuring BigNumber Arithmetic**:
+   - Use ethers.js BigNumber methods for calculations. For example, to add or subtract BigNumbers, use `.add()` or `.sub()` methods provided by ethers.js.
 
-3. **Update the Display**: Show the calculated available amount in the web interface.
+3. **Duplicate Variable Declaration**:
+   - You have declared `const now` twice in the same scope within `fetchAndDisplayVestingDetails`. This can cause syntax errors or unexpected behavior. Ensure each variable is declared only once within the same functional scope.
 
-Here's how you could implement this in your JavaScript, based on the provided smart contract:
+4. **Displaying Available Tokens Correctly**:
+   - To display "Tokens available for withdrawal", you must calculate this based on the vesting details and withdrawal rules defined in your Smart Contract. This involves understanding the vesting schedule, the withdrawal rate, and how much has already been withdrawn.
+
+### Corrected Approach for Calculating and Displaying Available Tokens
+
+Here's a simplified and corrected approach for calculating and displaying "Tokens available for withdrawal", assuming you need to make a correction for BigNumber handling and avoid duplicating variable declarations:
 
 ```javascript
+// Assuming fetchAndDisplayVestingDetails function is called correctly after connecting wallet
 async function fetchAndDisplayVestingDetails(walletAddress) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(contractAddress, contractABI, signer);
-    
+    // Existing setup code for provider, signer, and contract...
+
     try {
         const details = await contract.vestingDetails(walletAddress);
-        // Format and display other details as before...
+        // Formatting and displaying vesting details as before...
 
-        // Calculate the available tokens for withdrawal based on the contract logic
-        const now = Math.floor(Date.now() / 1000); // Current time in seconds
-        const timeElapsed = now - details.lastWithdrawal.toNumber();
-        const periodsElapsed = Math.floor(timeElapsed / VESTING_PERIOD);
-        let availableToWithdraw = details.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
+        // Use BigNumber methods for any arithmetic operations involving BigNumbers
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds, only declared once
+        const timeSinceLastWithdrawal = ethers.BigNumber.from(now).sub(details.lastWithdrawal);
+        const VESTING_PERIOD = await contract.VESTING_PERIOD();
+        const isEligibleToWithdraw = timeSinceLastWithdrawal.gte(VESTING_PERIOD);
 
-        if (availableToWithdraw.add(details.amountWithdrawn) > details.totalAllocation) {
-            availableToWithdraw = details.totalAllocation.sub(details.amountWithdrawn);
-        }
+        // Determine the correct logic to calculate availableToWithdraw based on your contract's rules
+        // This logic will depend on how your smart contract calculates available amounts
+        // Example placeholder logic:
+        let availableToWithdraw; // Calculate based on contract logic
+        // Example: If no tokens are available to withdraw, ensure it defaults to "0.0"
+        availableToWithdraw = availableToWithdraw || ethers.utils.parseEther("0");
 
-        // Ensure the display includes the calculation, accounting for no available tokens
         document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
 
+        // Update the rest of the UI elements as needed...
     } catch (error) {
         console.error('Error fetching vesting details:', error);
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
@@ -40,6 +51,9 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 }
 ```
 
-Please note, the calculation for `availableToWithdraw` in the JavaScript snippet above is conceptual and needs to be adjusted to work in your script. JavaScript does not support the `mul`, `div`, and `sub` methods directly on numbers or strings as in Solidity. You'll need to use a library that can handle big numbers (like BigNumber.js, which is included in the ethers.js library) for these operations, especially because Ethereum numbers can exceed JavaScript's safe integer limits.
+### Key Points
+- **BigNumber Arithmetic**: Ensure you're using ethers.js BigNumber arithmetic for operations involving contract return values.
+- **Single Declaration**: Make sure variables like `now` are declared once per scope to avoid errors.
+- **Logic for Available Tokens**: You'll need to implement logic matching your contract's rules to calculate `availableToWithdraw` correctly. The above example assumes a placeholder for this calculation.
 
-You might already be using ethers.js for interacting with Ethereum, so you can leverage `ethers.BigNumber` for calculations involving token amounts, similar to how calculations are done in Solidity. Adjust the calculation to fit JavaScript syntax and use ethers.js utilities for handling big numbers.
+By following these guidelines and ensuring correct BigNumber handling, you should be able to display all relevant details, including "Tokens available for withdrawal", upon successfully connecting a wallet.
