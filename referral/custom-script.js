@@ -12,7 +12,6 @@ async function detectAndConnectMetaMaskAutomatically() {
         try {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
             const address = await signer.getAddress();
 
             document.getElementById('walletAddress').innerText = address;
@@ -48,15 +47,14 @@ async function handleWithdrawButtonClick() {
 }
 
 async function performWithdrawal() {
-    // Create an instance of the contract using ethers, specifying the contract's address, ABI, and a signer
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner(); // Ensure signer is defined in this scope
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
     
-    // Call the `withdrawTokens` function of your smart contract
     const tx = await contract.withdrawTokens();
-    
-    // Wait for the transaction to be mined
     await tx.wait();
 }
+
 
 
 // Function to fetch and display vesting details
