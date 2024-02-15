@@ -1,12 +1,14 @@
-From your description, it appears the "Tokens available for withdrawal:" field is not displaying any value, particularly when the availability is "No" or when no tokens are yet eligible for withdrawal. To address this and ensure a more intuitive display, including showing "0.0 PLRT" (or a similar placeholder) when no tokens are available, you'll need to adjust the logic in the section where these details are set.
+Given your smart contract for team vesting, we can now accurately adjust the JavaScript function to fetch and display the correct "Tokens available for withdrawal" based on the contract's logic. The contract specifies that withdrawals can occur every 10 days with 10% of the total allocation available each period after the vesting start.
 
-Given the structure of your code and the output described, here's an approach to ensure "0.0 PLRT" is displayed when no tokens are available for withdrawal:
+To calculate and display the tokens available for withdrawal in your web interface, you can follow these steps:
 
-1. **Ensure a Default Value**: First, set a default value for tokens available for withdrawal when the page loads or when the details are fetched. This ensures there's always a value displayed, even before any specific calculation takes place.
+1. **Calculate the Time Since the Last Withdrawal**: Determine how much time has passed since the last withdrawal or the vesting start date, whichever is applicable.
 
-2. **Adjust the Display Based on Eligibility**: When calculating the tokens available for withdrawal, ensure the calculation accounts for cases where the result is zero or no tokens are available yet. This involves adjusting the logic in `fetchAndDisplayVestingDetails` or wherever the eligibility for withdrawal is determined.
+2. **Determine the Available Amount for Withdrawal**: Use the `WITHDRAWAL_RATE` and `VESTING_PERIOD` from your contract to calculate how much of the total allocation is available for withdrawal at the current time, considering the amount already withdrawn.
 
-Here's a conceptual adjustment to the `fetchAndDisplayVestingDetails` function to include a default display for "Tokens available for withdrawal:" and adjust it based on the withdrawal eligibility:
+3. **Update the Display**: Show the calculated available amount in the web interface.
+
+Here's how you could implement this in your JavaScript, based on the provided smart contract:
 
 ```javascript
 async function fetchAndDisplayVestingDetails(walletAddress) {
@@ -16,17 +18,20 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     
     try {
         const details = await contract.vestingDetails(walletAddress);
-        // Other details setup remains the same...
+        // Format and display other details as before...
 
-        // Assuming `calculateTokensAvailableForWithdrawal` is a function you need to define based on your contract's logic
-        // This should calculate how many tokens are currently available for withdrawal for the connected wallet
-        const tokensAvailable = calculateTokensAvailableForWithdrawal(details); // Implement this based on your logic
+        // Calculate the available tokens for withdrawal based on the contract logic
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        const timeElapsed = now - details.lastWithdrawal.toNumber();
+        const periodsElapsed = Math.floor(timeElapsed / VESTING_PERIOD);
+        let availableToWithdraw = details.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
 
-        // Ensure there's a default value displayed, even if it's zero
-        document.getElementById('tokensAvailableForWithdrawal').innerText = `${tokensAvailable.toFixed(2)} PLRT`;
+        if (availableToWithdraw.add(details.amountWithdrawn) > details.totalAllocation) {
+            availableToWithdraw = details.totalAllocation.sub(details.amountWithdrawn);
+        }
 
-        // If there's no specific function like `calculateTokensAvailableForWithdrawal`, you may need to implement logic to determine
-        // the amount based on `details`, the current time, `VESTING_PERIOD`, and any other relevant contract parameters.
+        // Ensure the display includes the calculation, accounting for no available tokens
+        document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
 
     } catch (error) {
         console.error('Error fetching vesting details:', error);
@@ -35,8 +40,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 }
 ```
 
-In this adjustment:
-- `calculateTokensAvailableForWithdrawal(details)` is a placeholder for your actual logic to determine the amount of tokens available for withdrawal based on the fetched vesting details and possibly other factors like the current time and any vesting periods. You'll need to implement this logic based on the specific rules defined in your smart contract.
-- The `.toFixed(2)` ensures numerical values are formatted to two decimal places, so you always have a consistent display format like "0.00 PLRT" even when the value is zero.
+Please note, the calculation for `availableToWithdraw` in the JavaScript snippet above is conceptual and needs to be adjusted to work in your script. JavaScript does not support the `mul`, `div`, and `sub` methods directly on numbers or strings as in Solidity. You'll need to use a library that can handle big numbers (like BigNumber.js, which is included in the ethers.js library) for these operations, especially because Ethereum numbers can exceed JavaScript's safe integer limits.
 
-Remember, the actual implementation of `calculateTokensAvailableForWithdrawal` will depend on how your smart contract calculates available tokens for withdrawal, including any vesting schedules, periods, and already withdrawn amounts.
+You might already be using ethers.js for interacting with Ethereum, so you can leverage `ethers.BigNumber` for calculations involving token amounts, similar to how calculations are done in Solidity. Adjust the calculation to fit JavaScript syntax and use ethers.js utilities for handling big numbers.
