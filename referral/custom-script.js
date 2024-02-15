@@ -57,6 +57,30 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     }
 }
 
+document.getElementById('withdrawTokensButton').addEventListener('click', async () => {
+    const walletAddress = await ethereum.request({ method: 'eth_accounts' }).then(accounts => accounts[0]);
+    checkWithdrawalEligibility(walletAddress);
+});
+
+async function checkWithdrawalEligibility(walletAddress) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    const detail = await contract.vestingDetails(walletAddress);
+
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    const lastWithdrawal = detail.lastWithdrawal.toNumber();
+    const timeSinceLastWithdrawal = now - lastWithdrawal;
+    const isEligibleToWithdraw = timeSinceLastWithdrawal >= VESTING_PERIOD;
+
+    if (isEligibleToWithdraw) {
+        withdrawTokens(); // Proceed to attempt withdrawal
+    } else {
+        document.getElementById('withdrawalStatus').innerText = "Can't withdraw yet. Please wait until the next vesting period.";
+    }
+}
+
+
 async function withdrawTokens() {
     if (!window.ethereum || !window.ethereum.isMetaMask) {
         console.log('MetaMask is not installed or not accessible.');
