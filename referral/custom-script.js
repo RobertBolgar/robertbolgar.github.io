@@ -34,6 +34,49 @@ async function detectAndConnectMetaMaskAutomatically() {
     }
 }
 
+async function fetchAndDisplayVestingDetails(walletAddress) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    
+    try {
+        const details = await contract.vestingDetails(walletAddress);
+        
+        // Assuming `details` contains the vesting information in the structure { totalAllocation, amountWithdrawn, vestingStart, lastWithdrawal }
+        // And you want to display them in the respective <span> elements within your HTML
+        
+        // Update the UI with the fetched details
+        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+        
+        // Convert UNIX timestamp to a readable format
+        const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
+        const lastWithdrawal = new Date(details.lastWithdrawal * 1000).toLocaleString();
+        document.getElementById('vestingStart').innerText = vestingStart;
+        document.getElementById('lastWithdrawal').innerText = lastWithdrawal;
+
+        // Calculate available to withdraw and days until next withdrawal if applicable
+        // This calculation will depend on your contract's logic, for example:
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        const timeSinceLastWithdrawal = now - details.lastWithdrawal.toNumber();
+        const VESTING_PERIOD = await contract.VESTING_PERIOD(); // Fetch vesting period from contract
+        const isEligibleToWithdraw = timeSinceLastWithdrawal > VESTING_PERIOD;
+        document.getElementById('availableToWithdraw').innerText = isEligibleToWithdraw ? 'Yes' : 'No';
+
+        // Calculate days until next withdrawal
+        const daysUntilNextWithdrawal = isEligibleToWithdraw ? 0 : (VESTING_PERIOD - timeSinceLastWithdrawal) / (60 * 60 * 24);
+        document.getElementById('daysUntilNextWithdrawal').innerText = Math.ceil(daysUntilNextWithdrawal) + ' days';
+
+        // Make the vesting details visible
+        showElement('vestingDetailsDisplay');
+
+    } catch (error) {
+        console.error('Error fetching vesting details:', error);
+        displayMessage('messageBox', 'Failed to fetch vesting details.', false);
+    }
+}
+
+
 // Function to handle withdrawal button click
 async function handleWithdrawButtonClick() {
     showElement('loadingIndicator');
