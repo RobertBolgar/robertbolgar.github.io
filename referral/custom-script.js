@@ -34,13 +34,24 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
     try {
         const details = await contract.vestingDetails(walletAddress);
-        console.log('Vesting details:', details);
-        // Assuming you have HTML elements with IDs to display these details
-        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation);
-        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
+        // Format details for display
+        const totalAllocationFormatted = ethers.utils.formatUnits(details.totalAllocation, 18); // Adjust the '18' based on your token's decimals
+        const amountWithdrawnFormatted = ethers.utils.formatUnits(details.amountWithdrawn, 18);
+
+        document.getElementById('totalAllocation').innerText = totalAllocationFormatted + ' PLRT';
+        document.getElementById('amountWithdrawn').innerText = amountWithdrawnFormatted + ' PLRT';
         document.getElementById('vestingStart').innerText = new Date(details.vestingStart * 1000).toLocaleString();
         document.getElementById('lastWithdrawal').innerText = new Date(details.lastWithdrawal * 1000).toLocaleString();
+
+        // Show vesting details section
         document.getElementById('vestingDetailsDisplay').style.display = 'block';
+
+        // Check if the user is eligible to withdraw yet
+        const timeNow = Date.now() / 1000; // Current time in seconds
+        const timeElapsedSinceLastWithdrawal = timeNow - details.lastWithdrawal.toNumber();
+        if (timeElapsedSinceLastWithdrawal < VESTING_PERIOD) {
+            document.getElementById('withdrawalStatus').innerText = "Can't withdraw yet";
+        }
     } catch (error) {
         console.error('Error fetching vesting details:', error);
     }
