@@ -4,17 +4,17 @@ const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
 
 async function detectAndConnectMetaMask() {
     const provider = await detectEthereumProvider();
-    if (provider && provider === window.ethereum) {
+    if (provider) {
         console.log("MetaMask is installed!");
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            await provider.request({ method: 'eth_requestAccounts' }); // This prompts the user to connect their wallet
+            const accounts = await provider.request({ method: 'eth_accounts' });
             if (accounts.length > 0) {
                 const walletAddress = accounts[0];
                 document.getElementById('walletAddress').innerText = walletAddress;
                 document.getElementById('walletAddressDisplay').style.display = 'block';
                 document.getElementById('withdrawTokensButton').style.display = 'block';
-                // Fetch and display vesting details
-                await fetchAndDisplayVestingDetails(walletAddress);
+                // Fetch and display vesting details if needed here
             }
         } catch (error) {
             console.error('Error connecting to MetaMask:', error);
@@ -23,6 +23,9 @@ async function detectAndConnectMetaMask() {
         console.log("MetaMask is not installed or not accessible.");
     }
 }
+
+document.addEventListener('DOMContentLoaded', detectAndConnectMetaMask);
+
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -68,4 +71,4 @@ async function withdrawTokens() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', detectAndConnectMetaMask);
+
