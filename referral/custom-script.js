@@ -82,6 +82,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 }
 
 
+
 // Handles the withdrawal button click. This function remains the same.
 async function handleWithdrawButtonClick() {
     showElement('loadingIndicator');
