@@ -42,22 +42,30 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     const signer = provider.getSigner();
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
     
-    try {
+     try {
         const details = await contract.vestingDetails(walletAddress);
        
         document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation);
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
 
+    
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
         const lastWithdrawal = new Date(details.lastWithdrawal * 1000).toLocaleString();
         document.getElementById('vestingStart').innerText = vestingStart;
         document.getElementById('lastWithdrawal').innerText = lastWithdrawal;
 
-        const now = Math.floor(Date.now() / 1000);
-        const timeSinceLastWithdrawal = now - details.lastWithdrawal.toNumber();
+       // Use BigNumber methods for any arithmetic operations involving BigNumbers
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds, only declared once
+        const timeSinceLastWithdrawal = ethers.BigNumber.from(now).sub(details.lastWithdrawal);
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
-        const isEligibleToWithdraw = timeSinceLastWithdrawal > VESTING_PERIOD;
+        const isEligibleToWithdraw = timeSinceLastWithdrawal.gte(VESTING_PERIOD);
+
+          // Example placeholder logic:
+        let availableToWithdraw; // Calculate based on contract logic
+        // Example: If no tokens are available to withdraw, ensure it defaults to "0.0"
+        availableToWithdraw = availableToWithdraw || ethers.utils.parseEther("0");
+        
         
         // Update button text based on withdrawal eligibility
         const withdrawButton = document.getElementById('withdrawTokensButton');
@@ -88,6 +96,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
         // Ensure the display includes the calculation, accounting for no available tokens
         document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
+
+         
 
 
 
