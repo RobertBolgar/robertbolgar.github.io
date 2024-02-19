@@ -31,12 +31,21 @@
             <p id="result" style="margin-top: 20px;"></p>
         </div>
         <script>
-            document.getElementById('affiliateForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const affiliateLink = document.getElementById('affiliateLink').value;
-                const generatedLink = `index.html?affiliate=${encodeURIComponent(affiliateLink)}`;
-                document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
-            });
+            document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('affiliateForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevents the form from submitting in the traditional manner
+        
+        // Retrieve the value entered into the input field
+        const inputLink = document.getElementById('affiliateLink').value;
+        
+        // Construct the custom link with a generic query parameter ('ref')
+        const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
+        
+        // Display the custom link to the user
+        document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
+    });
+});
+
         </script>
         </td>
       </tr>
