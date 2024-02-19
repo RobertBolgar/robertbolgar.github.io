@@ -37,16 +37,17 @@
         </div>
         <script>
             // Function to update the buy button link based on the affiliate query parameter
-            function updateBuyButtonLink() {
-                const queryParams = new URLSearchParams(window.location.search);
-                const affiliateLink = queryParams.get('affiliate');
-                if (affiliateLink) {
-                    document.getElementById('buyButton').href = affiliateLink;
-                }
-            }
-            
-            // Update the link when the page loads
-            window.onload = updateBuyButtonLink;
+function updateBuyButtonLink() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const affiliateLink = queryParams.get('affiliate');
+    if (affiliateLink) {
+        document.getElementById('buyButton').href = affiliateLink;
+    }
+}
+
+// Update the link when the page loads
+window.onload = updateBuyButtonLink;
+
         </script>
         </td>
       </tr>
