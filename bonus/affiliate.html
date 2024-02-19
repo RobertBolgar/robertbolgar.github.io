@@ -30,11 +30,13 @@
             </form>
             <p id="result"></p>
 
-          <!-- Place this div after the form -->
+          <!-- Container for the generated link and copy button -->
 <div id="linkContainer" style="display:none; margin-top: 20px;">
+    <p id="linkExplanation">Here is your custom affiliate link. Click the button to copy it:</p> <!-- Explanatory text -->
     <input type="text" id="generatedLink" class="form-input" readonly style="margin-bottom: 10px;">
     <button type="button" id="copyButton" class="button">Copy Link</button>
 </div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
