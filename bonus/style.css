@@ -86,6 +86,50 @@ img {
     line-height: 1.5; /* Improves readability */
 }
 
+.ebooks-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px; /* Adjusts the space between items */
+    margin-top: 20px;
+}
+
+.ebook {
+    flex-basis: calc(20% - 20px); /* Adjust based on the gap and number of items per row */
+    text-align: center;
+}
+
+.ebook img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px; /* Optional: adds rounded corners to the images */
+}
+
+.ebook h3 {
+    margin-top: 10px;
+    font-size: 16px; /* Adjust as needed */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ebook {
+        flex-basis: calc(50% - 20px); /* Adjusts for fewer items per row on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .ebooks-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .ebook {
+        flex-basis: 100%; /* Full width for very small screens */
+    }
+}
+
+
+
 /* Ensure the button styling is consistent across the site */
 .button {
     background-color: #FFD730; /* Keep your yellow color */
