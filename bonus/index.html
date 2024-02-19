@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Affiliate Link Generator</title>
+<title>Digital Product Bonus Page</title>
 <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -22,21 +22,24 @@
       <tr>
         <td>
         <div class="contentbox">
-            <h1 align="center" class="subheadline">Affiliate Link Generator</h1>
-            <p>Enter your affiliate link below to generate your custom sales page link.</p>
-            <form id="affiliateForm">
-                <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
-                <button type="submit" class="button">Generate</button>
-            </form>
-            <p id="result" style="text-align:center; margin-top:20px;"></p>
+            <h1 align="center" class="headline">Exclusive Bonus Offer</h1>
+            <p>Unlock your exclusive bonus today by purchasing through our special link!</p>
+            <div class="button" align="center">
+                <a href="default-affiliate-link" id="buyButton" class="button">Buy Now</a>
+            </div>
         </div>
         <script>
-            document.getElementById('affiliateForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const affiliateLink = document.getElementById('affiliateLink').value;
-                const generatedLink = `index.html?affiliate=${encodeURIComponent(affiliateLink)}`;
-                document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
-            });
+            // Function to update the buy button link based on the affiliate query parameter
+            function updateBuyButtonLink() {
+                const queryParams = new URLSearchParams(window.location.search);
+                const affiliateLink = queryParams.get('affiliate');
+                if (affiliateLink) {
+                    document.getElementById('buyButton').href = affiliateLink;
+                }
+            }
+            
+            // Update the link when the page loads
+            window.onload = updateBuyButtonLink;
         </script>
         </td>
       </tr>
