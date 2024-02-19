@@ -45,7 +45,6 @@ img {
     margin: 20px auto;
     padding: 20px;
     background: #fff; /* Optional: added background to content box for better readability */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: added shadow for depth */
 }
 
 .affiliate-form {
