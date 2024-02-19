@@ -40,11 +40,12 @@ img {
 
 /* Content Boxes */
 .contentbox {
-    width: 90%;
-    max-width: 850px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #fff; /* Optional: added background to content box for better readability */
+    width: 90%; /* Adjust width as needed, 90% is just an example */
+    max-width: 1200px; /* Increase max-width for wider content, adjust as needed */
+    margin: 20px auto; /* Keeps the content centered */
+    padding: 20px; /* Adjust padding as needed */
+    background: #fff; /* Assuming you have a background; adjust if necessary */
+    box-shadow: none; /* Removes drop shadow */
 }
 
 .affiliate-form {
