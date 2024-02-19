@@ -1,3 +1,4 @@
+/* General Styles */
 * {
     box-sizing: border-box;
 }
@@ -13,9 +14,8 @@ img {
     height: auto;
 }
 
-/* Fonts */
+/* Headline Styles */
 .headline, .headlineblk, .headlinered, .headlinered2 {
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 36px;
     color: #000;
     letter-spacing: -1px;
@@ -39,144 +39,107 @@ img {
 }
 
 #linkExplanation {
-    font-size: 16px; /* Example font size */
-    margin-bottom: 10px; /* Space before the input field */
-    color: #333; /* Text color */
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
 }
 
-
-/* Content Boxes */
+/* Content Box */
 .contentbox {
-    width: 90%; /* Adjust width as needed, 90% is just an example */
-    max-width: 1200px; /* Increase max-width for wider content, adjust as needed */
-    margin: 20px auto; /* Keeps the content centered */
-    padding: 20px; /* Adjust padding as needed */
-    background: #fff; /* Assuming you have a background; adjust if necessary */
-    box-shadow: none; /* Removes drop shadow */
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: none;
 }
 
+/* Form Styles */
 .affiliate-form {
     display: flex;
-    flex-direction: column; /* Aligns children (input and button) in a column */
-    align-items: center; /* Centers items horizontally */
-    justify-content: center; /* Adjusts distribution of items along the main axis */
-    width: 100%; /* Full width of its container */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
-
 
 .form-input, #generatedLink {
-    width: 100%; /* Full width */
-    max-width: 600px; /* Maximum width, adjust as needed */
-    padding: 10px; /* Padding inside the input */
-    margin: 0 auto 20px; /* Center align and space below */
-    border: 1px solid #ccc; /* Border color */
-    border-radius: 4px; /* Rounded corners */
-    box-sizing: border-box; /* Includes padding and border in element's total width */
-    display: block; /* Ensures it's a block-level element */
-}
-.ebook-list {
-    list-style-type: disc; /* Or none if you prefer */
-    margin: 20px auto;
-    padding-left: 20px; /* Adjust spacing for bullet points */
+    width: 100%;
+    max-width: 600px;
+    padding: 10px;
+    margin: 0 auto 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: block;
 }
 
-.ebook-list li {
-    margin-bottom: 10px;
-    font-size: 16px; /* Adjust based on preference */
-    line-height: 1.5; /* Improves readability */
-}
-
-.ebooks-container {
+/* eBook Styles for Vertical Listing */
+.ebook-container {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px; /* Adjusts the space between items */
-    margin-top: 20px;
+    flex-direction: column;
 }
 
 .ebook {
-    flex-basis: calc(20% - 20px); /* Adjust based on the gap and number of items per row */
-    text-align: center;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.ebook img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px; /* Optional: adds rounded corners to the images */
+.ebook-image {
+    width: 100px; /* Adjust based on your images */
+    margin-right: 20px;
+    border-radius: 5px;
 }
 
-.ebook h3 {
-    margin-top: 10px;
-    font-size: 16px; /* Adjust as needed */
+.ebook-info {
+    flex-grow: 1;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .ebook {
-        flex-basis: calc(50% - 20px); /* Adjusts for fewer items per row on smaller screens */
-    }
+.ebook-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
 }
 
-@media (max-width: 480px) {
-    .ebooks-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .ebook {
-        flex-basis: 100%; /* Full width for very small screens */
-    }
+.ebook-info p {
+    margin: 0;
+    font-size: 14px;
 }
 
-
-
-/* Ensure the button styling is consistent across the site */
+/* Button Styles */
 .button {
-    background-color: #FFD730; /* Keep your yellow color */
+    background-color: #FFD730;
     color: #000;
     padding: 10px 20px;
     border-radius: 4px;
-    text-decoration: none; /* Removes underline from anchor elements */
-    display: inline-block; /* Aligns button correctly */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Optional shadow for depth */
-    transition: background-color 0.3s; /* Smooth transition for hover state */
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s;
 }
 
 .button:hover {
-    background-color: #FFCD00; /* Slightly darker shade on hover */
+    background-color: #FFCD00;
 }
 
-
-
-/* Optionally, style the container that holds the generated link and button for further visual enhancement */
-#linkContainer {
-    text-align: center; /* Center aligns its children */
-    padding: 20px; /* Padding around the container */
-    background-color: #f9f9f9; /* Light background color */
-    border-radius: 4px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-    width: 100%; /* Full width */
-    max-width: 620px; /* Maximum width to align with the input field, adjust as needed */
-    margin: 20px auto; /* Center align and space above and below */
-}
-
-
-
-/* Styled Lists */
-ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-}
-
-/* Media Queries */
+/* Media Queries for Responsiveness */
 @media screen and (max-width: 767px) {
     .headline {
         font-size: 30px;
     }
 
     .contentbox, .button {
-        width: 100%; /* Ensures full width on smaller screens */
+        width: 100%;
+    }
+
+    .ebook {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ebook-image {
+        width: auto;
+        margin-right: 0;
+        margin-bottom: 10px;
     }
 }
