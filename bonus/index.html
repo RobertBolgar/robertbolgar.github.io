@@ -35,20 +35,29 @@
             </div>
             <p align="center" style="margin-top: 20px;">Don't miss out on this exclusive offer. Transform your photography skills today!</p>
         </div>
-        <script>
-            // Function to update the buy button link based on the affiliate query parameter
-function updateBuyButtonLink() {
-    const queryParams = new URLSearchParams(window.location.search);
-    const affiliateLink = queryParams.get('ref');
-    if (affiliateLink) {
-        document.getElementById('buyButton').href = affiliateLink;
+
+          <!-- HTML for the buy button on the landing page -->
+<a href="#" id="buyButton" class="button">Buy Now and Get Instant Access!</a>
+
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    // Function to update the buy button link based on the affiliate query parameter
+    function updateBuyButtonLink() {
+        const queryParams = new URLSearchParams(window.location.search);
+        const affiliateLink = queryParams.get('ref');
+        if (affiliateLink) {
+            // Update the href attribute of the buy button with the affiliate link
+            document.getElementById('buyButton').href = affiliateLink;
+        }
     }
-}
+    
+    // Call the function to update the buy button link when the page loads
+    updateBuyButtonLink();
+});
+</script>
 
-// Update the link when the page loads
-window.onload = updateBuyButtonLink;
 
-        </script>
+          
         </td>
       </tr>
     </table></td>
