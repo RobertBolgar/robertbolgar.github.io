@@ -24,11 +24,11 @@
         <div class="contentbox">
             <h1 align="center" class="subheadline">Affiliate Link Generator</h1>
             <p>Enter your affiliate link below to generate your custom sales page link.</p>
-            <form id="affiliateForm">
-                <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
+            <form id="affiliateForm" style="text-align: center;">
+                <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here" style="margin-bottom: 10px; display: block; width: 80%; max-width: 500px; margin: 0 auto 20px;">
                 <button type="submit" class="button">Generate</button>
             </form>
-            <p id="result"></p>
+            <p id="result" style="margin-top: 20px;"></p>
         </div>
         <script>
             document.getElementById('affiliateForm').addEventListener('submit', function(e) {
