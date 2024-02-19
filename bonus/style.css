@@ -78,6 +78,20 @@ img {
     box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.3); /* Slightly larger shadow on hover for a "lifting" effect */
 }
 
+/* Existing .button styles, add drop shadow */
+.button {
+    /* Existing button styles */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Example drop shadow */
+}
+
+/* Style for the link container */
+#linkContainer {
+    background-color: #f0f0f0; /* Grey background */
+    padding: 10px; /* Padding inside the container */
+    border-radius: 5px; /* Optional: rounded corners */
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1); /* Subtle drop shadow for the container */
+}
+
 
 /* Styled Lists */
 ul {
