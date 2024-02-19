@@ -8,10 +8,41 @@
 </head>
 <body>
     <h1>Affiliate Link Generator</h1>
-    <p>Enter your affiliate link below to generate your custom sales page link.</p>
-    <form id="affiliateForm">
-        <input type="text" id="affiliateLink" placeholder="Enter your affiliate link here">
-        <button type="submit">Generate</button>
+    <p>Follow the steps below to generate your custom sales page link.</p>
+    
+    <!-- Affiliate Instructions -->
+    <div class="affiliate-instructions">
+        <h2>Directions for Affiliates:</h2>
+        
+        <h3>Sign Up for WarriorPlus:</h3>
+        <ul>
+            <li>Visit <a href="https://warriorplus.com" target="_blank">WarriorPlus</a> and create an account.</li>
+            <li>Complete the sign-up process and verify the account through email.</li>
+        </ul>
+        
+        <h3>Get Approved for the Specific Product:</h3>
+        <ul>
+            <li>Log in to WarriorPlus and navigate to the Affiliates section.</li>
+            <li>Search for your product by name in the WarriorPlus marketplace.</li>
+            <li>Submit a request for approval to promote the product.</li>
+        </ul>
+        
+        <h3>Obtain the Affiliate Link:</h3>
+        <ul>
+            <li>Once approved, locate the unique affiliate link provided by WarriorPlus for your product.</li>
+            <li>This link is crucial for tracking sales and commissions.</li>
+        </ul>
+        
+        <h3>Promote the Product:</h3>
+        <ul>
+            <li>Use the obtained affiliate link in all promotional materials, ensuring sales are tracked accurately.</li>
+        </ul>
+    </div>
+    
+    <!-- Affiliate Link Generator Form -->
+    <form id="affiliateForm" class="affiliate-form">
+        <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
+        <button type="submit" class="button">Generate</button>
     </form>
     <p id="result"></p>
 
