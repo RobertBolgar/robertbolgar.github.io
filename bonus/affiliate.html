@@ -39,9 +39,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('affiliateForm');
+    const linkContainer = document.getElementById('linkContainer'); // Container for the generated link
     const inputLink = document.getElementById('affiliateLink');
-    const linkContainer = document.getElementById('linkContainer');
-    const generatedLinkInput = document.getElementById('generatedLink');
     const copyButton = document.getElementById('copyButton');
 
     form.addEventListener('submit', function(e) {
@@ -50,22 +49,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Construct the custom link with a generic query parameter ('ref')
         const generatedLink = `index.html?ref=${encodeURIComponent(inputLink.value)}`;
         
-        // Display the link container and set the generated link as the value of the input
+        // Show the link container and set the generated link as the value of the input
         linkContainer.style.display = 'block';
-        generatedLinkInput.value = generatedLink;
+        document.getElementById('generatedLink').value = generatedLink;
+
+        // Hide the initial form
+        form.style.display = 'none';
     });
 
     copyButton.addEventListener('click', function() {
         // Copy the generated link to the clipboard
+        const generatedLinkInput = document.getElementById('generatedLink');
         generatedLinkInput.select(); // Select the text
         document.execCommand('copy'); // Execute the copy command
 
-        // Optional: Provide feedback that the link was copied.
-        // You might want to replace this alert with a more subtle notification.
+        // Optional: Alert the user that the text was copied
         alert('Link copied to clipboard');
     });
 });
 </script>
+
 
 
             <!-- Affiliate Instructions Section -->
