@@ -25,29 +25,39 @@
             <h1 align="center" class="subheadline">Affiliate Link Generator</h1>
             <p>Enter your affiliate link below to generate your custom sales page link.</p>
             <form id="affiliateForm" class="affiliate-form">
-    <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your link here" style="width: 100%; max-width: 600px; display: block; margin: 0 auto 20px;">
-    <button type="submit" class="button">Generate</button>
-</form>
-<p id="result"></p>
+                <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your link here" style="width: 100%; max-width: 600px; display: block; margin: 0 auto 20px;">
+                <button type="submit" class="button">Generate</button>
+            </form>
+            <p id="result"></p>
 
-
+            <!-- Affiliate Instructions Section -->
+            <div class="affiliate-instructions">
+                <h2>How to Sign Up and Get Approved on WarriorPlus</h2>
+                <ol>
+                    <li>Visit <a href="https://www.warriorplus.com" target="_blank">WarriorPlus</a> and create an account.</li>
+                    <li>Log in to WarriorPlus and navigate to the "Affiliates" section, then "Offers" to find the product.</li>
+                    <li>Search for the product by name and click "Request Approval" to promote the product.</li>
+                    <li>Once approved, locate your unique affiliate link in the "Offers" section.</li>
+                    <li>Use this link in your promotions to ensure sales are tracked to your account.</li>
+                </ol>
+                <p>For detailed guidance, refer to WarriorPlus support and documentation.</p>
+            </div>
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('affiliateForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevents the form from submitting in the traditional manner
-        
-        // Retrieve the value entered into the input field
-        const inputLink = document.getElementById('affiliateLink').value;
-        
-        // Construct the custom link with a generic query parameter ('ref')
-        const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
-        
-        // Display the custom link to the user
-        document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
-    });
-});
-
+                document.getElementById('affiliateForm').addEventListener('submit', function(e) {
+                    e.preventDefault(); // Prevents the form from submitting in the traditional manner
+                    
+                    // Retrieve the value entered into the input field
+                    const inputLink = document.getElementById('affiliateLink').value;
+                    
+                    // Construct the custom link with a generic query parameter ('ref')
+                    const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
+                    
+                    // Display the custom link to the user
+                    document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
+                });
+            });
         </script>
         </td>
       </tr>
