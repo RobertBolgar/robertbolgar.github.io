@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Sales Page</title>
+</head>
+<body>
+    <h1>Amazing Digital Product</h1>
+    <p>Description of your digital product goes here.</p>
+    <a id="buyButton" href="default-affiliate-link">Buy Now</a>
+
+    <script>
+        const queryParams = new URLSearchParams(window.location.search);
+        const affiliateLink = queryParams.get('affiliate');
+        if (affiliateLink) {
+            document.getElementById('buyButton').href = affiliateLink;
+        }
+    </script>
+</body>
+</html>
