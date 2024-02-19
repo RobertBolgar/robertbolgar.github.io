@@ -48,6 +48,15 @@ img {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: added shadow for depth */
 }
 
+.affiliate-form {
+    display: flex;
+    flex-direction: column; /* Aligns children (input and button) in a column */
+    align-items: center; /* Centers items horizontally */
+    justify-content: center; /* Adjusts distribution of items along the main axis */
+    width: 100%; /* Full width of its container */
+}
+
+
 /* Buttons */
 .button, button {
     display: inline-block;
