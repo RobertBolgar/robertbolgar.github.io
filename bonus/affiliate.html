@@ -43,22 +43,40 @@
                 <p>For detailed guidance, refer to WarriorPlus support and documentation.</p>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('affiliateForm').addEventListener('submit', function(e) {
-                    e.preventDefault(); // Prevents the form from submitting in the traditional manner
-                    
-                    // Retrieve the value entered into the input field
-                    const inputLink = document.getElementById('affiliateLink').value;
-                    
-                    // Construct the custom link with a generic query parameter ('ref')
-                    const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
-                    
-                    // Display the custom link to the user
-                    document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
-                });
-            });
-        </script>
+       <!-- After the form, for displaying the generated link -->
+<div id="linkContainer" style="display:none; margin-top: 20px; background-color: #f0f0f0; padding: 10px;">
+    <textarea id="generatedLink" style="width: 100%; height: 50px;"></textarea>
+    <button type="button" id="copyButton" class="button">Copy Link</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('affiliateForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevents the form from submitting in the traditional manner
+        
+        // Retrieve the value entered into the input field
+        const inputLink = document.getElementById('affiliateLink').value;
+        
+        // Construct the custom link with a generic query parameter ('ref')
+        const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
+        
+        // Display the link container
+        document.getElementById('linkContainer').style.display = 'block';
+        
+        // Set the generated link as the value of the textarea
+        document.getElementById('generatedLink').value = generatedLink;
+    });
+
+    document.getElementById('copyButton').addEventListener('click', function() {
+        // Copy the generated link to the clipboard
+        const copyText = document.getElementById('generatedLink');
+        copyText.select(); // Select the text
+        document.execCommand('copy'); // Execute the copy command
+        alert('Link copied to clipboard'); // Optional: Alert the user that the text was copied
+    });
+});
+</script>
+
         </td>
       </tr>
     </table></td>
