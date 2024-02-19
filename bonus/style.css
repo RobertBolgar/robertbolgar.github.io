@@ -18,6 +18,14 @@ html, body {
     padding: 0;
 }
 
+.container {
+    max-width: 1200px; /* Adjust this value based on your design preference */
+    margin: 0 auto; /* Centers the container */
+    padding: 0 20px; /* Adds some padding on the inside */
+    box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+
 main {
     padding: 20px;
 }
