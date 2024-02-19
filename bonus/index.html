@@ -61,7 +61,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             document.getElementById('buyButton').href = affiliateLink;
             
             // Update the URL without refreshing the page
-            const newURL = '${currentURL}/bonus/'; // Replace this with the desired URL
+            const newURL = '${currentURL}'; // Replace this with the desired URL
             history.pushState({}, '', newURL);
         }
     }
