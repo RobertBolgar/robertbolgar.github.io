@@ -30,6 +30,44 @@
             </form>
             <p id="result"></p>
 
+          <!-- Place this div after the form -->
+<div id="linkContainer" style="display:none; margin-top: 20px;">
+    <input type="text" id="generatedLink" class="form-input" readonly style="margin-bottom: 10px;">
+    <button type="button" id="copyButton" class="button">Copy Link</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('affiliateForm');
+    const inputLink = document.getElementById('affiliateLink');
+    const linkContainer = document.getElementById('linkContainer');
+    const generatedLinkInput = document.getElementById('generatedLink');
+    const copyButton = document.getElementById('copyButton');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevents the form from submitting in the traditional manner
+        
+        // Construct the custom link with a generic query parameter ('ref')
+        const generatedLink = `index.html?ref=${encodeURIComponent(inputLink.value)}`;
+        
+        // Display the link container and set the generated link as the value of the input
+        linkContainer.style.display = 'block';
+        generatedLinkInput.value = generatedLink;
+    });
+
+    copyButton.addEventListener('click', function() {
+        // Copy the generated link to the clipboard
+        generatedLinkInput.select(); // Select the text
+        document.execCommand('copy'); // Execute the copy command
+
+        // Optional: Provide feedback that the link was copied.
+        // You might want to replace this alert with a more subtle notification.
+        alert('Link copied to clipboard');
+    });
+});
+</script>
+
+
             <!-- Affiliate Instructions Section -->
             <div class="affiliate-instructions">
                 <h2>How to Sign Up and Get Approved on WarriorPlus</h2>
@@ -48,34 +86,6 @@
     <textarea id="generatedLink" style="width: 100%; height: 50px;"></textarea>
     <button type="button" id="copyButton" class="button">Copy Link</button>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('affiliateForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevents the form from submitting in the traditional manner
-        
-        // Retrieve the value entered into the input field
-        const inputLink = document.getElementById('affiliateLink').value;
-        
-        // Construct the custom link with a generic query parameter ('ref')
-        const generatedLink = `index.html?ref=${encodeURIComponent(inputLink)}`;
-        
-        // Display the link container
-        document.getElementById('linkContainer').style.display = 'block';
-        
-        // Set the generated link as the value of the textarea
-        document.getElementById('generatedLink').value = generatedLink;
-    });
-
-    document.getElementById('copyButton').addEventListener('click', function() {
-        // Copy the generated link to the clipboard
-        const copyText = document.getElementById('generatedLink');
-        copyText.select(); // Select the text
-        document.execCommand('copy'); // Execute the copy command
-        alert('Link copied to clipboard'); // Optional: Alert the user that the text was copied
-    });
-});
-</script>
 
         </td>
       </tr>
