@@ -74,23 +74,35 @@ img {
     box-sizing: border-box; /* Includes padding and border in element's total width */
     display: block; /* Ensures it's a block-level element */
 }
+.ebook-list {
+    list-style-type: disc; /* Or none if you prefer */
+    margin: 20px auto;
+    padding-left: 20px; /* Adjust spacing for bullet points */
+}
 
+.ebook-list li {
+    margin-bottom: 10px;
+    font-size: 16px; /* Adjust based on preference */
+    line-height: 1.5; /* Improves readability */
+}
+
+/* Ensure the button styling is consistent across the site */
 .button {
-    background-color: #FFD730; /* Button background color */
-    color: #000; /* Button text color */
-    padding: 10px 20px; /* Padding inside the button */
-    border: none; /* No border for a clean look */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Changes cursor to pointer on hover */
-    display: inline-block; /* Allows the button to sit next to other inline or inline-block elements */
-    margin: 0 auto; /* Center align if it's the only element, adjust as needed */
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth, adjust as needed */
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    background-color: #FFD730; /* Keep your yellow color */
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none; /* Removes underline from anchor elements */
+    display: inline-block; /* Aligns button correctly */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Optional shadow for depth */
+    transition: background-color 0.3s; /* Smooth transition for hover state */
 }
 
 .button:hover {
-    background-color: #FFCD00; /* Slightly darker yellow on hover */
+    background-color: #FFCD00; /* Slightly darker shade on hover */
 }
+
+
 
 /* Optionally, style the container that holds the generated link and button for further visual enhancement */
 #linkContainer {
