@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Link Generator</title>
+</head>
+<body>
+    <h1>Affiliate Link Generator</h1>
+    <p>Enter your affiliate link below to generate your custom sales page link.</p>
+    <form id="affiliateForm">
+        <input type="text" id="affiliateLink" placeholder="Enter your affiliate link here">
+        <button type="submit">Generate</button>
+    </form>
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('affiliateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const affiliateLink = document.getElementById('affiliateLink').value;
+            const generatedLink = `index.html?affiliate=${encodeURIComponent(affiliateLink)}`;
+            document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
+        });
+    </script>
+</body>
+</html>
