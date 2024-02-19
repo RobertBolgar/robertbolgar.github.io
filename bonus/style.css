@@ -57,40 +57,46 @@ img {
 }
 
 
-/* Buttons */
-.button, button {
-    display: inline-block;
-    background: #FFD730; /* Yellow background */
-    color: #000; /* Black text */
-    padding: 10px 20px; /* Adequate padding */
-    font-family: Arial, Helvetica, sans-serif; /* Consistent font family */
-    font-size: 18px; /* Readable font size */
-    border: none; /* No border for a cleaner look */
-    cursor: pointer; /* Cursor changes to pointer to indicate clickable */
-    text-align: center;
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
-    border-radius: 5px; /* Slightly rounded corners for a modern look */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Subtle drop shadow for depth */
+.form-input, #generatedLink {
+    width: 100%; /* Full width */
+    max-width: 600px; /* Maximum width, adjust as needed */
+    padding: 10px; /* Padding inside the input */
+    margin: 0 auto 20px; /* Center align and space below */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Includes padding and border in element's total width */
+    display: block; /* Ensures it's a block-level element */
 }
 
-.button:hover, button:hover {
-    background: #FFCD00; /* Slightly darker yellow on hover for interaction feedback */
-    box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.3); /* Slightly larger shadow on hover for a "lifting" effect */
-}
-
-/* Existing .button styles, add drop shadow */
 .button {
-    /* Existing button styles */
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Example drop shadow */
+    background-color: #FFD730; /* Button background color */
+    color: #000; /* Button text color */
+    padding: 10px 20px; /* Padding inside the button */
+    border: none; /* No border for a clean look */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    display: inline-block; /* Allows the button to sit next to other inline or inline-block elements */
+    margin: 0 auto; /* Center align if it's the only element, adjust as needed */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth, adjust as needed */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
-/* Style for the link container */
-#linkContainer {
-    background-color: #f0f0f0; /* Grey background */
-    padding: 10px; /* Padding inside the container */
-    border-radius: 5px; /* Optional: rounded corners */
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.1); /* Subtle drop shadow for the container */
+.button:hover {
+    background-color: #FFCD00; /* Slightly darker yellow on hover */
 }
+
+/* Optionally, style the container that holds the generated link and button for further visual enhancement */
+#linkContainer {
+    text-align: center; /* Center aligns its children */
+    padding: 20px; /* Padding around the container */
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 4px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    width: 100%; /* Full width */
+    max-width: 620px; /* Maximum width to align with the input field, adjust as needed */
+    margin: 20px auto; /* Center align and space above and below */
+}
+
 
 
 /* Styled Lists */
