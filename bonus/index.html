@@ -39,7 +39,7 @@
             // Function to update the buy button link based on the affiliate query parameter
 function updateBuyButtonLink() {
     const queryParams = new URLSearchParams(window.location.search);
-    const affiliateLink = queryParams.get('affiliate');
+    const affiliateLink = queryParams.get('ref');
     if (affiliateLink) {
         document.getElementById('buyButton').href = affiliateLink;
     }
