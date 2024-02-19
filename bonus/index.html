@@ -1,41 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Sales Page</title>
-    <link rel="stylesheet" href="style.css">
-</head>
 <body>
-    <!-- Header -->
     <header class="site-header">
         <h1>Your Brand Name</h1>
     </header>
-    <h1>Ultimate Web Design Toolkit</h1>
-    <p>Welcome to the Ultimate Web Design Toolkit, your one-stop solution for crafting beautiful, responsive websites with ease. Whether you're a seasoned professional or just starting out, our toolkit offers a comprehensive collection of tools, templates, and resources designed to streamline your design process.</p>
     
-    <p>Features include:</p>
-    <ul>
-        <li>Responsive Templates: Ready-to-use website templates that automatically adjust to any screen size.</li>
-        <li>UI Components: A wide array of customizable UI elements to enhance the user experience.</li>
-        <li>Design Assets: High-quality images, icons, and fonts to bring your designs to life.</li>
-        <li>Productivity Tools: Software and guides to boost efficiency and creativity.</li>
-    </ul>
+    <!-- Wrap the main content in a container -->
+    <div class="container">
+        <h2>Affiliate Link Generator</h2>
+        <p>Follow the steps below to generate your custom sales page link.</p>
+        
+        <!-- Affiliate Instructions and Form -->
+        
+        <form id="affiliateForm" class="affiliate-form">
+            <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
+            <button type="submit" class="button">Generate</button>
+        </form>
+        <p id="result"></p>
+    </div>
     
-    <p>Don't miss out on the opportunity to transform your web design workflow and produce stunning results with minimal effort. Get your toolkit today!</p>
-    <a id="buyButton" class="button" href="default-affiliate-link">Buy Now</a>
-
-    <script>
-        const queryParams = new URLSearchParams(window.location.search);
-        const affiliateLink = queryParams.get('affiliate');
-        if (affiliateLink) {
-            document.getElementById('buyButton').href = affiliateLink;
-        }
-    </script>
-
-     <!-- Footer -->
     <footer class="site-footer">
         <p>© Your Brand Name - All Rights Reserved</p>
     </footer>
 </body>
-</html>
