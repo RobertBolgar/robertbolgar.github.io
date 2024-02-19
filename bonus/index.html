@@ -60,8 +60,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             // Update the href attribute of the buy button with the affiliate link
             document.getElementById('buyButton').href = affiliateLink;
             
-            // Update the URL without refreshing the page
-            const newURL = ''; // Replace this with the desired URL
+            // Update the URL without refreshing the page (keeping it unchanged)
+            const newURL = ''; // Leave this empty to keep the current URL
             history.pushState({}, '', newURL);
         }
     }
@@ -69,7 +69,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Call the function to update the buy button link when the page loads
     updateBuyButtonLink();
 });
-
 </script>
 
 </body>
