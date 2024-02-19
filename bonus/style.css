@@ -13,7 +13,7 @@ img {
     height: auto;
 }
 
-/* FONTS */
+/* Fonts */
 .headline, .headlineblk, .headlinered, .headlinered2 {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 36px;
@@ -38,33 +38,40 @@ img {
     color: #333;
 }
 
-/* CONTENT BOXES */
+/* Content Boxes */
 .contentbox {
     width: 90%;
     max-width: 850px;
-    margin: 5px auto;
-    padding: 5px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff; /* Optional: added background to content box for better readability */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: added shadow for depth */
 }
 
-/* BUTTONS */
+/* Buttons */
 .button, button {
     display: inline-block;
-    background: #FFD730;
-    color: #000;
-    padding: 1rem 2rem;
+    background: #FFD730; /* Yellow background */
+    color: #000; /* Black text */
+    padding: 15px 30px; /* Increased padding for a larger button */
     font-family: sans-serif;
-    font-size: 18px;
-    border: none;
+    font-size: 20px; /* Larger font size */
+    font-weight: bold; /* Bold text */
+    border: 2px solid #FFD730; /* Solid border with the same color as the background */
+    border-radius: 5px; /* Rounded corners */
     cursor: pointer;
     text-align: center;
-    transition: background 250ms ease-in-out, transform 150ms ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow for depth */
 }
 
 button:hover, button:focus {
-    background: #FFCD00;
+    background: #FFCD00; /* Slightly darker yellow on hover/focus */
+    border-color: #FFCD00; /* Border color changes with background */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Larger shadow on hover for a lifting effect */
 }
 
-/* STYLED LISTS */
+/* Styled Lists */
 ul {
     list-style-type: none;
     padding: 0;
@@ -72,13 +79,13 @@ ul {
     font-size: 16px;
 }
 
-/* MEDIA QUERIES */
+/* Media Queries */
 @media screen and (max-width: 767px) {
     .headline {
         font-size: 30px;
     }
 
     .contentbox, .button {
-        width: 100%;
+        width: 100%; /* Ensures full width on smaller screens */
     }
 }
