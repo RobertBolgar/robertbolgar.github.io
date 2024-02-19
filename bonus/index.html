@@ -1,23 +1,55 @@
-<body>
-    <header class="site-header">
-        <h1>Your Brand Name</h1>
-    </header>
-    
-    <!-- Wrap the main content in a container -->
-    <div class="container">
-        <h2>Affiliate Link Generator</h2>
-        <p>Follow the steps below to generate your custom sales page link.</p>
-        
-        <!-- Affiliate Instructions and Form -->
-        
-        <form id="affiliateForm" class="affiliate-form">
-            <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
-            <button type="submit" class="button">Generate</button>
-        </form>
-        <p id="result"></p>
-    </div>
-    
-    <footer class="site-footer">
-        <p>© Your Brand Name - All Rights Reserved</p>
-    </footer>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Affiliate Link Generator</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td><table align="center" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td><img alt="Header" src="images/header.png" /></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td><table class="pagewidth" align="center" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+        <div class="contentbox">
+            <h1 align="center" class="subheadline">Affiliate Link Generator</h1>
+            <p>Enter your affiliate link below to generate your custom sales page link.</p>
+            <form id="affiliateForm">
+                <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
+                <button type="submit" class="button">Generate</button>
+            </form>
+            <p id="result" style="text-align:center; margin-top:20px;"></p>
+        </div>
+        <script>
+            document.getElementById('affiliateForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const affiliateLink = document.getElementById('affiliateLink').value;
+                const generatedLink = `index.html?affiliate=${encodeURIComponent(affiliateLink)}`;
+                document.getElementById('result').textContent = `Your custom link is: ${generatedLink}`;
+            });
+        </script>
+        </td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td><table align="center" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td><img alt="Footer" src="images/footer.png" /></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+
 </body>
+</html>
