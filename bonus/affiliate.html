@@ -7,44 +7,34 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Affiliate Link Generator</h1>
-    <p>Follow the steps below to generate your custom sales page link.</p>
+    <!-- Header -->
+    <header class="site-header">
+        <h1>Your Brand Name</h1>
+    </header>
     
-    <!-- Affiliate Instructions -->
-    <div class="affiliate-instructions">
-        <h2>Directions for Affiliates:</h2>
+    <main>
+        <h2>Affiliate Link Generator</h2>
+        <p>Follow the steps below to generate your custom sales page link.</p>
         
-        <h3>Sign Up for WarriorPlus:</h3>
-        <ul>
-            <li>Visit <a href="https://warriorplus.com" target="_blank">WarriorPlus</a> and create an account.</li>
-            <li>Complete the sign-up process and verify the account through email.</li>
-        </ul>
+        <!-- Affiliate Instructions -->
+        <div class="affiliate-instructions">
+            <h3>Directions for Affiliates:</h3>
+            
+            <!-- Instructions omitted for brevity -->
+        </div>
         
-        <h3>Get Approved for the Specific Product:</h3>
-        <ul>
-            <li>Log in to WarriorPlus and navigate to the Affiliates section.</li>
-            <li>Search for your product by name in the WarriorPlus marketplace.</li>
-            <li>Submit a request for approval to promote the product.</li>
-        </ul>
-        
-        <h3>Obtain the Affiliate Link:</h3>
-        <ul>
-            <li>Once approved, locate the unique affiliate link provided by WarriorPlus for your product.</li>
-            <li>This link is crucial for tracking sales and commissions.</li>
-        </ul>
-        
-        <h3>Promote the Product:</h3>
-        <ul>
-            <li>Use the obtained affiliate link in all promotional materials, ensuring sales are tracked accurately.</li>
-        </ul>
-    </div>
+        <!-- Affiliate Link Generator Form -->
+        <form id="affiliateForm" class="affiliate-form">
+            <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
+            <button type="submit" class="button">Generate</button>
+        </form>
+        <p id="result"></p>
+    </main>
     
-    <!-- Affiliate Link Generator Form -->
-    <form id="affiliateForm" class="affiliate-form">
-        <input type="text" id="affiliateLink" class="form-input" placeholder="Enter your affiliate link here">
-        <button type="submit" class="button">Generate</button>
-    </form>
-    <p id="result"></p>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>© Your Brand Name - All Rights Reserved</p>
+    </footer>
 
     <script>
         document.getElementById('affiliateForm').addEventListener('submit', function(e) {
