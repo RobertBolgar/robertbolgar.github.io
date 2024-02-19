@@ -53,23 +53,22 @@ img {
     display: inline-block;
     background: #FFD730; /* Yellow background */
     color: #000; /* Black text */
-    padding: 15px 30px; /* Increased padding for a larger button */
-    font-family: sans-serif;
-    font-size: 20px; /* Larger font size */
-    font-weight: bold; /* Bold text */
-    border: 2px solid #FFD730; /* Solid border with the same color as the background */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer;
+    padding: 10px 20px; /* Adequate padding */
+    font-family: Arial, Helvetica, sans-serif; /* Consistent font family */
+    font-size: 18px; /* Readable font size */
+    border: none; /* No border for a cleaner look */
+    cursor: pointer; /* Cursor changes to pointer to indicate clickable */
     text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    border-radius: 5px; /* Slightly rounded corners for a modern look */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Subtle drop shadow for depth */
 }
 
-button:hover, button:focus {
-    background: #FFCD00; /* Slightly darker yellow on hover/focus */
-    border-color: #FFCD00; /* Border color changes with background */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Larger shadow on hover for a lifting effect */
+.button:hover, button:hover {
+    background: #FFCD00; /* Slightly darker yellow on hover for interaction feedback */
+    box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.3); /* Slightly larger shadow on hover for a "lifting" effect */
 }
+
 
 /* Styled Lists */
 ul {
