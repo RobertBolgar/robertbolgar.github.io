@@ -166,7 +166,7 @@ img {
     }
     
     .ebook-info {
-        max-width: none; /* Remove the maximum width for eBook descriptions */
+        max-width: 100%; /* Remove the maximum width for eBook descriptions */
     }
 }
 
