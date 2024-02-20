@@ -93,7 +93,6 @@ img {
 }
 
 .ebook-info {
-    flex-grow: 1;
     margin: 0 auto; /* Center the description */
     display: flex;
     flex-direction: column;
