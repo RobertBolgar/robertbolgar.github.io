@@ -78,6 +78,8 @@ img {
 .ebook-container {
     display: flex;
     flex-direction: column;
+    align-items: flex-start; /* Align items to the start of the container */
+    margin-bottom: 20px;
 }
 
 .ebook {
