@@ -122,6 +122,14 @@ img {
     background-color: #FFCD00;
 }
 
+.copy-button {
+    display: block;
+    margin: 0 auto;
+}
+
+
+
+
 /* Media Queries for Responsiveness */
 @media screen and (max-width: 767px) {
     .headline {
