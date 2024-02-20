@@ -93,10 +93,11 @@ img {
 }
 
 .ebook-info {
+    ax-width: 400px; /* Set the maximum width */
     margin: 0 auto; /* Center the description */
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start; /* Align items to the start of the containe
 }
 
 .ebook-info h3 {
