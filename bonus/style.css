@@ -84,33 +84,31 @@ img {
 
 .ebook {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Align items to the start of the container */
     margin-bottom: 20px;
 }
 
 .ebook-image {
     width: 200px; /* Adjust based on your images */
-    margin-right: 5px;
+    margin-right: 20px;
     border-radius: 5px;
 }
 
 .ebook-info {
-    ax-width: 400px; /* Set the maximum width */
-    margin: 0 auto; /* Center the description */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the start of the containe
+    max-width: 400px; /* Set the maximum width */
+    margin: 0; /* Remove margin to avoid extra space */
 }
 
 .ebook-info h3 {
-    margin: 0 0 10px 0;
+    margin-bottom: 10px; /* Add some bottom margin for separation */
     font-size: 18px;
 }
 
 .ebook-info p {
-    margin: 0;
+    margin: 0; /* Remove margin to avoid extra space */
     font-size: 14px;
 }
+
 
 /* Button Styles */
 .button {
