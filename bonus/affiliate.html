@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Affiliate Link Generator</title>
 <link rel="stylesheet" href="style.css" />
+<style>
+.copy-button {
+    display: block;
+    margin: 0 auto;
+}
+</style>
 </head>
 
 <body style="margin: 0; padding: 0;">
@@ -32,10 +38,10 @@
             <p id="result"></p>
 
           <!-- Container for the generated link and copy button -->
-<div id="linkContainer" style="display:none; margin-top: 20px; width: 100%; max-width: 600px;">
+<div id="linkContainer" style="display:none; margin-top: 20px;">
     <p id="linkExplanation">Here is your custom affiliate link. Click button to copy:</p> <!-- Explanatory text -->
     <input type="text" id="generatedLink" class="form-input" readonly style="margin-bottom: 10px; width: 100%;">
-    <button type="button" id="copyButton" class="button" style="margin: 0 auto;">Copy Link</button>
+    <button type="button" id="copyButton" class="button copy-button">Copy Link</button>
 </div>
 
 
@@ -91,6 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>For detailed guidance, refer to WarriorPlus support and documentation.</p>
             </div>
         </div>
+       <!-- After the form, for displaying the generated link -->
+<div id="linkContainer" style="display:none; margin-top: 20px; background-color: #f0f0f0; padding: 10px;">
+    <textarea id="generatedLink" style="width: 100%; height: 50px;"></textarea>
+    <button type="button" id="copyButton" class="button copy-button">Copy Link</button>
+</div>
 
         </td>
       </tr>
