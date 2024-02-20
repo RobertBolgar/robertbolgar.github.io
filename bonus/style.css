@@ -156,4 +156,17 @@ img {
         margin-right: 0;
         margin-bottom: 10px;
     }
+    
+    .ebook-container {
+        flex-direction: column; /* Change the direction to column for smaller screens */
+    }
+    
+    .ebook-image {
+        width: 100%; /* Set the image width to 100% for smaller screens */
+    }
+    
+    .ebook-info {
+        max-width: none; /* Remove the maximum width for eBook descriptions */
+    }
 }
+
