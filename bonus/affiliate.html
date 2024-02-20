@@ -53,15 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyButton = document.getElementById('copyButton');
     const currentURL = window.location.origin;
 
-
     form.addEventListener('submit', function(e) {
         e.preventDefault(); // Prevents the form from submitting in the traditional manner
         
+        // Ensure the input value starts with 'http://' or 'https://'
+        const linkValue = inputLink.value.trim();
+        const hasProtocol = linkValue.startsWith('http://') || linkValue.startsWith('https://');
+        const affiliateLink = hasProtocol ? linkValue : `http://${linkValue}`;
+
         // Construct the custom link with a generic query parameter ('ref')
-       const generatedLink = `${currentURL}/bonus/index.html?ref=${encodeURIComponent(inputLink.value)}`;
+        const generatedLink = `${currentURL}/bonus/index.html?ref=${encodeURIComponent(affiliateLink)}`;
 
-
-        
         // Show the link container and set the generated link as the value of the input
         linkContainer.style.display = 'block';
         document.getElementById('generatedLink').value = generatedLink;
@@ -81,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 
 
 
