@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="style.css" />
 </head>
 
-<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+<body style="margin: 0; padding: 0;">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
     <td><table align="center" border="0" cellpadding="0" cellspacing="0">
@@ -22,47 +22,32 @@
         <td>
         
           <div class="contentbox">
-    <h1 align="center" class="headline">Unlock Your Exclusive Bonus eBooks When You Purchase Today!</h1>
-    <p>Maximize your learning with these specially curated eBooks designed to complement your journey. Secure your purchase now and gain instant access to the following titles:</p>
-    
-    <!-- eBooks Display Section -->
-    <div class="contentbox">
-    <h1 align="center" class="headline">Unlock Your Exclusive Bonus eBooks When You Purchase Today!</h1>
-    <p>Maximize your learning with these specially curated eBooks designed to complement your journey. Secure your purchase now and gain instant access to the following titles:</p>
-    
-    <!-- eBooks Display Section with Vertical Listing -->
-    <div class="ebook-container">
-        <div class="ebook">
-            <img src="images/report.png" alt="eBook 1" class="ebook-image">
-            <div class="ebook-info">
-                <h3>Mastering the Art of Composition</h3>
-                <p>Discover the secrets to capturing compelling photographs with techniques that create depth and interest.</p>
-            </div>
-        </div>
-        <!-- Repeat for each eBook -->
-        <div class="ebook">
-            <img src="images/report.png" alt="eBook 2" class="ebook-image">
-            <div class="ebook-info">
-                <h3>The Ultimate Guide to Landscape Photography</h3>
-                <p>Explore breathtaking landscapes and learn how to capture the beauty of nature in every shot.</p>
-            </div>
-        </div>
-        <!-- Add more eBooks as needed -->
-    </div>
-    
-    <div align="center" style="margin-top: 20px;">
-        <a href="#" id="buyButton" class="button">Buy Now and Get Instant Access!</a>
-    </div>
-</div>
-
-    
-    <div align="center" style="margin-top: 20px;">
-        <a href="default-affiliate-link" id="buyButton" class="button">Buy Now and Get Instant Access!</a>
-    </div>
-</div>
-
+            <h1 align="center" class="headline">Unlock Your Exclusive Bonus eBooks When You Purchase Today!</h1>
+            <p>Maximize your learning with these specially curated eBooks designed to complement your journey. Secure your purchase now and gain instant access to the following titles:</p>
             
-      
+            <!-- eBooks Display Section with Vertical Listing -->
+            <div class="ebook-container">
+                <div class="ebook">
+                    <img src="images/report.png" alt="eBook 1" class="ebook-image">
+                    <div class="ebook-info">
+                        <h3>Mastering the Art of Composition</h3>
+                        <p>Discover the secrets to capturing compelling photographs with techniques that create depth and interest.</p>
+                    </div>
+                </div>
+                <!-- Repeat for each eBook -->
+                <div class="ebook">
+                    <img src="images/report.png" alt="eBook 2" class="ebook-image">
+                    <div class="ebook-info">
+                        <h3>The Ultimate Guide to Landscape Photography</h3>
+                        <p>Explore breathtaking landscapes and learn how to capture the beauty of nature in every shot.</p>
+                    </div>
+                </div>
+                <!-- Add more eBooks as needed -->
+            </div>
+            
+            <div align="center" style="margin-top: 20px;">
+                <a href="default-affiliate-link" class="button">Buy Now and Get Instant Access!</a>
+            </div>
         </div>
         </td>
       </tr>
@@ -85,7 +70,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         const affiliateLink = queryParams.get('ref');
         if (affiliateLink) {
             // Update the href attribute of the buy button with the affiliate link
-            document.getElementById('buyButton').href = affiliateLink;
+            document.querySelector('.button').href = affiliateLink;
             
             // Update the URL without refreshing the page (keeping it unchanged)
             const newURL = '/bonus'; // Leave this empty to keep the current URL
@@ -100,8 +85,3 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 </body>
 </html>
-
-
-
-
-
