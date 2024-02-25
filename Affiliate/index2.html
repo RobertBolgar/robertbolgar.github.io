@@ -69,13 +69,13 @@ const nftName = document.getElementById('nftName').value;
 const nftDescription = document.getElementById('nftDescription').value;
 const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
 
-// Convert the price to Wei
-const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
-
 
 // Initialize ethers provider with MetaMask
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
+
+// Get the user's Ethereum address from MetaMask
+const addressToSendNFTTo = await signer.getAddress();
 
             // Define the smart contract address and ABI (add your ABI array here)
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
@@ -832,22 +832,27 @@ const signer = provider.getSigner();
     }
 ];
 
-           // Create a contract instance
+ 
+
+
+            // Create a contract instance
 const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
+// Define the address where you want to send the NFT
+const addressToSendNFTTo = "0x123..."; // Replace with the actual address
 
-            // Call the safeMint function of your smart contract
-const address = await signer.getAddress();
-const amount = 0.004; // Define amount
-const valueToSend = 0.004; // Define valueToSend
+// Define the price of the NFT in Wei
+const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether'); // This line assumes you already defined nftPriceInput correctly
 
 // Prepare the URI for NFT metadata
 const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-// Call the safeMint function with the correct parameters
-const transaction = await nftContract.safeMint(address, amount, uri, { value: valueToSend });
 
+// Define the price (in Wei) for the NFT
+const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
 
+// Call the safeMint function of your smart contract
+const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri);
 
 
 
