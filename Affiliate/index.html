@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const nftName = document.getElementById('nftName').value;
         const nftDescription = document.getElementById('nftDescription').value;
-        const nftPrice = ethers.utils.parseUnits(document.getElementById('nftPrice').value, 'ether');
+const nftPrice = ethers.utils.parseEther(document.getElementById('nftPrice').value); // Parse as units of ether
+const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
         try {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -48,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const affiliateCode = urlParams.get('affiliate'); // Extract affiliate code from URL query parameter
 
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
-            const nftMintABI = [
+            
+		const nftMintABI = [
 	{
 		"inputs": [
 			{
@@ -801,15 +803,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 ]
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-            const uri = `data:application/json;base64,${btoa(JSON.stringify({name: nftName, description: nftDescription}))}`;
             
             // Pass the affiliate code along with minting transaction
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, affiliateCode);
-
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, affiliateCode || ethers.constants.AddressZero); // Use a default affiliate code if none is provided
+} catch (error) {
+    console.error('Error:', error);
+}
     });
 });
 </script>
