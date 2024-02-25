@@ -45,8 +45,9 @@
                 const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
                 // Additional logic to generate or retrieve the token URI based on nftName and nftDescription
-                const tokenURI = "generated_or_retrieved_token_URI_based_on_nftName_and_nftDescription";
+                const tokenURI = "https://robertbolgar.dev/Affiliate/nft-metadata.json";
                 const transaction = await nftContract.safeMint(signer.getAddress(), tokenURI);
+
 
                 console.log('Minting transaction:', transaction);
             } catch (err) {
