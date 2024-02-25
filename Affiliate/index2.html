@@ -46,28 +46,28 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
-            // Correctly fetch values from form inputs
-            const nftName = document.getElementById('nftName').value;
-            const nftDescription = document.getElementById('nftDescription').value;
-            const nftPrice = document.getElementById('nftPrice').value;
-            console.log('Price from form input:', nftPrice);
-            const parsedPrice = parseFloat(nftPrice);
-            console.log('Parsed Price:', parsedPrice);
+           // Correctly fetch values from form inputs
+const nftName = document.getElementById('nftName').value;
+const nftDescription = document.getElementById('nftDescription').value;
+const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
+console.log('Price from form input:', nftPriceInput);
 
-            if (isNaN(parsedPrice) || parsedPrice <= 0) {
-                throw new Error('Invalid price format');
-            }
+// Use ethers.js utility function to handle conversion
+// This will convert the input price to Wei, assuming the input is in Ether (or BNB for BSC)
+const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
+console.log('Converted Price in Wei:', nftPriceWei.toString());
 
-            const BNB_to_Wei_Factor = 10**18;
-            const nftPriceEther = parsedPrice * BNB_to_Wei_Factor;
+// Prepare the URI for NFT metadata
+const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
+// Initialize ethers provider with MetaMask
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+const signer = provider.getSigner();
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            const signer = provider.getSigner();
+// (Optional) Handle affiliate code if present in the URL
+const affiliateCode = new URLSearchParams(window.location.search).get('affiliate');
 
-            const affiliateCode = new URLSearchParams(window.location.search).get('affiliate');
 
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
             const nftMintABI = [
