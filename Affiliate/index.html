@@ -55,70 +55,45 @@
         <label for="nftDescription">NFT Description:</label>
         <input type="text" id="nftDescription" name="nftDescription" placeholder="Enter NFT description" required>
 
-        <label for="affiliateCode">Affiliate Code (Optional):</label>
-        <input type="text" id="affiliateCode" name="affiliateCode" placeholder="Enter affiliate code if any">
-
         <input type="submit" value="Mint NFT">
     </form>
 </div>
 
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
+        const parsedUrl = new URL(window.location.href);
+        const affiliateCode = parsedUrl.searchParams.get("affiliate"); // Assuming the URL parameter is named 'affiliate'
+
         const mintForm = document.getElementById('mintForm');
+        mintForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        async function connectWallet() {
-            if (window.ethereum) {
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                } catch (error) {
-                    console.error("User denied account access", error);
-                }
-            } else {
-                console.error('Please install MetaMask!');
-            }
-        }
-
-        async function mintNFT(nftName, nftDescription, affiliateCode) {
-            if (!window.ethereum) {
-                console.log('Ethereum provider is not available');
+            // Ensure Ethereum is accessible in the browser (e.g., through MetaMask)
+            if (typeof window.ethereum === 'undefined') {
+                console.log('Please install MetaMask!');
                 return;
             }
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []); // Request account access
             const signer = provider.getSigner();
 
-            // Placeholder values - replace these with your contract's actual details
-            const nftMintContractAddress = "<YOUR_NFTMINT_CONTRACT_ADDRESS>";
-            const affiliateTrackerContractAddress = "<YOUR_AFFILIATE_TRACKER_CONTRACT_ADDRESS>";
-            const nftMintABI = []; // ABI for your NFTmint contract
-            const affiliateTrackerABI = []; // ABI for your AffiliateTracker contract
-
-            const nftMintContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-            const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
-
-            // Example metadata URI - you might generate or fetch this based on the NFT's properties
-            const metadataURI = "ipfs://<YOUR_METADATA_URI>";
-
-            try {
-                // Handle affiliate registration or verification here if necessary
-
-                // Mint the NFT
-                const transaction = await nftMintContract.safeMint(signer.getAddress(), metadataURI); // Adjust parameters as needed
-                await transaction.wait();
-                console.log("NFT minted successfully");
-            } catch (error) {
-                console.error("Failed to mint NFT", error);
-            }
-        }
-
-        connectWallet();
-
-        mintForm.addEventListener('submit', (e) => {
-            e.preventDefault();
             const nftName = document.getElementById('nftName').value;
             const nftDescription = document.getElementById('nftDescription').value;
-            const affiliateCode = document.getElementById('affiliateCode').value;
-            mintNFT(nftName, nftDescription, affiliateCode);
+
+            // Replace these placeholder values with your actual contract address and ABI
+            const nftMintContractAddress = "<YOUR_NFTMINT_CONTRACT_ADDRESS>";
+            const nftMintABI = [<YOUR_CONTRACT_ABI>];
+            const nftMintContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+
+            const salePrice = ethers.utils.parseEther("0.05"); // Example sale price
+            // Assuming your contract has a function to mint NFT directly
+            // Replace 'safeMint' with your contract's relevant function
+            // Adjust parameters as required by your contract's function
+            const transaction = await nftMintContract.safeMint(signer.getAddress(), "URI representing NFT metadata", affiliateCode || ethers.constants.AddressZero, { value: salePrice });
+            await transaction.wait();
+
+            console.log('NFT minted successfully');
         });
     });
 </script>
