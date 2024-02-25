@@ -29,7 +29,6 @@
 
             
 
-
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
@@ -55,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const parsedPrice = parseFloat(nftPrice);
             console.log('Parsed Price:', parsedPrice);
 
-            if (isNaN(parsedPrice)) {
+            if (isNaN(parsedPrice) || parsedPrice <= 0) {
                 throw new Error('Invalid price format');
             }
 
