@@ -77,6 +77,17 @@ const signer = provider.getSigner();
 // Get the user's Ethereum address from MetaMask
 const addressToSendNFTTo = await signer.getAddress();
 
+                    // Parse the URL to extract the affiliate address
+function getAffiliateAddressFromURL() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('affiliate');
+}
+
+// Get the affiliate address from the URL
+const referringAffiliate = getAffiliateAddressFromURL();
+
+
             // Define the smart contract address and ABI (add your ABI array here)
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
             const nftMintABI = [
@@ -847,7 +858,7 @@ const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
 const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
 // Call the safeMint function of your smart contract
-const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, "0x0000000000000000000000000000000000000000");
+const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateAddress);
 
 
 
