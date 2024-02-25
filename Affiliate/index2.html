@@ -26,6 +26,10 @@
     </form>
 </div>
 
+
+            
+
+
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
@@ -47,23 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const nftName = urlParams.get('nftName');
             const nftDescription = urlParams.get('nftDescription');
             const nftPrice = urlParams.get('nftPrice');
-// After retrieving nftPrice from URL parameters
-console.log('Price from URL:', nftPrice);
-const parsedPrice = parseFloat(nftPrice);
-console.log('Parsed Price:', parsedPrice);
-
-if (isNaN(parsedPrice)) {
-    throw new Error('Invalid price format');
-}
-
-
+            console.log('Price from URL:', nftPrice);
             const parsedPrice = parseFloat(nftPrice);
+            console.log('Parsed Price:', parsedPrice);
 
             if (isNaN(parsedPrice)) {
                 throw new Error('Invalid price format');
             }
 
-            const nftPriceEther = ethers.utils.parseEther(parsedPrice.toString()); // Parse as units of ether
+            // Assuming the price is provided in BNB, you might want to multiply it by a factor
+            // to convert it to a suitable representation (e.g., Wei or Ether) for interacting with the Ethereum blockchain.
+            // For example, if 1 BNB = 10^18 Wei, you would multiply the parsedPrice by 10^18.
+            // Modify this conversion factor based on the actual conversion rate.
+            const BNB_to_Wei_Factor = 10**18;
+            const nftPriceEther = parsedPrice * BNB_to_Wei_Factor;
+
             const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -241,8 +243,6 @@ if (isNaN(parsedPrice)) {
     }
 ];
 
-
-
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
             
             // Pass the affiliate code along with minting transaction
@@ -266,6 +266,8 @@ if (isNaN(parsedPrice)) {
     });
 });
 </script>
+
+
 </body>
 </html>
 
