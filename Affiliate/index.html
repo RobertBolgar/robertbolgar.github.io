@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             const signer = provider.getSigner();
-
             // Adjust the contract address and ABI according to your BSC Testnet deployment
             const nftMintContractAddress = "0xd4Fe167e5c08A705DFCFA357D9c6857e7C335D0D";
                 const nftMintABI = [
@@ -788,11 +787,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
-            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+];
+             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
             const uri = `data:application/json;base64,${btoa(JSON.stringify({name: nftName, description: nftDescription}))}`;
             const signerAddress = (await provider.getSigner()).getAddress();
-	    const transaction = await nftContract.safeMint(signerAddress, nftPrice, uri);
+            const transaction = await nftContract.safeMint(signerAddress, nftPrice, uri);
 
 
         } catch (error) {
@@ -801,5 +800,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+
 </body>
 </html>
