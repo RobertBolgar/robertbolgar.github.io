@@ -1,5 +1,4 @@
-
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -26,7 +25,7 @@
 </div>
 
 <script type="text/javascript">
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
     mintForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -36,22 +35,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        try {
-            const nftName = document.getElementById('nftName').value;
-            const nftDescription = document.getElementById('nftDescription').value;
-            const nftPrice = ethers.utils.parseEther(document.getElementById('nftPrice').value); // Parse as units of ether
-            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
+        const nftName = document.getElementById('nftName').value;
+        const nftDescription = document.getElementById('nftDescription').value;
+        // Use ethers.js to convert the input price from BNB to the correct format for the blockchain
+        const nftPrice = ethers.utils.parseUnits(document.getElementById('nftPrice').value, 'ether');
 
+        try {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             await provider.send("eth_requestAccounts", []);
             const signer = provider.getSigner();
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const affiliateCode = urlParams.get('affiliate'); // Extract affiliate code from URL query parameter
-
-            const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
-
-            const nftMintABI = [
+            // Adjust the contract address and ABI according to your BSC Testnet deployment
+            const nftMintContractAddress = "0xF76E6A377Da4f281915ce47ff9bAC7C6f9Fc4fb9";
+                const nftMintABI = [
 	{
 		"inputs": [
 			{
@@ -134,11 +130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 			{
 				"internalType": "address",
 				"name": "initialOwner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_defaultAffiliate",
 				"type": "address"
 			}
 		],
@@ -381,11 +372,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 				"internalType": "string",
 				"name": "uri",
 				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "affiliate",
-				"type": "address"
 			}
 		],
 		"name": "safeMint",
@@ -802,12 +788,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
+]
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-            
-            // Pass the affiliate code along with minting transaction
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, affiliateCode || ethers.constants.AddressZero); // Use a default affiliate code if none is provided
-            console.log('Transaction Hash:', transaction.hash);
+            const uri = `data:application/json;base64,${btoa(JSON.stringify({name: nftName, description: nftDescription}))}`;
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri);
+
         } catch (error) {
             console.error('Error:', error);
         }
