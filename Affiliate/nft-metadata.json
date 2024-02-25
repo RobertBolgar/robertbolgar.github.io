@@ -1,0 +1,15 @@
+{
+  "name": "My Awesome NFT",
+  "description": "This is an example of an NFT metadata description.",
+  "image": "https://yourwebsite.com/nft-image.jpg",
+  "attributes": [
+    {
+      "trait_type": "Color",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Size",
+      "value": "Medium"
+    }
+  ]
+}
