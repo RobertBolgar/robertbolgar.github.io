@@ -841,15 +841,14 @@ const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, sign
 // Define the address where you want to send the NFT
 const addressToSendNFTTo = "0x123..."; // Replace with the actual address
 
-// Define the price of the NFT in Wei
-const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether'); // This line assumes you already defined nftPriceInput correctly
+// Fetch the price input as a string
+const nftPriceInput = document.getElementById('nftPrice').value;
+
+// Convert the price to Wei
+const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
 
 // Prepare the URI for NFT metadata
 const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
-
-
-// Define the price (in Wei) for the NFT
-const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
 
 // Call the safeMint function of your smart contract
 const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri);
