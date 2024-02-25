@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Link Generator</title>
+</head>
+<body>
+    <h2>Affiliate Link Generator</h2>
+    <label for="affiliateCode">Affiliate Code:</label>
+    <input type="text" id="affiliateCode" name="affiliateCode">
+    <button onclick="generateLink()">Generate Link</button>
+    <p>Generated Link: <span id="generatedLink"></span></p>
+
+    <script>
+        function generateLink() {
+            const baseNFTMintPageURL = 'http://yourdomain.com/nft-mint-page'; // Replace with your actual NFT mint page URL
+            const affiliateCodeInput = document.getElementById('affiliateCode');
+            const generatedLinkElement = document.getElementById('generatedLink');
+            
+            const affiliateCode = affiliateCodeInput.value;
+            const generatedLink = `${baseNFTMintPageURL}?affiliate=${encodeURIComponent(affiliateCode)}`;
+
+            generatedLinkElement.textContent = generatedLink;
+            // Optionally, automatically copy the generated link to clipboard
+            navigator.clipboard.writeText(generatedLink).then(() => {
+                console.log('Link copied to clipboard');
+            }, (err) => {
+                console.error('Could not copy link to clipboard', err);
+            });
+        }
+    </script>
+</body>
+</html>
