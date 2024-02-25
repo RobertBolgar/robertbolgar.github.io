@@ -46,6 +46,26 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
+
+                    async function isConnected() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const accounts = await provider.listAccounts();
+    return accounts.length > 0;
+}
+
+mintForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Check if the user is already connected
+    if (await isConnected()) {
+        console.log('User already connected. Skipping eth_requestAccounts.');
+    } else {
+        // Only call eth_requestAccounts if the user is not connected
+        await provider.send("eth_requestAccounts", []);
+    }
+
+
+
            // Correctly fetch values from form inputs
 const nftName = document.getElementById('nftName').value;
 const nftDescription = document.getElementById('nftDescription').value;
