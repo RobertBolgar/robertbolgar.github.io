@@ -791,7 +791,9 @@ document.addEventListener('DOMContentLoaded', () => {
 ]
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
             const uri = `data:application/json;base64,${btoa(JSON.stringify({name: nftName, description: nftDescription}))}`;
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri);
+            const signerAddress = (await provider.getSigner()).getAddress();
+	    const transaction = await nftContract.safeMint(signerAddress, nftPrice, uri);
+
 
         } catch (error) {
             console.error('Error:', error);
