@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const affiliateCode = urlParams.get('affiliate'); // Extract affiliate code from URL query parameter
 
-            const nftMintContractAddress = "0x80F0a4f7AfD23d4BD2A9E8910270E3c37a130635";
+            const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
             const nftMintABI = [
 	{
 		"inputs": [
@@ -131,6 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			{
 				"internalType": "address",
 				"name": "initialOwner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_defaultAffiliate",
 				"type": "address"
 			}
 		],
