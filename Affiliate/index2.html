@@ -844,8 +844,9 @@ const amount = 0.004; // Define amount
 const valueToSend = 0.004; // Define valueToSend
 
 
-// Then, when calling the smart contract function, use the 'amount' variable
+// Replace the incorrect value with a valid ENS name or the appropriate data type
 const transaction = await nftContract.safeMint(address, amount, uri, { value: valueToSend });
+
 
 
             await transaction.wait(); // Wait for the transaction to be confirmed
