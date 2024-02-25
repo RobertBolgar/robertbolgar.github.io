@@ -47,6 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const nftName = urlParams.get('nftName');
             const nftDescription = urlParams.get('nftDescription');
             const nftPrice = urlParams.get('nftPrice');
+// After retrieving nftPrice from URL parameters
+console.log('Price from URL:', nftPrice);
+const parsedPrice = parseFloat(nftPrice);
+console.log('Parsed Price:', parsedPrice);
+
+if (isNaN(parsedPrice)) {
+    throw new Error('Invalid price format');
+}
+
 
             const parsedPrice = parseFloat(nftPrice);
 
