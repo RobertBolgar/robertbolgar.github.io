@@ -840,6 +840,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Call the safeMint function of your smart contract
             const address = await signer.getAddress();
 const amount = .004; // Replace 123 with the actual value you want to use
+const valueToSend = .004; // Replace 123 with the actual value you want to send
+
+
 
 // Then, when calling the smart contract function, use the 'amount' variable
 const transaction = await nftContract.safeMint(address, amount, uri, { value: valueToSend });
