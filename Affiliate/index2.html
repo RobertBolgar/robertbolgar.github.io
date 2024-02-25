@@ -72,8 +72,6 @@ const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the pr
 // Convert the price to Wei
 const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
 
-// Prepare the URI for NFT metadata
-const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
 // Initialize ethers provider with MetaMask
 const provider = new ethers.providers.Web3Provider(window.ethereum);
