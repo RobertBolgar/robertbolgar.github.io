@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>NFT Minting & Affiliate Script Test</h1>
+    <h1>NFT Minter & Affiliate Script Test</h1>
     <form id="mintForm">
         <label for="nftName">NFT Name:</label>
         <input type="text" id="nftName" name="nftName" placeholder="Enter NFT name" required>
@@ -43,9 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
-            const nftName = document.getElementById('nftName').value;
-            const nftDescription = document.getElementById('nftDescription').value;
-            const nftPrice = ethers.utils.parseEther(document.getElementById('nftPrice').value); // Parse as units of ether
+            const urlParams = new URLSearchParams(window.location.search);
+            const nftName = urlParams.get('nftName');
+            const nftDescription = urlParams.get('nftDescription');
+            const nftPrice = urlParams.get('nftPrice');
+
+            const parsedPrice = parseFloat(nftPrice);
+
+            if (isNaN(parsedPrice)) {
+                throw new Error('Invalid price format');
+            }
+
+            const nftPriceEther = ethers.utils.parseEther(parsedPrice.toString()); // Parse as units of ether
             const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -199,10 +208,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 ];
 
+
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
             
             // Pass the affiliate code along with minting transaction
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, affiliateCode || ethers.constants.AddressZero); // Use a default affiliate code if none is provided
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPriceEther, uri, affiliateCode || ethers.constants.AddressZero); // Use a default affiliate code if none is provided
             await transaction.wait(); // Wait for the transaction to be confirmed
 
             console.log('NFT Minted successfully!');
@@ -224,3 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
+            
+            
+            
