@@ -30,9 +30,10 @@
 </div>
 
 
-            <script type="text/javascript">
+<script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
+    const submitButton = document.getElementById('submit-button'); // Ensure this ID matches your submit button
     const loadingIndicator = document.getElementById('loading');
     const messageDiv = document.getElementById('message');
 
@@ -45,21 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mintForm.addEventListener('submit', async (e) => {
         e.preventDefault(); // Prevent the form from submitting traditionally
+        submitButton.disabled = true; // Disable the submit button to prevent multiple submissions
 
         if (typeof window.ethereum === 'undefined') {
             console.log('Please install MetaMask!');
             messageDiv.innerText = 'Please install MetaMask!';
             messageDiv.style.color = 'red';
+            submitButton.disabled = false; // Re-enable the submit button
             return;
         }
 
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
-            // Check if the user is already connected
-            if (await isConnected()) {
-                console.log('User already connected. Skipping eth_requestAccounts.');
-            } else {
+            if (!(await isConnected())) {
                 // Only call eth_requestAccounts if the user is not connected
                 await window.ethereum.request({ method: "eth_requestAccounts" });
             }
@@ -850,6 +850,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.style.color = 'red';
         } finally {
             loadingIndicator.style.display = 'none'; // Hide loading indicator
+            submitButton.disabled = false; // Re-enable the submit button after the process
             mintForm.reset(); // Clear form fields after the process
         }
     });
