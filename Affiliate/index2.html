@@ -29,68 +29,59 @@
     </form>
 </div>
 
-<script type="text/javascript">
+
+            <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
     const loadingIndicator = document.getElementById('loading');
     const messageDiv = document.getElementById('message');
 
+    // Define a function to check if the user is connected
+    async function isConnected() {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.listAccounts();
+        return accounts.length > 0;
+    }
+
     mintForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent the form from submitting traditionally
 
         if (typeof window.ethereum === 'undefined') {
             console.log('Please install MetaMask!');
+            messageDiv.innerText = 'Please install MetaMask!';
+            messageDiv.style.color = 'red';
             return;
         }
 
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
+            // Check if the user is already connected
+            if (await isConnected()) {
+                console.log('User already connected. Skipping eth_requestAccounts.');
+            } else {
+                // Only call eth_requestAccounts if the user is not connected
+                await window.ethereum.request({ method: "eth_requestAccounts" });
+            }
 
-                    async function isConnected() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const accounts = await provider.listAccounts();
-    return accounts.length > 0;
-}
+            // Fetch values from form inputs
+            const nftName = document.getElementById('nftName').value;
+            const nftDescription = document.getElementById('nftDescription').value;
+            const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
 
-mintForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+            // Convert the price to Wei
+            const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
 
-    // Check if the user is already connected
-    if (await isConnected()) {
-        console.log('User already connected. Skipping eth_requestAccounts.');
-    } else {
-        // Only call eth_requestAccounts if the user is not connected
-        await provider.send("eth_requestAccounts", []);
-    }
+            // Prepare the URI for NFT metadata
+            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
+            // Initialize ethers provider with MetaMask
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
 
-
-           // Correctly fetch values from form inputs
-const nftName = document.getElementById('nftName').value;
-const nftDescription = document.getElementById('nftDescription').value;
-const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
-console.log('Price from form input:', nftPriceInput);
-
-// Use ethers.js utility function to handle conversion
-// This will convert the input price to Wei, assuming the input is in Ether (or BNB for BSC)
-const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
-console.log('Converted Price in Wei:', nftPriceWei.toString());
-
-// Prepare the URI for NFT metadata
-const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
-
-// Initialize ethers provider with MetaMask
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts", []);
-const signer = provider.getSigner();
-
-// (Optional) Handle affiliate code if present in the URL
-const affiliateCode = new URLSearchParams(window.location.search).get('affiliate');
-
-
+            // Define the smart contract address and ABI (add your ABI array here)
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
-            const nftMintABI = [
+            cconst nftMintABI = [
     {
         "inputs": [
             {
@@ -843,26 +834,29 @@ const affiliateCode = new URLSearchParams(window.location.search).get('affiliate
     }
 ];
 
-
+            // Create a contract instance
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPriceEther, uri, {value: nftPriceEther});
+            // Call the safeMint function of your smart contract
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPriceWei, uri, {value: nftPriceWei});
             await transaction.wait(); // Wait for the transaction to be confirmed
 
             console.log('NFT Minted successfully!');
             messageDiv.innerText = 'NFT Minted successfully!';
             messageDiv.style.color = 'green';
-            mintForm.reset(); // Clear form fields
         } catch (error) {
             console.error('Error:', error);
             messageDiv.innerText = 'Error: ' + error.message;
             messageDiv.style.color = 'red';
         } finally {
             loadingIndicator.style.display = 'none'; // Hide loading indicator
+            mintForm.reset(); // Clear form fields after the process
         }
     });
 });
 </script>
+
+
 </body>
 </html>
 
