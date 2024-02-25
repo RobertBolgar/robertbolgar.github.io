@@ -804,7 +804,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const uri = `data:application/json;base64,${btoa(JSON.stringify({name: nftName, description: nftDescription}))}`;
             
             // Pass the affiliate code along with minting transaction
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, { affiliate: affiliateCode });
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPrice, uri, affiliateCode);
+
 
         } catch (error) {
             console.error('Error:', error);
