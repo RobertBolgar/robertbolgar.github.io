@@ -838,11 +838,7 @@ const addressToSendNFTTo = await signer.getAddress();
             // Create a contract instance
 const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
-// Define the address where you want to send the NFT
-const addressToSendNFTTo = "0x123..."; // Replace with the actual address
 
-// Fetch the price input as a string
-const nftPriceInput = document.getElementById('nftPrice').value;
 
 // Convert the price to Wei
 const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
