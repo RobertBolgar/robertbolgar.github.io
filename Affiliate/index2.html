@@ -850,6 +850,7 @@ const transaction = await nftContract.safeMint(address, amount, uri, { value: va
 
 
 
+
             await transaction.wait(); // Wait for the transaction to be confirmed
 
             console.log('NFT Minted successfully!');
