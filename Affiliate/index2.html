@@ -1,3 +1,6 @@
+
+            
+          
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,9 +29,6 @@
     </form>
 </div>
 
-
-            
-
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
     const mintForm = document.getElementById('mintForm');
@@ -46,11 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             loadingIndicator.style.display = 'block'; // Show loading indicator
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const nftName = urlParams.get('nftName');
-            const nftDescription = urlParams.get('nftDescription');
-            const nftPrice = urlParams.get('nftPrice');
-            console.log('Price from URL:', nftPrice);
+            // Correctly fetch values from form inputs
+            const nftName = document.getElementById('nftName').value;
+            const nftDescription = document.getElementById('nftDescription').value;
+            const nftPrice = document.getElementById('nftPrice').value;
+            console.log('Price from form input:', nftPrice);
             const parsedPrice = parseFloat(nftPrice);
             console.log('Parsed Price:', parsedPrice);
 
@@ -58,10 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Invalid price format');
             }
 
-            // Assuming the price is provided in BNB, you might want to multiply it by a factor
-            // to convert it to a suitable representation (e.g., Wei or Ether) for interacting with the Ethereum blockchain.
-            // For example, if 1 BNB = 10^18 Wei, you would multiply the parsedPrice by 10^18.
-            // Modify this conversion factor based on the actual conversion rate.
             const BNB_to_Wei_Factor = 10**18;
             const nftPriceEther = parsedPrice * BNB_to_Wei_Factor;
 
@@ -71,10 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
             await provider.send("eth_requestAccounts", []);
             const signer = provider.getSigner();
 
-            const affiliateCode = urlParams.get('affiliate'); // Extract affiliate code from URL query parameter
+            const affiliateCode = new URLSearchParams(window.location.search).get('affiliate');
 
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
-            
             const nftMintABI = [
     {
         "inputs": [
@@ -242,10 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 ];
 
+
             const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-            
-            // Pass the affiliate code along with minting transaction
-            const transaction = await nftContract.safeMint(signer.getAddress(), nftPriceEther, uri, affiliateCode || ethers.constants.AddressZero); // Use a default affiliate code if none is provided
+
+            const transaction = await nftContract.safeMint(signer.getAddress(), nftPriceEther, uri, {value: nftPriceEther});
             await transaction.wait(); // Wait for the transaction to be confirmed
 
             console.log('NFT Minted successfully!');
@@ -254,9 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mintForm.reset(); // Clear form fields
         } catch (error) {
             console.error('Error:', error);
-            if (error.code === -32603) {
-                console.error('Internal JSON-RPC error. Please check your MetaMask connection and try again.');
-            }
             messageDiv.innerText = 'Error: ' + error.message;
             messageDiv.style.color = 'red';
         } finally {
@@ -265,8 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
-
-
 </body>
 </html>
 
