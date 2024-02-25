@@ -65,19 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Fetch values from form inputs
-            const nftName = document.getElementById('nftName').value;
-            const nftDescription = document.getElementById('nftDescription').value;
-            const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
+const nftName = document.getElementById('nftName').value;
+const nftDescription = document.getElementById('nftDescription').value;
+const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
 
-            // Convert the price to Wei
-            const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
+// Convert the price to Wei
+const nftPriceWei = ethers.utils.parseUnits(nftPriceInput, 'ether');
 
-            // Prepare the URI for NFT metadata
-            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
+// Prepare the URI for NFT metadata
+const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-            // Initialize ethers provider with MetaMask
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+// Initialize ethers provider with MetaMask
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
 
             // Define the smart contract address and ABI (add your ABI array here)
             const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
@@ -834,14 +834,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 ];
 
-            // Create a contract instance
-            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+           // Create a contract instance
+const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+
 
             // Call the safeMint function of your smart contract
-            const address = await signer.getAddress();
-const amount = .004; // Replace 123 with the actual value you want to use
-const valueToSend = .004; // Replace 123 with the actual value you want to send
-
+const address = await signer.getAddress();
+const amount = 0.004; // Define amount
+const valueToSend = 0.004; // Define valueToSend
 
 
 // Then, when calling the smart contract function, use the 'amount' variable
