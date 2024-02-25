@@ -843,9 +843,12 @@ const address = await signer.getAddress();
 const amount = 0.004; // Define amount
 const valueToSend = 0.004; // Define valueToSend
 
+// Prepare the URI for NFT metadata
+const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-// Replace the incorrect value with a valid ENS name or the appropriate data type
+// Call the safeMint function with the correct parameters
 const transaction = await nftContract.safeMint(address, amount, uri, { value: valueToSend });
+
 
 
 
