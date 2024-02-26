@@ -84,15 +84,12 @@ function getAffiliateAddressFromURL() {
     return urlParams.get('affiliate');
 }
 
-                    // Call the contract method to get the default affiliate address
-const defaultAffiliate = await nftContract.defaultAffiliate();
-
+                 
 
 // Get the affiliate address from the URL
 const referringAffiliate = getAffiliateAddressFromURL();
 
-                    // Determine the affiliate address to use
-const affiliateToUse = referringAffiliate ? referringAffiliate : defaultAffiliate;
+               
 
 
             // Define the smart contract address and ABI (add your ABI array here)
@@ -854,18 +851,22 @@ const affiliateToUse = referringAffiliate ? referringAffiliate : defaultAffiliat
 
 
             // Create a contract instance
-const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
+            // Call the contract method to get the default affiliate address
+            const defaultAffiliate = await nftContract.defaultAffiliate();
 
+            // Determine the affiliate address to use
+            const affiliateToUse = referringAffiliate ? referringAffiliate : defaultAffiliate;
 
-// Convert the price to Wei
-const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
+            // Convert the price to Wei
+            const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
 
-// Prepare the URI for NFT metadata
-const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
+            // Prepare the URI for NFT metadata
+            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-// Call the safeMint function of your smart contract
-const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse);
+            // Call the safeMint function of your smart contract
+            const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse);
 
 
 
