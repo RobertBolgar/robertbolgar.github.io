@@ -84,6 +84,10 @@ function getAffiliateAddressFromURL() {
     return urlParams.get('affiliate');
 }
 
+                    // Call the contract method to get the default affiliate address
+const defaultAffiliate = await nftContract.defaultAffiliate();
+
+
 // Get the affiliate address from the URL
 const referringAffiliate = getAffiliateAddressFromURL();
 
