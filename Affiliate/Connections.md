@@ -1,0 +1,4 @@
+AffiliateTracker Address:  0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E
+
+NFTmint Address: 0x832a32FDDB09c530845996ab252513251a726fB8
+
