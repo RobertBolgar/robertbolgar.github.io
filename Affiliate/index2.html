@@ -68,7 +68,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 	    // Extract affiliate address from URL
-            const referringAffiliate = getQueryParam('affiliate'); 	
+            function getQueryParam(param) {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get(param);
+}
+	
 
             // Get the referring affiliate address
             const referringAffiliateAddress = await getReferringAffiliateAddress();
