@@ -66,6 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const signer = provider.getSigner();
             const addressToSendNFTTo = await signer.getAddress();
 
+
+	    // Extract affiliate address from URL
+            const referringAffiliate = getQueryParam('affiliate'); 	
+
             // Get the referring affiliate address
             const referringAffiliateAddress = await getReferringAffiliateAddress();
 
