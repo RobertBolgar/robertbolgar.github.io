@@ -1,6 +1,3 @@
-
-            
-          
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,21 +20,19 @@
     <label for="nftPrice">NFT Price (in BNB):</label>
     <input type="text" id="nftPrice" name="nftPrice" placeholder="Enter NFT price" required>
 
-    <input type="submit" id="submit-button" value="Mint NFT"> <!-- Added ID here -->
+    <input type="submit" id="submit-button" value="Mint NFT">
     <div id="loading" style="display: none;">Loading...</div>
     <div id="message"></div>
 </form>
 </div>
 
-
 <script type="text/javascript">
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const mintForm = document.getElementById('mintForm');
-    const submitButton = document.getElementById('submit-button'); // Ensure this ID matches your submit button
+    const submitButton = document.getElementById('submit-button');
     const loadingIndicator = document.getElementById('loading');
     const messageDiv = document.getElementById('message');
 
-    // Define a function to check if the user is connected
     async function isConnected() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const accounts = await provider.listAccounts();
@@ -45,824 +40,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     mintForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Prevent the form from submitting traditionally
-        submitButton.disabled = true; // Disable the submit button to prevent multiple submissions
+        e.preventDefault();
+        submitButton.disabled = true;
 
         if (typeof window.ethereum === 'undefined') {
             console.log('Please install MetaMask!');
             messageDiv.innerText = 'Please install MetaMask!';
             messageDiv.style.color = 'red';
-            submitButton.disabled = false; // Re-enable the submit button
+            submitButton.disabled = false;
             return;
         }
 
         try {
-            loadingIndicator.style.display = 'block'; // Show loading indicator
+            loadingIndicator.style.display = 'block';
 
             if (!(await isConnected())) {
-                // Only call eth_requestAccounts if the user is not connected
                 await window.ethereum.request({ method: "eth_requestAccounts" });
             }
 
-            // Fetch values from form inputs
-const nftName = document.getElementById('nftName').value;
-const nftDescription = document.getElementById('nftDescription').value;
-const nftPriceInput = document.getElementById('nftPrice').value; // Fetch the price input as a string
+            const nftName = document.getElementById('nftName').value;
+            const nftDescription = document.getElementById('nftDescription').value;
+            const nftPriceInput = document.getElementById('nftPrice').value;
 
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const addressToSendNFTTo = await signer.getAddress();
 
-// Initialize ethers provider with MetaMask
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
+            // Get the referring affiliate address
+            const referringAffiliateAddress = await getReferringAffiliateAddress();
 
-// Get the user's Ethereum address from MetaMask
-const addressToSendNFTTo = await signer.getAddress();
-
-                    // Parse the URL to extract the affiliate address
-function getAffiliateAddressFromURL() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    return urlParams.get('affiliate');
-}
-
-// Get the affiliate address from the URL
-const referringAffiliate = getAffiliateAddressFromURL();
-
-
-            // Define the smart contract address and ABI (add your ABI array here)
-            const nftMintContractAddress = "0xbeB397c1a482D6739b71c357aB5D1cf4654342e1";
+            const nftMintContractAddress = "0x81269B1Da46BF56395C198ee3fF7a274847e5e5f";
             const nftMintABI = [
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "name",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "symbol",
-                "type": "string"
-            },
-            {
-                "internalType": "address",
-                "name": "_affiliateTrackerAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "initialOwner",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_defaultAffiliate",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "sender",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721IncorrectOwner",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "ERC721InsufficientApproval",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "approver",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721InvalidApprover",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721InvalidOperator",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721InvalidOwner",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "receiver",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721InvalidReceiver",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "sender",
-                "type": "address"
-            }
-        ],
-        "name": "ERC721InvalidSender",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "ERC721NonexistentToken",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnableInvalidOwner",
-        "type": "error"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            }
-        ],
-        "name": "OwnableUnauthorizedAccount",
-        "type": "error"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "affiliate",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "AffiliatePaid",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "approved",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "Approval",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "bool",
-                "name": "approved",
-                "type": "bool"
-            }
-        ],
-        "name": "ApprovalForAll",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "previousOwner",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "OwnershipTransferred",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "salePrice",
-                "type": "uint256"
-            }
-        ],
-        "name": "TokenSold",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "Transfer",
-        "type": "event"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "approve",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "affiliate",
-                "type": "address"
-            }
-        ],
-        "name": "approveAffiliate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "approvedAffiliates",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "burn",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "affiliate",
-                "type": "address"
-            }
-        ],
-        "name": "buyNFT",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "commissionRate",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "defaultAffiliate",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "getApproved",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            }
-        ],
-        "name": "isApprovedForAll",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "name",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "owner",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "ownerOf",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "renounceOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "price",
-                "type": "uint256"
-            },
-            {
-                "internalType": "string",
-                "name": "uri",
-                "type": "string"
-            },
-            {
-                "internalType": "address",
-                "name": "affiliate",
-                "type": "address"
-            }
-        ],
-        "name": "safeMint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "safeTransferFrom",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes",
-                "name": "data",
-                "type": "bytes"
-            }
-        ],
-        "name": "safeTransferFrom",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "approved",
-                "type": "bool"
-            }
-        ],
-        "name": "setApprovalForAll",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_defaultAffiliate",
-                "type": "address"
-            }
-        ],
-        "name": "setDefaultAffiliate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes4",
-                "name": "interfaceId",
-                "type": "bytes4"
-            }
-        ],
-        "name": "supportsInterface",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "tokenPrices",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "tokenSellers",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "tokenURI",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-            }
-        ],
-        "name": "transferFrom",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
-];
+                // Updated ABI based on IAffiliateTracker
+                // Add the ABI here
+            ];
 
- 
+            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 
+            // Get the default affiliate address
+            const defaultAffiliateAddress = await getDefaultAffiliateAddress();
 
-            // Create a contract instance
-const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+            // Determine the affiliate address to use
+            const affiliateToUse = referringAffiliateAddress || defaultAffiliateAddress;
 
+            const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
+            const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
+            const overrides = {
+                gasLimit: 9000000
+            };
 
-// Convert the price to Wei
-const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
+            // Call the mintNFT method from the deployed contract
+            const transaction = await nftContract.mintNFT(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse, overrides);
 
-// Prepare the URI for NFT metadata
-const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
-
-// Call the safeMint function of your smart contract
-const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateAddress);
-
-
-
-            await transaction.wait(); // Wait for the transaction to be confirmed
+            await transaction.wait();
 
             console.log('NFT Minted successfully!');
             messageDiv.innerText = 'NFT Minted successfully!';
@@ -872,20 +103,28 @@ const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, 
             messageDiv.innerText = 'Error: ' + error.message;
             messageDiv.style.color = 'red';
         } finally {
-            loadingIndicator.style.display = 'none'; // Hide loading indicator
-            submitButton.disabled = false; // Re-enable the submit button after the process
-            mintForm.reset(); // Clear form fields after the process
+            loadingIndicator.style.display = 'none';
+            submitButton.disabled = false;
+            mintForm.reset();
         }
     });
-});
-</script>
 
+    async function getReferringAffiliateAddress() {
+        // Replace with actual call to get referring affiliate address
+        // Example:
+        // const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
+        // return await affiliateTracker.getReferringAffiliateAddress();
+    }
+
+    async function getDefaultAffiliateAddress() {
+        // Replace with actual call to get default affiliate address
+        // Example:
+        // const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
+        // return await affiliateTracker.getDefaultAffiliateAddress();
+    }
+});
+
+</script>
 
 </body>
 </html>
-
-           
-
-            
-            
-            
