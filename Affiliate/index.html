@@ -530,6 +530,19 @@ const referringAffiliate = getAffiliateAddressFromURL();
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getDefaultAffiliate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -834,7 +847,13 @@ const referringAffiliate = getAffiliateAddressFromURL();
 				"name": "newOwner",
 				"type": "address"
 			}
-		]
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
  
 
 
