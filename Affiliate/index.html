@@ -871,8 +871,13 @@ const referringAffiliate = getAffiliateAddressFromURL();
             // Prepare the URI for NFT metadata
             const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
-            // Call the safeMint function of your smart contract
-            const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse);
+            const overrides = {
+    gasLimit: 500000 // Adjust the gas limit as needed
+};
+
+// Call the safeMint function with overrides
+const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse, overrides);
+
 
             await transaction.wait(); // Wait for the transaction to be confirmed
 
