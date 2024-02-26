@@ -845,7 +845,7 @@ const referringAffiliate = getAffiliateAddressFromURL();
         "stateMutability": "nonpayable",
         "type": "function"
     }
-];
+]
 
  
 
@@ -856,8 +856,14 @@ const referringAffiliate = getAffiliateAddressFromURL();
             // Call the contract method to get the default affiliate address
             const defaultAffiliate = await nftContract.defaultAffiliate();
 
+                    console.log('Default Affiliate:', defaultAffiliate);
+
+
             // Determine the affiliate address to use
             const affiliateToUse = referringAffiliate ? referringAffiliate : defaultAffiliate;
+
+                    console.log('Referring Affiliate:', referringAffiliate);
+
 
             // Convert the price to Wei
             const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
@@ -867,10 +873,6 @@ const referringAffiliate = getAffiliateAddressFromURL();
 
             // Call the safeMint function of your smart contract
             const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateToUse);
-
-
-
-
 
             await transaction.wait(); // Wait for the transaction to be confirmed
 
