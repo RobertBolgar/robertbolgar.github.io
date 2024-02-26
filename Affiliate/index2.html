@@ -109,19 +109,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    async function getReferringAffiliateAddress() {
-        // Replace with actual call to get referring affiliate address
-        // Example:
-        // const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
-        // return await affiliateTracker.getReferringAffiliateAddress();
-    }
+   async function getReferringAffiliateAddress() {
+    const affiliateTrackerAddress = "0x123..."; // Replace with the actual address of your deployed AffiliateTracker contract
+    const affiliateTrackerABI = [
+        // Add the ABI of your AffiliateTracker contract here
+    ];
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
+    return await affiliateTracker.getReferringAffiliateAddress();
+}
 
-    async function getDefaultAffiliateAddress() {
-        // Replace with actual call to get default affiliate address
-        // Example:
-        // const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
-        // return await affiliateTracker.getDefaultAffiliateAddress();
-    }
+async function getDefaultAffiliateAddress() {
+    const affiliateTrackerAddress = "0x123..."; // Replace with the actual address of your deployed AffiliateTracker contract
+    const affiliateTrackerABI = [
+        // Add the ABI of your AffiliateTracker contract here
+    ];
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const affiliateTracker = new ethers.Contract(affiliateTrackerAddress, affiliateTrackerABI, signer);
+    return await affiliateTracker.getDefaultAffiliateAddress();
+}
+
 });
 
 </script>
