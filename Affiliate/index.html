@@ -858,7 +858,8 @@ const nftPriceWei = ethers.utils.parseEther(nftPriceInput);
 const uri = `data:application/json;base64,${btoa(JSON.stringify({ name: nftName, description: nftDescription }))}`;
 
 // Call the safeMint function of your smart contract
-const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, affiliateAddress);
+const transaction = await nftContract.safeMint(addressToSendNFTTo, nftPriceWei, uri, referringAffiliate);
+
 
 
 
