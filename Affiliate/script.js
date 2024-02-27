@@ -1342,5 +1342,4 @@ function displayErrorMessage(message, elementId) {
     messageElement.innerText = message;
     messageElement.classList.add('error');
 }
-});
 
