@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const nftMintContractAddress = "0x12dc6649Fa9E51eE6389b152A95Ec0af3352B335";
     const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
+const contractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
+const contractABI = [
+    // Your contract ABI goes here. This should include the withdrawAffiliateCommission function
+];
     const nftMintABI = [
 	{
 		"inputs": [
@@ -1207,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 ]; 
 	
 
-    const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
 const listForm = document.getElementById('listForm');
@@ -1256,6 +1260,28 @@ async function handleBuyFormSubmit(e) {
     }
 }
 
+document.getElementById('withdrawCommission').addEventListener('click', async (e) => {
+    e.preventDefault(); // Prevent any default button click behavior
+
+    console.log("Withdraw button clicked");
+
+    try {
+        // Assuming your contract has a function to withdraw affiliate commissions
+        // without requiring any arguments
+        const tx = await affiliateTrackerContract.withdrawAffiliateCommission();
+        console.log('Withdrawal transaction sent:', tx.hash);
+
+        // Wait for the transaction to be mined
+        await tx.wait();
+        console.log('Withdrawal transaction confirmed.');
+
+        // Update UI to reflect the withdrawal
+        document.getElementById('withdrawMessage').innerText = 'Commissions withdrawn successfully!';
+    } catch (error) {
+        console.error('Error withdrawing commissions:', error);
+        document.getElementById('withdrawMessage').innerText = 'Error withdrawing commissions. See console for details.';
+    }	
+
 function displayMessage(message, elementId) {
     const messageDiv = document.getElementById(elementId);
     messageDiv.innerText = message;
@@ -1271,9 +1297,6 @@ function displayErrorMessage(message, elementId) {
 // Event listeners
 listForm.addEventListener('submit', handleListFormSubmit);
 buyForm.addEventListener('submit', handleBuyFormSubmit);
-withdrawButton.addEventListener('click', async (e) => {
-    // Your logic for handling the withdraw button click
-    // Placeholder for where you'd implement the function
-    console.log("Withdraw button clicked");
-    // Implement the actual logic here
+withdrawButton.addEventListener('click', handleWithdrawButtonClick);
+	
 });
