@@ -28,27 +28,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-    const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
-
-    const affiliateTrackerABI = [
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_contract",
-                    "type": "address"
-                }
-            ],
-            "name": "allowContract",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        // Other ABI functions...
-    ];
-
-    const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
-
     const withdrawForm = document.getElementById('withdrawForm');
 
     withdrawForm.addEventListener('submit', async (e) => {
@@ -69,5 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <script src="script.js"></script> <!-- Link to the JavaScript file -->
+
 </body>
 </html>
+
