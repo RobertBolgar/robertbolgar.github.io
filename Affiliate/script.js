@@ -1,9 +1,9 @@
+<script type="text/javascript">
 document.addEventListener('DOMContentLoaded', async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-    // Update these with your actual deployed contracts
     const nftMintContractAddress = "0x12dc6649Fa9E51eE6389b152A95Ec0af3352B335";
     const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
     const nftMintABI = [
@@ -831,8 +831,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"type": "function"
 	}
 ]; 
-
-    
     const affiliateTrackerABI = [
 	{
 		"inputs": [
@@ -1207,14 +1205,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"type": "function"
 	}
 ]; 
+	
 
-    
-
-    // Contract instances
     const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
     const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
-    // DOM Elements
     const listForm = document.getElementById('listForm');
     const buyForm = document.getElementById('buyForm');
     const withdrawButton = document.getElementById('withdrawCommission');
@@ -1225,122 +1220,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function handleListFormSubmit(e) {
-    e.preventDefault();
-    const nftName = document.getElementById('nftName').value;
-    const nftDescription = document.getElementById('nftDescription').value;
-    const nftPrice = document.getElementById('nftPrice').value;
-    // Assume mintNFT is a function in your smart contract that mints the NFT and returns the token ID
-    try {
-        // Call the minting function and wait for the transaction to complete
-        const txResponse = await nftContract.mintNFT(signer.getAddress(), "tokenURI", { /* transaction parameters */ });
-        const receipt = await txResponse.wait(); // Wait for transaction to be mined
+        e.preventDefault();
+        const nftName = document.getElementById('nftName').value;
+        const nftDescription = document.getElementById('nftDescription').value;
+        const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
 
-        // Extract the token ID from the transaction receipt (if an event is emitted)
-        // OR if the function directly returns the token ID, adjust accordingly
-        let tokenId;
-        for (const event of receipt.events) {
-            if (event.event === "NFTListed" /* Replace with your actual event name */) {
-                tokenId = event.args.tokenId.toString();
-                break;
-            }
+        // Convert BNB to Wei
+        const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
+
+        try {
+            // Assuming listNFTForSale is a function in your contract for listing an NFT
+            // and it requires the price in Wei
+            const txResponse = await nftContract.listNFTForSale("tokenURI", nftPriceWei);
+            const receipt = await txResponse.wait();
+
+            // Optionally handle the receipt to get the tokenId if your contract emits it
+            displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
+        } catch (error) {
+            displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
         }
-
-        // Display the token ID on the webpage
-        displayMessage(`NFT listed successfully with Token ID: ${tokenId}`, 'listMessage');
-    } catch (error) {
-        displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
     }
-}
-
-
-// Example function to add a new NFT to the displayed listings
-function addNFTToListing(tokenId, nftName, nftDescription) {
-    const nftListingsDiv = document.getElementById('nftListings');
-    
-    // Create elements for the NFT listing
-    const listingElement = document.createElement('div');
-    listingElement.classList.add('nft-listing');
-    listingElement.innerHTML = `
-        <h3>${nftName}</h3>
-        <p>${nftDescription}</p>
-        <p>Token ID: ${tokenId}</p>
-    `;
-    
-    // Append the new listing to the listings container
-    nftListingsDiv.appendChild(listingElement);
-}
-
-    // Assuming this is within the handleListFormSubmit function or a similar context
-// after successfully listing an NFT and obtaining its token ID
-addNFTToListing(newTokenId, nftName, nftDescription);
-
-    
 
     async function handleBuyFormSubmit(e) {
-    e.preventDefault();
-    const tokenId = document.getElementById('tokenId').value;
-    
-    // Attempt to retrieve an affiliate address from the URL, defaulting to a zero address if not found
-   async function handleBuyFormSubmit(e) {
-    e.preventDefault();
-    const tokenId = document.getElementById('tokenId').value;
-    
-    // Initialize the affiliate address as empty
-    let affiliateAddress = await getAffiliateAddressFromURL();
-
-    // If no affiliate address is found in the URL, fetch the default affiliate address from the contract
-    if (!affiliateAddress || affiliateAddress === '') {
-        affiliateAddress = await nftContract.defaultAffiliate();
-    }
-
-    try {
-        // Fetch the NFT's price. Ensure your smart contract has a function to get the price by token ID.
-        const nftPriceWei = await nftContract.tokenPrices(tokenId);
-
-        // Ensure the user has a connected wallet and sufficient balance (this check is optional and can be more complex)
-        const signer = await nftContract.signer;
-        const userAddress = await signer.getAddress();
-        const userBalance = await signer.getBalance();
+        e.preventDefault();
+        const tokenId = document.getElementById('tokenId').value;
         
-        if (userBalance.lt(nftPriceWei)) {
-            displayErrorMessage("Insufficient balance for this transaction.", 'buyMessage');
-            return;
+        let affiliateAddress = await getAffiliateAddressFromURL();
+        if (!affiliateAddress || affiliateAddress === '') {
+            affiliateAddress = await nftContract.defaultAffiliate();
         }
 
-        // Execute the transaction with the appropriate value and affiliate address
-        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-        await tx.wait(); // Wait for the transaction to be mined
-
-        displayMessage('NFT purchased successfully!', 'buyMessage');
-    } catch (error) {
-        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-    }
-}
-
-    try {
-        // Fetch the NFT's price. Ensure your smart contract has a function to get the price by token ID.
-        const nftPriceWei = await nftContract.tokenPrices(tokenId);
-
-        // Ensure the user has a connected wallet and sufficient balance (this check is optional and can be more complex)
-        const signer = await nftContract.signer;
-        const userAddress = await signer.getAddress();
-        const userBalance = await signer.getBalance();
-        
-        if (userBalance.lt(nftPriceWei)) {
-            displayErrorMessage("Insufficient balance for this transaction.", 'buyMessage');
-            return;
+        try {
+            const nftPriceWei = await nftContract.tokenPrices(tokenId);
+            const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
+            await tx.wait();
+            displayMessage('NFT purchased successfully!', 'buyMessage');
+        } catch (error) {
+            displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
         }
-
-        // Execute the transaction with the appropriate value and affiliate address
-        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-        await tx.wait(); // Wait for the transaction to be mined
-
-        displayMessage('NFT purchased successfully!', 'buyMessage');
-    } catch (error) {
-        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
     }
-}
-
 
     async function handleWithdrawButtonClick() {
         try {
@@ -1364,8 +1282,8 @@ addNFTToListing(newTokenId, nftName, nftDescription);
         messageDiv.className = 'message-error';
     }
 
-    // Attach event listeners
     listForm.addEventListener('submit', handleListFormSubmit);
     buyForm.addEventListener('submit', handleBuyFormSubmit);
     withdrawButton.addEventListener('click', handleWithdrawButtonClick);
 });
+</script>
