@@ -1269,24 +1269,6 @@ async function getAffiliateAddressFromURL() {
     return '';
 }
 
-// Instantiate contracts
-const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
-
-// Get form elements
-const listForm = document.getElementById('listForm');
-const buyForm = document.getElementById('buyForm');
-
-// Function to extract affiliate address from URL
-async function getAffiliateAddressFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const affiliate = params.get('affiliate');
-    if (ethers.utils.isAddress(affiliate)) {
-        return affiliate;
-    }
-    return '';
-}
-
 // Handle form submission to list NFT for sale
 async function handleListFormSubmit(e) {
     e.preventDefault();
