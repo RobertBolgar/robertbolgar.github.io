@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
-}
+
 
     const nftMintContractAddress = "0x12dc6649Fa9E51eE6389b152A95Ec0af3352B335";
     const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
@@ -1226,18 +1226,21 @@ async function handleListFormSubmit(e) {
     const nftName = document.getElementById('nftName').value;
     const nftDescription = document.getElementById('nftDescription').value;
     const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
+    const nftTokenURI = document.getElementById('nftTokenURI').value; // Retrieve the token URI from the form
 
-    // Convert BNB to Wei
+    // Convert BNB to Wei for the transaction
     const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
 
     try {
-        const txResponse = await nftContract.listNFTForSale("tokenURI", nftPriceWei);
+        // Use the actual token URI here
+        const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
         const receipt = await txResponse.wait();
         displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
     } catch (error) {
         displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
     }
 }
+
 
 async function handleBuyFormSubmit(e) {
     e.preventDefault();
