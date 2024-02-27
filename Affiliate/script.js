@@ -1270,6 +1270,3 @@ function displayErrorMessage(message, elementId) {
 }
 
 
-
-	});
-
