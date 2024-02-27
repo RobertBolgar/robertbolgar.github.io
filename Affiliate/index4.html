@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFT & Affiliate Test Site</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
+    <title>NFT & Affiliate Management</title>
+    <link rel="stylesheet" href="style.css"> <!-- Ensure the CSS file is linked -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.x/dist/ethers.min.js"></script>
 </head>
 <body>
 <div class="container">
-    <h1>NFT Minting & Affiliate Test Site</h1>
+    <h1>NFT Minting & Affiliate Management</h1>
     
-    <!-- Section 1: List NFT -->
+    <!-- Section 1: List NFT for Sale -->
     <section id="listNFT">
         <h2>List NFT for Sale</h2>
         <form id="listForm">
             <input type="text" id="nftName" placeholder="NFT Name" required>
             <input type="text" id="nftDescription" placeholder="NFT Description" required>
-            <input type="number" id="nftPrice" placeholder="Price in ETH" required>
+            <input type="text" id="nftPrice" placeholder="Price in ETH" required>
             <button type="submit">List NFT</button>
         </form>
-        <div id="listMessage"></div>
+        <div id="listMessage" class="message"></div>
     </section>
     
     <!-- Section 2: Buy NFT -->
@@ -27,19 +28,20 @@
         <h2>Buy NFT</h2>
         <form id="buyForm">
             <input type="number" id="tokenId" placeholder="Token ID" required>
+            <!-- Affiliate Address is now handled within the script and remains hidden -->
             <button type="submit">Buy NFT</button>
         </form>
-        <div id="buyMessage"></div>
+        <div id="buyMessage" class="message"></div>
     </section>
     
     <!-- Section 3: Affiliate Commission Withdrawal -->
     <section id="affiliateWithdraw">
         <h2>Affiliate Commission Withdrawal</h2>
         <button id="withdrawCommission">Withdraw Commissions</button>
-        <div id="withdrawMessage"></div>
+        <div id="withdrawMessage" class="message"></div>
     </section>
 </div>
 
-<script src="script.js"></script> <!-- Link to your JavaScript file -->
+<script src="script.js"></script> <!-- Link to the JavaScript file -->
 </body>
 </html>
