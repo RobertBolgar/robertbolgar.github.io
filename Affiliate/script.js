@@ -52,20 +52,63 @@ document.addEventListener('DOMContentLoaded', async () => {
 }
 
 
+// Example function to add a new NFT to the displayed listings
+function addNFTToListing(tokenId, nftName, nftDescription) {
+    const nftListingsDiv = document.getElementById('nftListings');
+    
+    // Create elements for the NFT listing
+    const listingElement = document.createElement('div');
+    listingElement.classList.add('nft-listing');
+    listingElement.innerHTML = `
+        <h3>${nftName}</h3>
+        <p>${nftDescription}</p>
+        <p>Token ID: ${tokenId}</p>
+    `;
+    
+    // Append the new listing to the listings container
+    nftListingsDiv.appendChild(listingElement);
+}
+
+    // Assuming this is within the handleListFormSubmit function or a similar context
+// after successfully listing an NFT and obtaining its token ID
+addNFTToListing(newTokenId, nftName, nftDescription);
+
+    
+
     async function handleBuyFormSubmit(e) {
-        e.preventDefault();
-        const tokenId = document.getElementById('tokenId').value;
-        const affiliateAddress = await getAffiliateAddressFromURL();
-        const nftPriceWei = await nftContract.tokenPrices(tokenId); // Ensure this method exists to fetch price
-        
-        try {
-            const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-            await tx.wait();
-            displayMessage('NFT purchased successfully!', 'buyMessage');
-        } catch (error) {
-            displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-        }
+    e.preventDefault();
+    const tokenId = document.getElementById('tokenId').value;
+    
+    // Attempt to retrieve an affiliate address from the URL, defaulting to a zero address if not found
+    let affiliateAddress = await getAffiliateAddressFromURL();
+    if (!affiliateAddress) {
+        affiliateAddress = '0x0000000000000000000000000000000000000000'; // Fallback to a zero address
     }
+
+    try {
+        // Fetch the NFT's price. Ensure your smart contract has a function to get the price by token ID.
+        const nftPriceWei = await nftContract.tokenPrices(tokenId);
+
+        // Ensure the user has a connected wallet and sufficient balance (this check is optional and can be more complex)
+        const signer = await nftContract.signer;
+        const userAddress = await signer.getAddress();
+        const userBalance = await signer.getBalance();
+        
+        if (userBalance.lt(nftPriceWei)) {
+            displayErrorMessage("Insufficient balance for this transaction.", 'buyMessage');
+            return;
+        }
+
+        // Execute the transaction with the appropriate value and affiliate address
+        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
+        await tx.wait(); // Wait for the transaction to be mined
+
+        displayMessage('NFT purchased successfully!', 'buyMessage');
+    } catch (error) {
+        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
+    }
+}
+
 
     async function handleWithdrawButtonClick() {
         try {
