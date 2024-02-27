@@ -1214,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 ]; 
 
-    // Instantiate contracts and get form elements
+   // Instantiate contracts and get form elements
 const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
 const listForm = document.getElementById('listForm');
 const buyForm = document.getElementById('buyForm');
