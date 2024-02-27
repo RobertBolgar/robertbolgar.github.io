@@ -1207,19 +1207,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 ]; 
 
-const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+    const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+    const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
-const listForm = document.getElementById('listForm');
-const buyForm = document.getElementById('buyForm');
-const withdrawButton = document.getElementById('withdrawCommission');
+    const listForm = document.getElementById('listForm');
+    const buyForm = document.getElementById('buyForm');
 
-async function getAffiliateAddressFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const affiliateAddress = params.get('affiliate');
-    return affiliateAddress || null; // Return null if no affiliate address is found
-}
-
+    async function getAffiliateAddressFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('affiliate');
+    }
 async function handleListFormSubmit(e) {
     e.preventDefault();
     const nftName = document.getElementById('nftName').value;
