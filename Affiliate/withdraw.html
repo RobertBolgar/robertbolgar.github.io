@@ -20,15 +20,14 @@
     </section>
 </div>
 
-<script src="script.js"></script> <!-- Link to the JavaScript file -->
-
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     
-const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
+    const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
+    
 const affiliateTrackerABI = [
 	{
 		"inputs": [
@@ -404,6 +403,8 @@ const affiliateTrackerABI = [
 	}
 ]; 
     
+   const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+
     const commissionInfo = document.getElementById('commissionInfo');
     const withdrawButton = document.getElementById('withdrawButton');
     const withdrawMessage = document.getElementById('withdrawMessage');
@@ -411,7 +412,7 @@ const affiliateTrackerABI = [
     // Function to get affiliate's commission information and display it
     async function displayCommissionInfo() {
         const affiliateAddress = await signer.getAddress();
-        const earnings = await affiliateTrackerContract.getAffiliateEarnings(affiliateAddress);
+        const earnings = await affiliateTrackerContract.affiliateEarnings(affiliateAddress);
         commissionInfo.innerHTML = `<p>Your earned commissions: ${ethers.utils.formatEther(earnings)} ETH</p>`;
     }
 
