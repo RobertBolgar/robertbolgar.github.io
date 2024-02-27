@@ -1261,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-	/ Function to retrieve and display newly listed NFT
+	// Function to retrieve and display newly listed NFT
     async function displayNewlyListedNFT() {
         // Get the total number of listed NFTs
         const totalListed = await nftContract.totalListed();
