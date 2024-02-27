@@ -1242,12 +1242,13 @@ async function handleListFormSubmit(e) {
     try {
         // Use the actual token URI here
         const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
-        const receipt = await txResponse.wait();
-        
-        // Update the listing status div with the details of the listed NFT
-        const tokenIdInput = document.getElementById('tokenId');
-        const tokenId = tokenIdInput.value; // Assuming the Token ID is obtained from an input field in the form
 
+        // Get the token ID from the contract event emitted after listing the NFT
+        const receipt = await txResponse.wait();
+        const events = await nftContract.queryFilter(nftContract.filters.NFTListed());
+        const tokenId = events[0]?.args?.tokenId;
+
+        // Update the listing status div with the details of the listed NFT
         const listingStatusDiv = document.getElementById('listingStatus');
         listingStatusDiv.innerHTML = `
             <p>NFT listed successfully!</p>
@@ -1256,7 +1257,7 @@ async function handleListFormSubmit(e) {
             <p>Description: ${nftDescription}</p>
             <p>Price: ${nftPriceBNB} BNB</p>
         `;
-        
+
         displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
     } catch (error) {
         displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
