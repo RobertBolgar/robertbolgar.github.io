@@ -1276,13 +1276,20 @@ async function getTotalListedWithFallback() {
     }
 }
 
-// Example implementation of getting total listed NFTs from contract events
 async function getTotalListedFromEvents() {
-    // Implement your logic to fetch the total listed NFTs from contract events
-    // This might involve scanning past events or listening for new events
-    // For demonstration purposes, returning a hardcoded value
-    return 100; // Replace with actual logic
+    try {
+        // Fetch events from the contract to determine the total listed NFTs
+        // This could involve querying past events or listening for new events
+        // For demonstration purposes, let's assume you have a contract method to retrieve the total listed NFTs
+        const totalListedBN = await nftContract.totalListed();
+        const totalListed = totalListedBN.toString(); // Convert BigNumber to string
+        return parseInt(totalListed); // Parse string to integer
+    } catch (error) {
+        console.error("Error retrieving total listed NFTs from events:", error.message);
+        throw error; // Propagate the error to the caller
+    }
 }
+
 
 	
 
