@@ -17,6 +17,9 @@ interface IAffiliateTracker {
     // Allows the owner to authorize a contract to call payCommission
     function allowContract(address _contract) external;
 
+    // Returns the amount of commissions earned by a specific affiliate
+    function getAffiliateEarnings(address affiliate) external view returns (uint256);
+
     // Events for significant actions within the contract
     event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
     event CommissionPaid(address indexed affiliate, uint256 amount, address nft, uint256 tokenId);
