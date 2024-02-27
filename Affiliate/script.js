@@ -1,4 +1,4 @@
-<script type="text/javascript">
+
 document.addEventListener('DOMContentLoaded', async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     await provider.send("eth_requestAccounts", []);
@@ -1286,4 +1286,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     buyForm.addEventListener('submit', handleBuyFormSubmit);
     withdrawButton.addEventListener('click', handleWithdrawButtonClick);
 });
-</script>
+
