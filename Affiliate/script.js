@@ -1214,16 +1214,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 ]; 
 
-   // Instantiate contracts and get form elements
-const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-const listForm = document.getElementById('listForm');
-const buyForm = document.getElementById('buyForm');
+  // Instantiate contracts
+            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+            const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
-// Function to extract affiliate address from URL
-async function getAffiliateAddressFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('affiliate');
-}
+            // Get form elements
+            const listForm = document.getElementById('listForm');
+            const buyForm = document.getElementById('buyForm');
+
+            // Function to extract affiliate address from URL
+            async function getAffiliateAddressFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('affiliate');
+            }
 
 // Handle form submission to list NFT for sale
 async function handleListFormSubmit(e) {
@@ -1267,20 +1270,27 @@ async function handleBuyFormSubmit(e) {
 }
 
 // Attach event listeners to form submissions
-listForm.addEventListener('submit', handleListFormSubmit);
-buyForm.addEventListener('submit', handleBuyFormSubmit);
+            listForm.addEventListener('submit', handleListFormSubmit);
+            buyForm.addEventListener('submit', handleBuyFormSubmit);
 
-// Function to display a success or error message
-function displayMessage(message, elementId) {
-    const messageElement = document.getElementById(elementId);
-    messageElement.innerText = message;
-    messageElement.classList.remove('error');
-}
+            // Function to display a success or error message
+            function displayMessage(message, elementId) {
+                const messageElement = document.getElementById(elementId);
+                messageElement.innerText = message;
+                messageElement.classList.remove('error');
+            }
 
-function displayErrorMessage(message, elementId) {
-    const messageElement = document.getElementById(elementId);
-    messageElement.innerText = message;
-    messageElement.classList.add('error');
-}
-
-
+            function displayErrorMessage(message, elementId) {
+                const messageElement = document.getElementById(elementId);
+                messageElement.innerText = message;
+                messageElement.classList.add('error');
+            }
+        } catch (error) {
+            console.error('Error initializing Metamask:', error);
+            // Handle errors here
+        }
+    } else {
+        console.error('Metamask not found.');
+        // Handle Metamask not found scenario here
+    }
+});
