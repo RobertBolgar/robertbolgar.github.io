@@ -1208,95 +1208,72 @@ document.addEventListener('DOMContentLoaded', async () => {
 	
 
     const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-    const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
-    const listForm = document.getElementById('listForm');
-    const buyForm = document.getElementById('buyForm');
-    const withdrawButton = document.getElementById('withdrawCommission');
+const listForm = document.getElementById('listForm');
+const buyForm = document.getElementById('buyForm');
+const withdrawButton = document.getElementById('withdrawCommission');
 
-    async function getAffiliateAddressFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('affiliate') || await nftContract.defaultAffiliate();
+async function getAffiliateAddressFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('affiliate') || await nftContract.defaultAffiliate();
+}
+
+async function handleListFormSubmit(e) {
+    e.preventDefault();
+    const nftName = document.getElementById('nftName').value;
+    const nftDescription = document.getElementById('nftDescription').value;
+    const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
+
+    // Convert BNB to Wei
+    const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
+
+    try {
+        const txResponse = await nftContract.listNFTForSale("tokenURI", nftPriceWei);
+        const receipt = await txResponse.wait();
+        displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
+    } catch (error) {
+        displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
+    }
+}
+
+async function handleBuyFormSubmit(e) {
+    e.preventDefault();
+    const tokenId = document.getElementById('tokenId').value;
+
+    let affiliateAddress = await getAffiliateAddressFromURL();
+    if (!affiliateAddress || affiliateAddress === '') {
+        affiliateAddress = await nftContract.defaultAffiliate();
     }
 
-    async function handleListFormSubmit(e) {
-        e.preventDefault();
-        const nftName = document.getElementById('nftName').value;
-        const nftDescription = document.getElementById('nftDescription').value;
-        const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
-
-        // Convert BNB to Wei
-        const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
-
-        try {
-            // Assuming listNFTForSale is a function in your contract for listing an NFT
-            // and it requires the price in Wei
-            const txResponse = await nftContract.listNFTForSale("tokenURI", nftPriceWei);
-            const receipt = await txResponse.wait();
-
-            // Optionally handle the receipt to get the tokenId if your contract emits it
-            displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
-        } catch (error) {
-            displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
-        }
+    try {
+        const nftPriceWei = await nftContract.tokenPrices(tokenId);
+        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
+        await tx.wait();
+        displayMessage('NFT purchased successfully!', 'buyMessage');
+    } catch (error) {
+        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
     }
+}
 
-    async function handleBuyFormSubmit(e) {
-        e.preventDefault();
-        const tokenId = document.getElementById('tokenId').value;
-        
-        let affiliateAddress = await getAffiliateAddressFromURL();
-        if (!affiliateAddress || affiliateAddress === '') {
-            affiliateAddress = await nftContract.defaultAffiliate();
-        }
+function displayMessage(message, elementId) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.innerText = message;
+    messageDiv.className = 'message-success';
+}
 
-        try {
-            const nftPriceWei = await nftContract.tokenPrices(tokenId);
-            const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-            await tx.wait();
-            displayMessage('NFT purchased successfully!', 'buyMessage');
-        } catch (error) {
-            displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-        }
-    }
-
-document.getElementById("listForm").addEventListener("submit", function(event) {
-  event.preventDefault(); // Prevent the form from submitting in the traditional way
-
-  // Retrieve the input values from the form
-  const nftName = document.getElementById("nftName").value;
-  const nftDescription = document.getElementById("nftDescription").value;
-  const nftPrice = document.getElementById("nftPrice").value;
-
-  // Log the NFT listing details to the console
-  console.log(`Listing NFT with Name: ${nftName}, Description: ${nftDescription}, Price: ${nftPrice} BNB`);
-
-  // Update the message div with the listing information
-  document.getElementById("listMessage").innerText = `NFT "${nftName}" listed for ${nftPrice} BNB`;
-
-  // Optionally, clear the form fields after listing
-  document.getElementById("nftName").value = '';
-  document.getElementById("nftDescription").value = '';
-  document.getElementById("nftPrice").value = '';
-
-
-
-
-    function displayMessage(message, elementId) {
-        const messageDiv = document.getElementById(elementId);
-        messageDiv.innerText = message;
-        messageDiv.className = 'message-success';
-    }
-
-    function displayErrorMessage(message, elementId) {
-        const messageDiv = document.getElementById(elementId);
-        messageDiv.innerText = message;
-        messageDiv.className = 'message-error';
-    }
-
+function displayErrorMessage(message, elementId) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.innerText = message;
+    messageDiv.className = 'message-error';
+}
 
 // Event listeners
-    listForm.addEventListener('submit', handleListFormSubmit);
-    buyForm.addEventListener('submit', handleBuyFormSubmit);
-    withdrawButton.addEventListener('click', handleWithdrawButtonClick);
+listForm.addEventListener('submit', handleListFormSubmit);
+buyForm.addEventListener('submit', handleBuyFormSubmit);
+withdrawButton.addEventListener('click', async (e) => {
+    // Your logic for handling the withdraw button click
+    // Placeholder for where you'd implement the function
+    console.log("Withdraw button clicked");
+    // Implement the actual logic here
 });
