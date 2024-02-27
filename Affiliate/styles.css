@@ -20,6 +20,11 @@ h1, h2 {
     margin-bottom: 20px;
 }
 
+/* Space between sections */
+section {
+    margin-bottom: 40px; /* Adjust the space between sections */
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -49,19 +54,20 @@ input[type="submit"]:hover, button:hover {
 }
 
 /* Loading and message div */
-#loading, #message {
+#loading, #message, #listMessage, #buyMessage, #withdrawMessage {
     text-align: center;
     margin-top: 20px;
 }
 
 /* Additional styling for message color set in JavaScript */
+.message-success, .message-error {
+    margin-top: 10px;
+}
 
 .message-success {
     color: #28a745;
-    margin-top: 10px;
 }
 
 .message-error {
     color: #dc3545;
-    margin-top: 10px;
 }
