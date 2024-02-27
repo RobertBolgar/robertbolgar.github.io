@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Get the signer
             const signer = provider.getSigner();
 
-            const nftMintContractAddress = "0x12dc6649Fa9E51eE6389b152A95Ec0af3352B335";
+            const nftMintContractAddress = "0xbAa506cd0915e604c147570114d11d5dDDC5453c";
             const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
 
     const nftMintABI = [
@@ -326,6 +326,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 		],
 		"name": "ApprovalForAll",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "uri",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"name": "NFTListed",
 		"type": "event"
 	},
 	{
@@ -839,7 +864,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"type": "function"
 	}
 ]; 
-    const affiliateTrackerABI = [
+    
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+const affiliateTrackerABI = [
 	{
 		"inputs": [
 			{
