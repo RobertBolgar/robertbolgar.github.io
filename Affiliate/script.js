@@ -1281,7 +1281,8 @@ document.getElementById('withdrawCommission').addEventListener('click', async (e
     } catch (error) {
         console.error('Error withdrawing commissions:', error);
         document.getElementById('withdrawMessage').innerText = 'Error withdrawing commissions. See console for details.';
-    }	
+    }
+});
 
 function displayMessage(message, elementId) {
     const messageDiv = document.getElementById(elementId);
@@ -1295,7 +1296,4 @@ function displayErrorMessage(message, elementId) {
     messageDiv.className = 'message-error';
 }
 
-});
-
-	});
 	
