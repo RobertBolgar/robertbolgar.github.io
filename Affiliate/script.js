@@ -1216,7 +1216,8 @@ const withdrawButton = document.getElementById('withdrawCommission');
 
 async function getAffiliateAddressFromURL() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('affiliate') || await nftContract.defaultAffiliate();
+    const affiliateAddress = params.get('affiliate');
+    return affiliateAddress || null; // Return null if no affiliate address is found
 }
 
 async function handleListFormSubmit(e) {
