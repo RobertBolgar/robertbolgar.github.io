@@ -1251,104 +1251,96 @@ const affiliateTrackerABI = [
 	}
 ]; 
 
- // Instantiate contracts
-            const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-            const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+// Instantiate contracts
+const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
-            // Get form elements
-            const listForm = document.getElementById('listForm');
-            const buyForm = document.getElementById('buyForm');
+// Get form elements
+const listForm = document.getElementById('listForm');
+const buyForm = document.getElementById('buyForm');
 
-            // Function to extract affiliate address from URL
-            async function getAffiliateAddressFromURL() {
-                const params = new URLSearchParams(window.location.search);
-                const affiliate = params.get('affiliate');
-                if (ethers.utils.isAddress(affiliate)) {
-                    return affiliate;
-                }
-                return '';
-            }
-
-            // Handle form submission to list NFT for sale
-            async function handleListFormSubmit(e) {
-                e.preventDefault();
-                const nftName = document.getElementById('nftName').value;
-                const nftDescription = document.getElementById('nftDescription').value;
-                const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
-                const nftTokenURI = document.getElementById('nftTokenURI').value; // Retrieve the token URI from the form
-
-                // Convert BNB to Wei for the transaction
-                const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
-
-                try {
-                    // Use the actual token URI here
-                    const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
-
-                    // Get the token ID from the contract event emitted after listing the NFT
-                    const receipt = await txResponse.wait();
-                    const eventFilter = nftContract.filters.NFTListed();
-                    const events = await nftContract.queryFilter(eventFilter);
-                    const tokenId = events[0]?.args?.tokenId;
-
-                    // Update the listing status div with the details of the listed NFT
-                    const listingStatusDiv = document.getElementById('listingStatus');
-                    listingStatusDiv.innerHTML = `
-                        <p>NFT listed successfully!</p>
-                        <p>Token ID: ${tokenId}</p>
-                        <p>NFT Name: ${nftName}</p>
-                        <p>Description: ${nftDescription}</p>
-                        <p>Price: ${nftPriceBNB} BNB</p>
-                    `;
-
-                    displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
-                } catch (error) {
-                    displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
-                }
-            }
-
-            // Handle form submission to buy NFT
-            async function handleBuyFormSubmit(e) {
-                e.preventDefault();
-                const tokenId = parseInt(document.getElementById('tokenId').value); // Parse token ID as integer
-
-                let affiliateAddress = await getAffiliateAddressFromURL();
-                if (!affiliateAddress) {
-                    affiliateAddress = await nftContract.defaultAffiliate();
-                }
-
-                try {
-                    const nftPriceWei = await nftContract.tokenPrices(tokenId);
-                    const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-                    await tx.wait();
-                    displayMessage('NFT purchased successfully!', 'buyMessage');
-                } catch (error) {
-                    displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-                }
-            }
-
-            // Attach event listeners to form submissions
-            listForm.addEventListener('submit', handleListFormSubmit);
-            buyForm.addEventListener('submit', handleBuyFormSubmit);
-
-            // Function to display a success or error message
-            function displayMessage(message, elementId) {
-                const messageElement = document.getElementById(elementId);
-                messageElement.innerText = message;
-                messageElement.classList.remove('error');
-            }
-
-            function displayErrorMessage(message, elementId) {
-                const messageElement = document.getElementById(elementId);
-                messageElement.innerText = message;
-                messageElement.classList.add('error');
-            }
-        } else {
-            console.error('Metamask not found.');
-            // Handle Metamask not found scenario here
-        }
-    } catch (error) {
-        console.error('Error initializing Metamask:', error);
-        // Handle errors here
+// Function to extract affiliate address from URL
+async function getAffiliateAddressFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const affiliate = params.get('affiliate');
+    if (ethers.utils.isAddress(affiliate)) {
+        return affiliate;
     }
-});
+    return '';
+}
+
+// Handle form submission to list NFT for sale
+async function handleListFormSubmit(e) {
+    e.preventDefault();
+    const nftName = document.getElementById('nftName').value;
+    const nftDescription = document.getElementById('nftDescription').value;
+    const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
+    const nftTokenURI = document.getElementById('nftTokenURI').value; // Retrieve the token URI from the form
+
+    // Convert BNB to Wei for the transaction
+    const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
+
+    try {
+        // Use the actual token URI here
+        const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
+
+        // Get the token ID from the contract event emitted after listing the NFT
+        const receipt = await txResponse.wait();
+        const eventFilter = nftContract.filters.NFTListed();
+        const events = await nftContract.queryFilter(eventFilter);
+        const tokenId = events[0]?.args?.tokenId;
+
+        // Update the listing status div with the details of the listed NFT
+        const listingStatusDiv = document.getElementById('listingStatus');
+        listingStatusDiv.innerHTML = `
+            <p>NFT listed successfully!</p>
+            <p>Token ID: ${tokenId}</p>
+            <p>NFT Name: ${nftName}</p>
+            <p>Description: ${nftDescription}</p>
+            <p>Price: ${nftPriceBNB} BNB</p>
+        `;
+
+        displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
+    } catch (error) {
+        displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
+    }
+}
+
+// Handle form submission to buy NFT
+async function handleBuyFormSubmit(e) {
+    e.preventDefault();
+    const tokenId = parseInt(document.getElementById('tokenId').value); // Parse token ID as integer
+
+    let affiliateAddress = await getAffiliateAddressFromURL();
+    if (!affiliateAddress) {
+        affiliateAddress = await nftContract.defaultAffiliate();
+    }
+
+    try {
+        const nftPriceWei = await nftContract.tokenPrices(tokenId);
+        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
+        await tx.wait();
+        displayMessage('NFT purchased successfully!', 'buyMessage');
+    } catch (error) {
+        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
+    }
+}
+
+// Attach event listeners to form submissions
+listForm.addEventListener('submit', handleListFormSubmit);
+buyForm.addEventListener('submit', handleBuyFormSubmit);
+
+// Function to display a success or error message
+function displayMessage(message, elementId) {
+    const messageElement = document.getElementById(elementId);
+    messageElement.innerText = message;
+    messageElement.classList.remove('error');
+}
+
+function displayErrorMessage(message, elementId) {
+    const messageElement = document.getElementById(elementId);
+    messageElement.innerText = message;
+    messageElement.classList.add('error');
+}
+
 
