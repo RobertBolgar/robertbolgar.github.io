@@ -1236,9 +1236,21 @@ async function handleListFormSubmit(e) {
     const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
     const nftTokenURI = document.getElementById('nftTokenURI').value; // Retrieve the token URI from the form
 
-	// Inside the handleListFormSubmit function after listing the NFT successfully
+// Inside the handleListFormSubmit function after listing the NFT successfully
+const tokenId = ...; // Get the Token ID of the listed NFT
+const nftName = document.getElementById('nftName').value;
+const nftDescription = document.getElementById('nftDescription').value;
+const nftPriceBNB = document.getElementById('nftPrice').value;
+
 const listingStatusDiv = document.getElementById('listingStatus');
-listingStatusDiv.innerHTML = '<p>NFT listed successfully!</p>';
+listingStatusDiv.innerHTML = `
+    <p>NFT listed successfully!</p>
+    <p>Token ID: ${tokenId}</p>
+    <p>NFT Name: ${nftName}</p>
+    <p>Description: ${nftDescription}</p>
+    <p>Price: ${nftPriceBNB} BNB</p>
+`;
+
 
     // Convert BNB to Wei for the transaction
     const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
