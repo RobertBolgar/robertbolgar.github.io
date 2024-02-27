@@ -1286,7 +1286,7 @@ async function getTotalListedFromEvents() {
 
 	
 
-	/ Function to display newly listed NFT using the total listed obtained with fallback
+	// Function to display newly listed NFT using the total listed obtained with fallback
 async function displayNewlyListedNFT() {
     const totalListed = await getTotalListedWithFallback();
 
