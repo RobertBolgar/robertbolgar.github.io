@@ -1293,4 +1293,4 @@ document.getElementById('withdrawCommission').addEventListener('click', async (e
         document.getElementById('withdrawMessage').innerText = 'Error withdrawing commissions. See console for details.';
     }
 });
-	
+	});
