@@ -1,15 +1,34 @@
 {
-  "name": "My Awesome NFT",
-  "description": "This is an example of an NFT metadata description.",
-  "image": "https://yourwebsite.com/nft-image.jpg",
+  "name": "Unique Art Piece #001",
+  "description": "An exclusive digital art piece from the Unique Art Collection. This piece embodies the essence of creativity and innovation.",
+  "image": "https://example.com/path/to/unique-art-001.png",
+  "external_url": "https://yourprojectwebsite.com/art/001",
   "attributes": [
     {
-      "trait_type": "Color",
-      "value": "Blue"
+      "trait_type": "Artist",
+      "value": "John Doe"
     },
     {
-      "trait_type": "Size",
-      "value": "Medium"
+      "trait_type": "Collection",
+      "value": "Unique Art Collection"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Rare"
+    },
+    {
+      "trait_type": "Creation Date",
+      "value": "2024-01-01"
+    },
+    {
+      "trait_type": "Affiliate Eligible",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Initial Price",
+      "value": "1 ETH"
     }
-  ]
+  ],
+  "seller_fee_basis_points": 100,
+  "fee_recipient": "0xYourFeeRecipientAddressHere"
 }
