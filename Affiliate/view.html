@@ -401,7 +401,7 @@ const affiliateTrackerABI = [
 	}
 ]; 
 
-    const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+   const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
 
     const commissionDetails = document.getElementById('commissionDetails');
 
@@ -409,7 +409,7 @@ const affiliateTrackerABI = [
     async function displayCommissionInfo() {
         try {
             const affiliateAddress = await signer.getAddress();
-            const earnings = await affiliateTrackerContract.getAffiliateEarnings(affiliateAddress);
+            const earnings = await affiliateTrackerContract.affiliateEarnings(affiliateAddress);
             commissionDetails.innerHTML = `<p>Your earned commissions: ${ethers.utils.formatEther(earnings)} ETH</p>`;
         } catch (error) {
             console.error("Error fetching commission information:", error);
