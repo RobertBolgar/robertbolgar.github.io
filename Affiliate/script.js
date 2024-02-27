@@ -24,16 +24,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function handleListFormSubmit(e) {
-        e.preventDefault();
-        const nftName = document.getElementById('nftName').value;
-        const nftDescription = document.getElementById('nftDescription').value;
-        const nftPrice = document.getElementById('nftPrice').value;
-        
-        // Assuming _tokenURIs mapping is publicly accessible or there's a function to set it
-        // and price setting functionality is implemented
-        // This is a placeholder for actual logic, as listing directly for sale might not be directly supported
-        displayMessage('Listing NFT action initiated...', 'listMessage');
+    e.preventDefault();
+    const nftName = document.getElementById('nftName').value;
+    const nftDescription = document.getElementById('nftDescription').value;
+    const nftPrice = document.getElementById('nftPrice').value;
+    // Assume mintNFT is a function in your smart contract that mints the NFT and returns the token ID
+    try {
+        // Call the minting function and wait for the transaction to complete
+        const txResponse = await nftContract.mintNFT(signer.getAddress(), "tokenURI", { /* transaction parameters */ });
+        const receipt = await txResponse.wait(); // Wait for transaction to be mined
+
+        // Extract the token ID from the transaction receipt (if an event is emitted)
+        // OR if the function directly returns the token ID, adjust accordingly
+        let tokenId;
+        for (const event of receipt.events) {
+            if (event.event === "NFTListed" /* Replace with your actual event name */) {
+                tokenId = event.args.tokenId.toString();
+                break;
+            }
+        }
+
+        // Display the token ID on the webpage
+        displayMessage(`NFT listed successfully with Token ID: ${tokenId}`, 'listMessage');
+    } catch (error) {
+        displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
     }
+}
+
 
     async function handleBuyFormSubmit(e) {
         e.preventDefault();
