@@ -1308,8 +1308,14 @@ async function displayNewlyListedNFT() {
         return; // Exit the function if error occurs
     }
 
+    // Ensure totalListed is a number
+    if (typeof totalListed !== 'number') {
+        console.error("Total listed NFTs is not a number:", totalListed);
+        return; // Exit the function if totalListed is not a number
+    }
+
     // Get the information of the newly listed NFT
-    const tokenId = totalListed.toNumber();
+    const tokenId = totalListed;
     const nftInfo = await nftContract.tokenURI(tokenId);
 
     // Update the webpage with the newly listed NFT information
@@ -1326,6 +1332,7 @@ async function displayNewlyListedNFT() {
     `;
     nftContainer.appendChild(nftElement);
 }
+
 
 // Call the function to display the newly listed NFT
 await displayNewlyListedNFT();
