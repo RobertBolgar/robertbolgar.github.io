@@ -1282,7 +1282,8 @@ async function handleListFormSubmit(e) {
 
         // Get the token ID from the contract event emitted after listing the NFT
         const receipt = await txResponse.wait();
-        const events = await nftContract.queryFilter(nftContract.filters.NFTListed());
+        const eventFilter = nftContract.filters.NFTListed();
+        const events = await nftContract.queryFilter(eventFilter);
         const tokenId = events[0]?.args?.tokenId;
 
         // Update the listing status div with the details of the listed NFT
@@ -1300,6 +1301,7 @@ async function handleListFormSubmit(e) {
         displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
     }
 }
+
 
 // Handle form submission to buy NFT
 async function handleBuyFormSubmit(e) {
