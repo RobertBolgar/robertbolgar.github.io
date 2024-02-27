@@ -1295,8 +1295,5 @@ function displayErrorMessage(message, elementId) {
     messageDiv.className = 'message-error';
 }
 
-// Event listeners
-listForm.addEventListener('submit', handleListFormSubmit);
-buyForm.addEventListener('submit', handleBuyFormSubmit);
-withdrawButton.addEventListener('click', handleWithdrawButtonClick);
+
 	
