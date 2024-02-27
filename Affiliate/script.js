@@ -1280,30 +1280,43 @@ async function handleListFormSubmit(e) {
     // Convert BNB to Wei for the transaction
     const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
 
-    try {
-        // Use the actual token URI here
-        const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
+try {
+    // Use the actual token URI here
+    const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
 
-        // Get the token ID from the contract event emitted after listing the NFT
-        const receipt = await txResponse.wait();
-        const eventFilter = nftContract.filters.NFTListed();
-        const events = await nftContract.queryFilter(eventFilter);
-        const tokenId = events[0]?.args?.tokenId;
+    // Wait for transaction receipt
+    const receipt = await txResponse.wait();
 
-        // Update the listing status div with the details of the listed NFT
-        const listingStatusDiv = document.getElementById('listingStatus');
-        listingStatusDiv.innerHTML = `
-            <p>NFT listed successfully!</p>
-            <p>Token ID: ${tokenId}</p>
-            <p>NFT Name: ${nftName}</p>
-            <p>Description: ${nftDescription}</p>
-            <p>Price: ${nftPriceBNB} BNB</p>
-        `;
+    // Retrieve all NFTListed events from the transaction receipt logs
+    const events = receipt.logs.map(log => nftContract.interface.parseLog(log))
+                                 .filter(parsedLog => parsedLog.name === 'NFTListed');
 
-        displayMessage(`NFT listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
-    } catch (error) {
-        displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
+    if (events.length > 0) {
+        // Extract token IDs from the events
+        const tokenIds = events.map(event => event.args.tokenId);
+
+        // Update UI or perform other actions with the token IDs
+        tokenIds.forEach(tokenId => {
+            // Update UI or perform other actions with the token ID
+            const listingStatusDiv = document.getElementById('listingStatus');
+            listingStatusDiv.innerHTML += `
+                <p>NFT listed successfully!</p>
+                <p>Token ID: ${tokenId}</p>
+                <p>NFT Name: ${nftName}</p>
+                <p>Description: ${nftDescription}</p>
+                <p>Price: ${nftPriceBNB} BNB</p>
+            `;
+        });
+
+        displayMessage(`NFTs listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
+    } else {
+        // Handle case where no NFTListed events were emitted
+        displayErrorMessage('No NFTListed events found in transaction logs', 'listMessage');
     }
+} catch (error) {
+    displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
+}
+
 }
 
 // Handle form submission to buy NFT
