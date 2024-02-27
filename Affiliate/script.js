@@ -1296,4 +1296,6 @@ function displayErrorMessage(message, elementId) {
 }
 
 });
+
+	});
 	
