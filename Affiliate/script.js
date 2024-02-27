@@ -6,10 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const nftMintContractAddress = "0x12dc6649Fa9E51eE6389b152A95Ec0af3352B335";
     const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
-const contractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
-const contractABI = [
-    // Your contract ABI goes here. This should include the withdrawAffiliateCommission function
-];
+
     const nftMintABI = [
 	{
 		"inputs": [
