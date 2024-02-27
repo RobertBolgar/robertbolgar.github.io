@@ -1299,4 +1299,3 @@ listForm.addEventListener('submit', handleListFormSubmit);
 buyForm.addEventListener('submit', handleBuyFormSubmit);
 withdrawButton.addEventListener('click', handleWithdrawButtonClick);
 	
-});
