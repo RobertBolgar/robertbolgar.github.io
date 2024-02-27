@@ -1275,5 +1275,32 @@ function displayErrorMessage(message, elementId) {
     messageDiv.innerText = message;
     messageDiv.className = 'message-error';
 }
+    try {
+        // Call the buyNFT function in the smart contract
+        const txResponse = await nftContract.buyNFT(tokenId, { value: ethers.utils.parseEther('0.1') });
+        // Wait for the transaction to be confirmed
+        const receipt = await txResponse.wait();
+        displayMessage(`NFT with token ID ${tokenId} bought successfully`, 'buyMessage');
+    } catch (error) {
+        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
+    }
+}
+
+// Attach event listeners to form submissions
+listForm.addEventListener('submit', handleListFormSubmit);
+buyForm.addEventListener('submit', handleBuyFormSubmit);
+
+// Function to display a success or error message
+function displayMessage(message, elementId) {
+    const messageElement = document.getElementById(elementId);
+    messageElement.innerText = message;
+    messageElement.classList.remove('error');
+}
+
+function displayErrorMessage(message, elementId) {
+    const messageElement = document.getElementById(elementId);
+    messageElement.innerText = message;
+    messageElement.classList.add('error');
+}
 
 
