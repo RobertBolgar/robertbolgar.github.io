@@ -1312,4 +1312,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     buyForm.addEventListener('submit', handleBuyFormSubmit);
     withdrawButton.addEventListener('click', handleWithdrawButtonClick);
 
-);
