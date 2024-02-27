@@ -1278,17 +1278,26 @@ async function getTotalListedWithFallback() {
 
 async function getTotalListedFromEvents() {
     try {
-        // Fetch events from the contract to determine the total listed NFTs
-        // This could involve querying past events or listening for new events
-        // For demonstration purposes, let's assume you have a contract method to retrieve the total listed NFTs
-        const totalListedBN = await nftContract.totalListed();
-        const totalListed = totalListedBN.toString(); // Convert BigNumber to string
-        return parseInt(totalListed); // Parse string to integer
+        // Specify the filter for the events you're interested in
+        // For example, if your contract emits a "NFTListed" event every time an NFT is listed
+        const filter = nftContract.filters.NFTListed();
+        
+        // Query the blockchain for past events using the filter
+        // You might need to specify additional parameters such as fromBlock and toBlock
+        // depending on your requirements and to optimize the query
+        const events = await nftContract.queryFilter(filter);
+        
+        // The total number of listed NFTs is simply the count of these events
+        // Assuming each event corresponds to a single NFT listing
+        const totalListed = events.length;
+
+        return totalListed;
     } catch (error) {
         console.error("Error retrieving total listed NFTs from events:", error.message);
         throw error; // Propagate the error to the caller
     }
 }
+
 
 
 async function displayNewlyListedNFT() {
