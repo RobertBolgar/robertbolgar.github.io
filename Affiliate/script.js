@@ -1260,6 +1260,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+
+	/ Function to retrieve and display newly listed NFT
+    async function displayNewlyListedNFT() {
+        // Get the total number of listed NFTs
+        const totalListed = await nftContract.totalListed();
+
+        // Get the information of the newly listed NFT
+        const tokenId = totalListed.toNumber();
+        const nftInfo = await nftContract.tokenURI(tokenId);
+
+        // Update the webpage with the newly listed NFT information
+        const nftContainer = document.getElementById('newlyListedNFT');
+        const nftElement = document.createElement('div');
+        nftElement.innerHTML = `
+            <h3>Newly Listed NFT</h3>
+            <p>Token ID: ${tokenId}</p>
+            <p>NFT Info: ${nftInfo}</p>
+        `;
+        nftContainer.appendChild(nftElement);
+    }
+
+    // Call the function to display the newly listed NFT
+    await displayNewlyListedNFT();
+});
+
+
     async function handleWithdrawButtonClick() {
         try {
             const tx = await affiliateTrackerContract.withdrawEarnings();
