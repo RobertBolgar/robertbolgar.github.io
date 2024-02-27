@@ -1308,8 +1308,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageDiv.className = 'message-error';
     }
 
-  // Event listeners
-listForm.addEventListener('submit', handleListFormSubmit);
-buyForm.addEventListener('submit', handleBuyFormSubmit);
-withdrawButton.addEventListener('click', handleWithdrawButtonClick);
-
+// Event listeners
+    listForm.addEventListener('submit', handleListFormSubmit);
+    buyForm.addEventListener('submit', handleBuyFormSubmit);
+    withdrawButton.addEventListener('click', handleWithdrawButtonClick);
+});
