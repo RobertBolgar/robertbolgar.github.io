@@ -1258,6 +1258,19 @@ async function handleBuyFormSubmit(e) {
     }
 }
 
+
+function displayMessage(message, elementId) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.innerText = message;
+    messageDiv.className = 'message-success';
+}
+
+function displayErrorMessage(message, elementId) {
+    const messageDiv = document.getElementById(elementId);
+    messageDiv.innerText = message;
+    messageDiv.className = 'message-error';
+}
+
 document.getElementById('withdrawCommission').addEventListener('click', async (e) => {
     e.preventDefault(); // Prevent any default button click behavior
 
@@ -1280,17 +1293,4 @@ document.getElementById('withdrawCommission').addEventListener('click', async (e
         document.getElementById('withdrawMessage').innerText = 'Error withdrawing commissions. See console for details.';
     }
 });
-
-function displayMessage(message, elementId) {
-    const messageDiv = document.getElementById(elementId);
-    messageDiv.innerText = message;
-    messageDiv.className = 'message-success';
-}
-
-function displayErrorMessage(message, elementId) {
-    const messageDiv = document.getElementById(elementId);
-    messageDiv.innerText = message;
-    messageDiv.className = 'message-error';
-}
-
 	
