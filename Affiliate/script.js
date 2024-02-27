@@ -1286,16 +1286,26 @@ async function getTotalListedFromEvents() {
 
 	
 
-	// Function to display newly listed NFT using the total listed obtained with fallback
 async function displayNewlyListedNFT() {
-    const totalListed = await getTotalListedWithFallback();
+    let totalListed;
+    try {
+        // Fallback to event-based approach
+        totalListed = await getTotalListedFromEvents();
+    } catch (error) {
+        console.error("Error retrieving totalListed:", error.message);
+        return; // Exit the function if error occurs
+    }
 
     // Get the information of the newly listed NFT
-    const tokenId = totalListed + 1; // Example: increment the total count for demonstration
-    const nftInfo = "Example NFT Info"; // Example: replace with actual retrieval logic
+    const tokenId = totalListed.toNumber();
+    const nftInfo = await nftContract.tokenURI(tokenId);
 
     // Update the webpage with the newly listed NFT information
     const nftContainer = document.getElementById('newlyListedNFT');
+    if (!nftContainer) {
+        console.error("Container element for displaying newly listed NFTs not found");
+        return; // Exit the function if container element is not found
+    }
     const nftElement = document.createElement('div');
     nftElement.innerHTML = `
         <h3>Newly Listed NFT</h3>
@@ -1305,7 +1315,7 @@ async function displayNewlyListedNFT() {
     nftContainer.appendChild(nftElement);
 }
 
-// Call the function to display the newly listed NFT using the fallback mechanism
+// Call the function to display the newly listed NFT
 await displayNewlyListedNFT();
 
 
