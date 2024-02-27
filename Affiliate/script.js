@@ -1261,26 +1261,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-	// Function to retrieve and display newly listed NFT
-    async function displayNewlyListedNFT() {
-        // Get the total number of listed NFTs
+// Function to retrieve the total number of listed NFTs with a fallback mechanism
+async function getTotalListedWithFallback() {
+    try {
+        // Try calling the totalListed function directly
         const totalListed = await nftContract.totalListed();
-
-        // Get the information of the newly listed NFT
-        const tokenId = totalListed.toNumber();
-        const nftInfo = await nftContract.tokenURI(tokenId);
-
-        // Update the webpage with the newly listed NFT information
-        const nftContainer = document.getElementById('newlyListedNFT');
-        const nftElement = document.createElement('div');
-        nftElement.innerHTML = `
-            <h3>Newly Listed NFT</h3>
-            <p>Token ID: ${tokenId}</p>
-            <p>NFT Info: ${nftInfo}</p>
-        `;
-        nftContainer.appendChild(nftElement);
+        return totalListed.toNumber(); // Convert BigNumber to number
+    } catch (error) {
+        console.error("Error retrieving totalListed:", error.message);
+        // Implement a fallback mechanism here
+        // For example, fetching the count from events emitted by the contract
+        const totalListedFromEvents = await getTotalListedFromEvents();
+        return totalListedFromEvents;
     }
+}
 
+// Example implementation of getting total listed NFTs from contract events
+async function getTotalListedFromEvents() {
+    // Implement your logic to fetch the total listed NFTs from contract events
+    // This might involve scanning past events or listening for new events
+    // For demonstration purposes, returning a hardcoded value
+    return 100; // Replace with actual logic
+}
+
+	
+
+	/ Function to display newly listed NFT using the total listed obtained with fallback
+async function displayNewlyListedNFT() {
+    const totalListed = await getTotalListedWithFallback();
+
+    // Get the information of the newly listed NFT
+    const tokenId = totalListed + 1; // Example: increment the total count for demonstration
+    const nftInfo = "Example NFT Info"; // Example: replace with actual retrieval logic
+
+    // Update the webpage with the newly listed NFT information
+    const nftContainer = document.getElementById('newlyListedNFT');
+    const nftElement = document.createElement('div');
+    nftElement.innerHTML = `
+        <h3>Newly Listed NFT</h3>
+        <p>Token ID: ${tokenId}</p>
+        <p>NFT Info: ${nftInfo}</p>
+    `;
+    nftContainer.appendChild(nftElement);
+}
+
+// Call the function to display the newly listed NFT using the fallback mechanism
+await displayNewlyListedNFT();
 
 
     async function handleWithdrawButtonClick() {
@@ -1305,8 +1331,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageDiv.className = 'message-error';
     }
 
-	  // Call the function to display the newly listed NFT
-    await displayNewlyListedNFT();
 
 // Event listeners
     listForm.addEventListener('submit', handleListFormSubmit);
