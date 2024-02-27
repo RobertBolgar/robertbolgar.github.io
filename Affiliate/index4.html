@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT & Affiliate Test Site</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+<div class="container">
+    <h1>NFT Minting & Affiliate Test Site</h1>
+    
+    <!-- Section 1: List NFT -->
+    <section id="listNFT">
+        <h2>List NFT for Sale</h2>
+        <form id="listForm">
+            <input type="text" id="nftName" placeholder="NFT Name" required>
+            <input type="text" id="nftDescription" placeholder="NFT Description" required>
+            <input type="number" id="nftPrice" placeholder="Price in ETH" required>
+            <button type="submit">List NFT</button>
+        </form>
+        <div id="listMessage"></div>
+    </section>
+    
+    <!-- Section 2: Buy NFT -->
+    <section id="buyNFT">
+        <h2>Buy NFT</h2>
+        <form id="buyForm">
+            <input type="number" id="tokenId" placeholder="Token ID" required>
+            <button type="submit">Buy NFT</button>
+        </form>
+        <div id="buyMessage"></div>
+    </section>
+    
+    <!-- Section 3: Affiliate Commission Withdrawal -->
+    <section id="affiliateWithdraw">
+        <h2>Affiliate Commission Withdrawal</h2>
+        <button id="withdrawCommission">Withdraw Commissions</button>
+        <div id="withdrawMessage"></div>
+    </section>
+</div>
+
+<script src="script.js"></script> <!-- Link to your JavaScript file -->
+</body>
+</html>
