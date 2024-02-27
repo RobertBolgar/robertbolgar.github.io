@@ -8,9 +8,6 @@ interface IAffiliateTracker {
     // Pays commission to an affiliate for a sale, restricted to allowed contracts
     function payCommission(address affiliate, uint256 salePrice, address nft, uint256 tokenId) external;
 
-    // Allows affiliates to withdraw their earned commissions
-    function withdrawEarnings() external;
-
     // Allows setting commission rates for affiliates, with restrictions
     function setCommissionRate(address affiliate, uint256 newRate) external;
 
@@ -20,10 +17,12 @@ interface IAffiliateTracker {
     // Returns the amount of commissions earned by a specific affiliate
     function getAffiliateEarnings(address affiliate) external view returns (uint256);
 
+    // Returns the earnings of a specific affiliate
+    function affiliateEarnings(address affiliate) external view returns (uint256);
+
     // Events for significant actions within the contract
     event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
     event CommissionPaid(address indexed affiliate, uint256 amount, address nft, uint256 tokenId);
-    event EarningsWithdrawn(address indexed affiliate, uint256 amount);
     event AffiliateCommissionRateUpdated(address indexed affiliate, uint256 newRate);
     event ContractAllowed(address contractAddress);
 }
