@@ -1214,16 +1214,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 	}
 ]; 
 
-    const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
-    const affiliateTrackerContract = new ethers.Contract(affiliateTrackerContractAddress, affiliateTrackerABI, signer);
+    // Instantiate contracts and get form elements
+const nftContract = new ethers.Contract(nftMintContractAddress, nftMintABI, signer);
+const listForm = document.getElementById('listForm');
+const buyForm = document.getElementById('buyForm');
 
-    const listForm = document.getElementById('listForm');
-    const buyForm = document.getElementById('buyForm');
+// Function to extract affiliate address from URL
+async function getAffiliateAddressFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('affiliate');
+}
 
-    async function getAffiliateAddressFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('affiliate');
-    }
+// Handle form submission to list NFT for sale
 async function handleListFormSubmit(e) {
     e.preventDefault();
     const nftName = document.getElementById('nftName').value;
@@ -1244,6 +1246,7 @@ async function handleListFormSubmit(e) {
     }
 }
 
+// Handle form submission to buy NFT
 async function handleBuyFormSubmit(e) {
     e.preventDefault();
     const tokenId = document.getElementById('tokenId').value;
@@ -1258,29 +1261,6 @@ async function handleBuyFormSubmit(e) {
         const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
         await tx.wait();
         displayMessage('NFT purchased successfully!', 'buyMessage');
-    } catch (error) {
-        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-    }
-}
-	
-
-function displayMessage(message, elementId) {
-    const messageDiv = document.getElementById(elementId);
-    messageDiv.innerText = message;
-    messageDiv.className = 'message-success';
-}
-
-function displayErrorMessage(message, elementId) {
-    const messageDiv = document.getElementById(elementId);
-    messageDiv.innerText = message;
-    messageDiv.className = 'message-error';
-}
-    try {
-        // Call the buyNFT function in the smart contract
-        const txResponse = await nftContract.buyNFT(tokenId, { value: ethers.utils.parseEther('0.1') });
-        // Wait for the transaction to be confirmed
-        const receipt = await txResponse.wait();
-        displayMessage(`NFT with token ID ${tokenId} bought successfully`, 'buyMessage');
     } catch (error) {
         displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
     }
