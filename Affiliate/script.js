@@ -1255,29 +1255,7 @@ async function handleBuyFormSubmit(e) {
         displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
     }
 }
-
-	document.getElementById('withdrawCommission').addEventListener('click', async (e) => {
-    e.preventDefault(); // Prevent any default button click behavior
-
-    console.log("Withdraw button clicked");
-
-    try {
-        // Assuming your contract has a function to withdraw affiliate commissions
-        // without requiring any arguments
-        const tx = await affiliateTrackerContract.withdrawAffiliateCommission();
-        console.log('Withdrawal transaction sent:', tx.hash);
-
-        // Wait for the transaction to be mined
-        await tx.wait();
-        console.log('Withdrawal transaction confirmed.');
-
-        // Update UI to reflect the withdrawal
-        document.getElementById('withdrawMessage').innerText = 'Commissions withdrawn successfully!';
-    } catch (error) {
-        console.error('Error withdrawing commissions:', error);
-        document.getElementById('withdrawMessage').innerText = 'Error withdrawing commissions. See console for details.';
-    }
-});
+	
 
 function displayMessage(message, elementId) {
     const messageDiv = document.getElementById(elementId);
