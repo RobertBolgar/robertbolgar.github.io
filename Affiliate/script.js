@@ -1295,9 +1295,6 @@ async function estimateTotalListedNFTs() {
 }
 
 
-
-	
-
 async function displayNewlyListedNFT() {
     let totalListed;
     try {
@@ -1332,6 +1329,7 @@ async function displayNewlyListedNFT() {
     `;
     nftContainer.appendChild(nftElement);
 }
+
 
 
 // Call the function to display the newly listed NFT
