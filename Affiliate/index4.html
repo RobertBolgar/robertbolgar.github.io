@@ -17,25 +17,23 @@
         <form id="listForm">
             <input type="text" id="nftName" placeholder="NFT Name" required>
             <input type="text" id="nftDescription" placeholder="NFT Description" required>
-            <input type="text" id="nftPrice" placeholder="Price in ETH" required>
+            <input type="text" id="nftPrice" placeholder="Price in BNB" required> <!-- Updated placeholder to BNB -->
             <button type="submit">List NFT</button>
         </form>
         <div id="listMessage" class="message"></div>
     </section>
 
-<!-- Section for displaying listed NFTs -->
-<section id="listedNFTs">
-    <h2>Listed NFTs</h2>
-    <div id="nftListings"></div>
-</section>
-    
+    <!-- Section for displaying listed NFTs -->
+    <section id="listedNFTs">
+        <h2>Listed NFTs</h2>
+        <div id="nftListings"></div>
+    </section>
     
     <!-- Section 2: Buy NFT -->
     <section id="buyNFT">
         <h2>Buy NFT</h2>
         <form id="buyForm">
             <input type="number" id="tokenId" placeholder="Token ID" required>
-            <!-- Affiliate Address is now handled within the script and remains hidden -->
             <button type="submit">Buy NFT</button>
         </form>
         <div id="buyMessage" class="message"></div>
