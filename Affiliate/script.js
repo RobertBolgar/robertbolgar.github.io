@@ -1326,6 +1326,7 @@ async function handleBuyFormSubmit(e) {
 
     let affiliateAddress = await getAffiliateAddressFromURL();
     if (!affiliateAddress) {
+        // Retrieve the default affiliate address from the contract
         affiliateAddress = await nftContract.defaultAffiliate();
     }
 
@@ -1338,6 +1339,7 @@ async function handleBuyFormSubmit(e) {
         displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
     }
 }
+
 
 // Attach event listeners to form submissions
 listForm.addEventListener('submit', handleListFormSubmit);
