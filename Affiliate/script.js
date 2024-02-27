@@ -1260,95 +1260,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+document.getElementById("listForm").addEventListener("submit", function(event) {
+  event.preventDefault(); // Prevent the form from submitting in the traditional way
 
-// Function to retrieve the total number of listed NFTs with a fallback mechanism
-async function getTotalListedWithFallback() {
-    try {
-        // Try calling the totalListed function directly
-        const totalListed = await nftContract.totalListed();
-        return totalListed.toNumber(); // Convert BigNumber to number
-    } catch (error) {
-        console.error("Error retrieving totalListed:", error.message);
-        // Implement a fallback mechanism here
-        // For example, fetching the count from events emitted by the contract
-        const totalListedFromEvents = await getTotalListedFromEvents();
-        return totalListedFromEvents;
-    }
-}
+  // Retrieve the input values from the form
+  const nftName = document.getElementById("nftName").value;
+  const nftDescription = document.getElementById("nftDescription").value;
+  const nftPrice = document.getElementById("nftPrice").value;
 
-async function getTotalListedFromEvents() {
-    try {
-        // Specify the filter for the events you're interested in
-        // For example, if your contract emits a "NFTListed" event every time an NFT is listed
-        const filter = nftContract.filters.NFTListed();
-        
-        // Query the blockchain for past events using the filter
-        // You might need to specify additional parameters such as fromBlock and toBlock
-        // depending on your requirements and to optimize the query
-        const events = await nftContract.queryFilter(filter);
-        
-        // The total number of listed NFTs is simply the count of these events
-        // Assuming each event corresponds to a single NFT listing
-        const totalListed = events.length;
+  // Log the NFT listing details to the console
+  console.log(`Listing NFT with Name: ${nftName}, Description: ${nftDescription}, Price: ${nftPrice} BNB`);
 
-        return totalListed;
-    } catch (error) {
-        console.error("Error retrieving total listed NFTs from events:", error.message);
-        throw error; // Propagate the error to the caller
-    }
-}
+  // Update the message div with the listing information
+  document.getElementById("listMessage").innerText = `NFT "${nftName}" listed for ${nftPrice} BNB`;
+
+  // Optionally, clear the form fields after listing
+  document.getElementById("nftName").value = '';
+  document.getElementById("nftDescription").value = '';
+  document.getElementById("nftPrice").value = '';
 
 
 
-async function displayNewlyListedNFT() {
-    let totalListed;
-    try {
-        // Fallback to event-based approach
-        totalListed = await getTotalListedFromEvents();
-    } catch (error) {
-        console.error("Error retrieving totalListed:", error.message);
-        return; // Exit the function if error occurs
-    }
-
-    // Ensure totalListed is a number
-    if (typeof totalListed !== 'number') {
-        console.error("Total listed NFTs is not a number:", totalListed);
-        return; // Exit the function if totalListed is not a number
-    }
-
-    // Get the information of the newly listed NFT
-    const tokenId = totalListed;
-    const nftInfo = await nftContract.tokenURI(tokenId);
-
-    // Update the webpage with the newly listed NFT information
-    const nftContainer = document.getElementById('newlyListedNFT');
-    if (!nftContainer) {
-        console.error("Container element for displaying newly listed NFTs not found");
-        return; // Exit the function if container element is not found
-    }
-    const nftElement = document.createElement('div');
-    nftElement.innerHTML = `
-        <h3>Newly Listed NFT</h3>
-        <p>Token ID: ${tokenId}</p>
-        <p>NFT Info: ${nftInfo}</p>
-    `;
-    nftContainer.appendChild(nftElement);
-}
-
-
-
-// Call the function to display the newly listed NFT
-await displayNewlyListedNFT();
-	
-    async function handleWithdrawButtonClick() {
-        try {
-            const tx = await affiliateTrackerContract.withdrawEarnings();
-            await tx.wait();
-            displayMessage('Commission withdrawn successfully!', 'withdrawMessage');
-        } catch (error) {
-            displayErrorMessage(`Error withdrawing commission: ${error.message}`, 'withdrawMessage');
-        }
-    }
 
     function displayMessage(message, elementId) {
         const messageDiv = document.getElementById(elementId);
