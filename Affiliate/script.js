@@ -1281,9 +1281,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         nftContainer.appendChild(nftElement);
     }
 
-    // Call the function to display the newly listed NFT
-    await displayNewlyListedNFT();
-});
 
 
     async function handleWithdrawButtonClick() {
@@ -1307,6 +1304,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageDiv.innerText = message;
         messageDiv.className = 'message-error';
     }
+
+	  // Call the function to display the newly listed NFT
+    await displayNewlyListedNFT();
 
 // Event listeners
     listForm.addEventListener('submit', handleListFormSubmit);
