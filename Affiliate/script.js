@@ -1276,4 +1276,4 @@ withdrawButton.addEventListener('click', async (e) => {
     // Placeholder for where you'd implement the function
     console.log("Withdraw button clicked");
     // Implement the actual logic here
-});}
+});
