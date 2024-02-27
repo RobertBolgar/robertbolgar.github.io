@@ -28,42 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-    const affiliateTrackerContract = new ethers.Contract(
-        affiliateTrackerAddress, // Use the contract address defined in script.js
-        [ // Contract ABI
-            // Define the ABI methods here
-            {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "affiliate",
-                        "type": "address"
-                    }
-                ],
-                "name": "getAffiliateEarnings",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [],
-                "name": "withdrawEarnings",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ],
-        signer
-    );
-
+    
     const commissionInfo = document.getElementById('commissionInfo');
     const withdrawButton = document.getElementById('withdrawButton');
     const withdrawMessage = document.getElementById('withdrawMessage');
