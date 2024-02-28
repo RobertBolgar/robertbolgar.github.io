@@ -1,4 +1,3 @@
-// Assuming the ethers.js library is included in your HTML file
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize connection to Ethereum
