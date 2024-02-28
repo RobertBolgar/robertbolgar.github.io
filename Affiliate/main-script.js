@@ -1470,5 +1470,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error initializing Metamask:', error);
         // Handle errors here
     }
-});
+}); 
 		
