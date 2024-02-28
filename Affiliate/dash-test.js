@@ -65,7 +65,7 @@ async function approveUser(userAddress) {
 
 
 
-    // Admin function to approve an affiliate
+    // Admin function to approve and register an affiliate
 async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
     try {
         // Validate inputs
@@ -88,6 +88,7 @@ async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
         console.error("Error approving and registering affiliate:", error.message);
     }
 }
+
 
 
 
