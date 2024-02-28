@@ -306,11 +306,21 @@ async function setCommissionRate(newRate) {
         await revokeAffiliate(affiliateAddress);
     });
 
-    // Event listener for the "Set Commission Rate" button click event
+   // Event listener for the "Set Commission Rate" button click event
     document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
-        const newRate = document.getElementById('commissionRate').value;
-        await setCommissionRate(newRate);
+        const commissionRateInput = document.getElementById('commissionRate');
+        const newRate = commissionRateInput.value.trim(); // Trim any leading or trailing whitespace
+
+    // Validate if the input is a valid number
+    if (isNaN(newRate) || newRate === '' || newRate < 0 || newRate > 100) {
+        alert("Please enter a valid commission rate between 0 and 100.");
+        return;
+    }
+
+    // Call the setCommissionRate function with the validated rate
+    await setCommissionRate(newRate);
     });
+
 
     // Event listener for the "Set AffiliateTracker Address" button click event
     document.getElementById('setAffiliateTrackerAddressBtn').addEventListener('click', async () => {
