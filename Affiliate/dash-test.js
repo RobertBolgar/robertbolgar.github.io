@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Contract addresses
     const nftContractAddress = "0xd940B79622e07E8CC54DEB37037bD35c18387Dc2";
-    const affiliateContractAddress = "0x17B4166EA43F770Bd6ff36D68E6A9De4D4d2Ff42";
+    const affiliateContractAddress = "0x761c5c5409D80D042242344f075B3B570c51Eb70";
 
     // Contract instances
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
