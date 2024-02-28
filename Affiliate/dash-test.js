@@ -65,22 +65,27 @@ async function approveUser(userAddress) {
 
 
 
-    async function approveAffiliate(affiliateAddress) {
-        try {
-            // Validate affiliate input
-            if (!ethers.utils.isAddress(affiliateAddress)) {
-                throw new Error("Invalid affiliate address");
-            }
-
-            // Implement the logic to approve an affiliate
-            // ...
-
-            // Provide feedback to the user
-            console.log("Affiliate approved successfully");
-        } catch (error) {
-            console.error("Error approving affiliate:", error.message);
+    // Admin function to approve an affiliate
+async function approveAffiliate(affiliateAddress) {
+    try {
+        // Validate affiliate input
+        if (!ethers.utils.isAddress(affiliateAddress)) {
+            throw new Error("Invalid affiliate address");
         }
+
+        // Call the approveAffiliate function from the contract
+        const tx = await affiliateContract.approveAffiliate(affiliateAddress);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Affiliate approved successfully");
+    } catch (error) {
+        console.error("Error approving affiliate:", error.message);
     }
+}
+
 
     async function revokeAffiliate(affiliateAddress) {
         try {
@@ -229,6 +234,14 @@ async function approveUser(userAddress) {
         const userAddress = document.getElementById('userAddressToRemove').value;
         await revokeUser(userAddress);
     });
+
+    
+    // Add an event listener for the "Approve Affiliate" button click event
+    document.getElementById('approveAffiliateBtn').addEventListener('click', async () => {
+        const affiliateAddress = document.getElementById('affiliateAddressToApprove').value;
+        await approveAffiliate(affiliateAddress);
+    });
+
 
 
 
