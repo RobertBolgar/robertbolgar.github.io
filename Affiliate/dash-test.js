@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-   // Fetch ABI files asynchronously
+    // Fetch ABI files asynchronously
     const mintAbiResponse = await fetch('./mint_abi.json');
     const mintAbi = await mintAbiResponse.json();
 
@@ -19,216 +19,227 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
-// Function to set the AffiliateTracker contract address
-async function setAffiliateTrackerAddress(address) {
-    try {
-        // Call the setAffiliateTrackerAddress function from the NFTmint contract
-        const tx = await nftContract.setAffiliateTrackerAddress(address);
+    // Function to set the AffiliateTracker contract address
+    async function setAffiliateTrackerAddress(address) {
+        try {
+            // Call the setAffiliateTrackerAddress function from the NFTmint contract
+            const tx = await nftContract.setAffiliateTrackerAddress(address);
 
-        // Wait for the transaction to be confirmed
-        await tx.wait();
+            // Wait for the transaction to be confirmed
+            await tx.wait();
 
-        // Provide feedback to the user
-        console.log("AffiliateTracker address set successfully");
-    } catch (error) {
-        console.error("Error setting AffiliateTracker address:", error.message);
-    }
-}
-
-    
-// Admin function to approve a user
-async function approveUser(userAddress) {
-    try {
-        // Validate user input
-        if (!ethers.utils.isAddress(userAddress)) {
-            throw new Error("Invalid user address");
+            // Provide feedback to the user
+            console.log("AffiliateTracker address set successfully");
+        } catch (error) {
+            console.error("Error setting AffiliateTracker address:", error.message);
         }
-
-        // Call the approveUser function from the contract
-        const tx = await nftContract.approveUser(userAddress);
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("User approved successfully");
-    } catch (error) {
-        console.error("Error approving user:", error.message);
     }
-}
 
-
-// Admin function to revoke a user
-   async function revokeUser(userAddress) {
-    try {
-        // Validate user input
-        if (!ethers.utils.isAddress(userAddress)) {
-            throw new Error("Invalid user address");
-        }
-
-        // Call the contract function to revoke the user
-        const tx = await nftContract.revokeUser(userAddress);
-
-        // Wait for the transaction to be mined
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("User revoked successfully");
-    } catch (error) {
-        console.error("Error revoking user:", error.message);
-    }
-}
-
-
-
-    // Admin function to approve and register an affiliate
-async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
-    try {
-        // Validate inputs
-        if (!ethers.utils.isAddress(affiliateAddress)) {
-            throw new Error("Invalid affiliate address");
-        }
-        if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
-            throw new Error("Invalid commission rate");
-        }
-
-        // Call the approveAndRegisterAffiliate function from the NFTmint contract
-        const tx = await nftContract.approveAndRegisterAffiliate(affiliateAddress, commissionRate);
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Affiliate approved and registered successfully");
-    } catch (error) {
-        console.error("Error approving and registering affiliate:", error.message);
-    }
-}
-
-
-
-
-    // Function to revoke an affiliate
-async function revokeAffiliate(affiliateAddress) {
-    try {
-        // Validate affiliate input
-        if (!ethers.utils.isAddress(affiliateAddress)) {
-            throw new Error("Invalid affiliate address");
-        }
-
-        // Call the revokeAffiliate function from the NFTmint contract
-        const tx = await nftContract.revokeAffiliate(affiliateAddress);
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Affiliate revoked successfully");
-    } catch (error) {
-        console.error("Error revoking affiliate:", error.message);
-    }
-}
-
-
-  // Function to set commission rate using the NFTmint contract
-async function setCommissionRate(newRate) {
-    try {
-        // Log the new rate value for debugging
-        console.log("New rate value:", newRate);
-
-        // Validate commission rate input
-        if (isNaN(newRate) || newRate < 0 || newRate > 100) {
-            throw new Error("Invalid commission rate. Please provide a value between 0 and 100.");
-        }
-
-        // Convert commission rate to BigNumber if necessary
-        const commissionRate = ethers.utils.parseUnits(newRate.toString(), 0); // Assuming rate is passed as a percentage
-
-        // Log the parsed commission rate for debugging
-        console.log("Parsed commission rate:", commissionRate.toString());
-
-        // Call the setCommissionRate function from the NFTmint contract
-        const tx = await nftContract.setCommissionRate(commissionRate);
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Commission rate set successfully");
-    } catch (error) {
-        console.error("Error setting commission rate:", error.message);
-    }
-}
-
-
-// Function to fetch the status of direct payments
-async function fetchDirectPaymentStatus() {
-    try {
-        // Call a function to check if direct payments are enabled or disabled
-        const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
-
-        // Update the content of the element based on the status
-        const directPaymentStatusElement = document.getElementById('directPaymentStatus');
-        directPaymentStatusElement.textContent = `Direct Payment Status: ${isDirectPaymentEnabled ? 'Enabled' : 'Disabled'}`;
-    } catch (error) {
-        console.error("Error fetching direct payment status:", error.message);
-    }
-}
-
-
-
-   
-    async function toggleDirectPayment() {
-    try {
-        // Call the toggleDirectPayment function from the contract
-        const tx = await affiliateTracker.toggleDirectPayment();
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Direct payment toggled successfully");
-    } catch (error) {
-        console.error("Error toggling direct payment:", error.message);
-    }
-} 
-    
-  /*
-    async function toggleDirectPaymentForUser(userAddress) {
+    // Admin function to approve a user
+    async function approveUser(userAddress) {
         try {
             // Validate user input
             if (!ethers.utils.isAddress(userAddress)) {
                 throw new Error("Invalid user address");
             }
 
-            // Implement the logic to toggle direct payment for a user
-            // ...
+            // Call the approveUser function from the contract
+            const tx = await nftContract.approveUser(userAddress);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
 
             // Provide feedback to the user
-            console.log("Direct payment toggled successfully for user");
+            console.log("User approved successfully");
         } catch (error) {
-            console.error("Error toggling direct payment for user:", error.message);
-        }
-    } */
-
-    async function setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate) {
-        try {
-            // Validate inputs
-            if (!ethers.utils.isAddress(defaultAffiliateAddress) || isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
-                throw new Error("Invalid inputs");
-            }
-
-            // Implement the logic to set default affiliate with rate
-            // ...
-
-            // Provide feedback to the user
-            console.log("Default affiliate set with rate successfully");
-        } catch (error) {
-            console.error("Error setting default affiliate with rate:", error.message);
+            console.error("Error approving user:", error.message);
         }
     }
 
-    // JavaScript function to handle Withdraw Funds button click event
+    // Admin function to revoke a user
+    async function revokeUser(userAddress) {
+        try {
+            // Validate user input
+            if (!ethers.utils.isAddress(userAddress)) {
+                throw new Error("Invalid user address");
+            }
+
+            // Call the contract function to revoke the user
+            const tx = await nftContract.revokeUser(userAddress);
+
+            // Wait for the transaction to be mined
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("User revoked successfully");
+        } catch (error) {
+            console.error("Error revoking user:", error.message);
+        }
+    }
+
+    // Admin function to approve and register an affiliate
+    async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
+        try {
+            // Validate inputs
+            if (!ethers.utils.isAddress(affiliateAddress)) {
+                throw new Error("Invalid affiliate address");
+            }
+            if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+                throw new Error("Invalid commission rate");
+            }
+
+            // Call the approveAndRegisterAffiliate function from the NFTmint contract
+            const tx = await nftContract.approveAndRegisterAffiliate(affiliateAddress, commissionRate);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Affiliate approved and registered successfully");
+        } catch (error) {
+            console.error("Error approving and registering affiliate:", error.message);
+        }
+    }
+
+    // Function to revoke an affiliate
+    async function revokeAffiliate(affiliateAddress) {
+        try {
+            // Validate affiliate input
+            if (!ethers.utils.isAddress(affiliateAddress)) {
+                throw new Error("Invalid affiliate address");
+            }
+
+            // Call the revokeAffiliate function from the NFTmint contract
+            const tx = await nftContract.revokeAffiliate(affiliateAddress);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Affiliate revoked successfully");
+        } catch (error) {
+            console.error("Error revoking affiliate:", error.message);
+        }
+    }
+
+    // Function to set commission rate using the NFTmint contract
+    async function setCommissionRate(newRate) {
+        try {
+            // Log the new rate value for debugging
+            console.log("New rate value:", newRate);
+
+            // Validate commission rate input
+            if (isNaN(newRate) || newRate < 0 || newRate > 100) {
+                throw new Error("Invalid commission rate. Please provide a value between 0 and 100.");
+            }
+
+            // Convert commission rate to BigNumber if necessary
+            const commissionRate = ethers.utils.parseUnits(newRate.toString(), 0); // Assuming rate is passed as a percentage
+
+            // Log the parsed commission rate for debugging
+            console.log("Parsed commission rate:", commissionRate.toString());
+
+            // Call the setCommissionRate function from the NFTmint contract
+            const tx = await nftContract.setCommissionRate(commissionRate);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Commission rate set successfully");
+        } catch (error) {
+            console.error("Error setting commission rate:", error.message);
+        }
+    }
+
+    // Function to fetch the status of direct payments
+    async function fetchDirectPaymentStatus() {
+        try {
+            // Call a function to check if direct payments are enabled or disabled
+            const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
+
+            // Update the content of the element based on the status
+            const directPaymentStatusElement = document.getElementById('directPaymentStatus');
+            directPaymentStatusElement.textContent = `Direct Payment Status: ${isDirectPaymentEnabled ? 'Enabled' : 'Disabled'}`;
+        } catch (error) {
+            console.error("Error fetching direct payment status:", error.message);
+        }
+    }
+
+    // Function to toggle direct payment
+    async function toggleDirectPayment() {
+        try {
+            // Call the toggleDirectPayment function from the contract
+            const tx = await affiliateContract.toggleDirectPayment();
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Direct payment toggled successfully");
+        } catch (error) {
+            console.error("Error toggling direct payment:", error.message);
+        }
+    }
+
+    // Event listeners for admin actions
+
+    // Event listener for the "Approve User" button click event
+    document.getElementById('approveUserBtn').addEventListener('click', async () => {
+        const userAddress = document.getElementById('userAddress').value;
+        await approveUser(userAddress);
+    });
+
+    // Event listener for the "Revoke User" button click event
+    document.getElementById('revokeUserBtn').addEventListener('click', async () => {
+        const userAddress = document.getElementById('userAddressToRemove').value;
+        await revokeUser(userAddress);
+    });
+
+    // Event listener for the "Approve and Register Affiliate" button click event
+    document.getElementById('approveAndRegisterAffiliateBtn').addEventListener('click', async () => {
+        const affiliateAddress = document.getElementById('affiliateAddress').value;
+        const commissionRate = document.getElementById('commissionRate').value;
+        await approveAndRegisterAffiliate(affiliateAddress, commissionRate);
+    });
+
+    // Event listener for the "Revoke Affiliate" button click event
+    document.getElementById('revokeAffiliateBtn').addEventListener('click', async () => {
+        const affiliateAddress = document.getElementById('affiliateAddress').value;
+        await revokeAffiliate(affiliateAddress);
+    });
+
+    // Event listener for the "Set Commission Rate" button click event
+    document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
+        const newRateInput = document.getElementById('newCommissionRate').value.trim();
+        if (newRateInput === "") {
+            console.error("Error setting commission rate: Commission rate cannot be empty.");
+            return;
+        }
+        const newRate = parseFloat(newRateInput);
+        await setCommissionRate(newRate);
+    });
+
+    // Event listener for the "Set AffiliateTracker Address" button click event
+    document.getElementById('setAffiliateTrackerAddressBtn').addEventListener('click', async () => {
+        const affiliateTrackerAddress = document.getElementById('affiliateTrackerAddress').value;
+        await setAffiliateTrackerAddress(affiliateTrackerAddress);
+    });
+
+    // Event listener for the "Toggle Direct Payment" button click event
+    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
+        await toggleDirectPayment();
+        await fetchDirectPaymentStatus();
+    });
+
+    // Event listener for the "Fetch Direct Payment Status" button click event
+    document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click', async () => {
+        await fetchDirectPaymentStatus();
+    });
+
+    // Additional event listeners and functions
+
+    // Function to withdraw funds
     async function withdrawFunds() {
         try {
             // Implement the logic to withdraw funds
@@ -241,7 +252,7 @@ async function fetchDirectPaymentStatus() {
         }
     }
 
-    // JavaScript function to handle View Contract Balance button click event
+    // Function to view contract balance
     async function viewContractBalance() {
         try {
             // Implement the logic to view contract balance
@@ -254,7 +265,7 @@ async function fetchDirectPaymentStatus() {
         }
     }
 
-    // JavaScript function to trigger emergency stop
+    // Function to trigger emergency stop
     async function triggerEmergencyStop() {
         try {
             // Implement the logic to trigger emergency stop
@@ -280,98 +291,26 @@ async function fetchDirectPaymentStatus() {
         }
     }
 
-    
-    // Add event listeners admin actions
+    // Additional event listeners for new buttons
 
-    // Event listener for the approveUser button
-    document.getElementById('approveUserBtn').addEventListener('click', async () => {
-        const userAddress = document.getElementById('userAddress').value;
-        await approveUser(userAddress);
+    // Event listener for the "Withdraw Funds" button click event
+    document.getElementById('withdrawFundsBtn').addEventListener('click', async () => {
+        await withdrawFunds();
     });
 
-
-       // Add an event listener for the "Revoke User" button click event
-    document.getElementById('revokeUserBtn').addEventListener('click', async () => {
-        const userAddress = document.getElementById('userAddressToRemove').value;
-        await revokeUser(userAddress);
+    // Event listener for the "View Contract Balance" button click event
+    document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
+        await viewContractBalance();
     });
 
-    
-    // Event listener for the "Approve and Register Affiliate" button click event
-    document.getElementById('approveAndRegisterAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddress').value;
-        const commissionRate = document.getElementById('commissionRate').value;
-        await approveAndRegisterAffiliate(affiliateAddress, commissionRate);
+    // Event listener for the "Trigger Emergency Stop" button click event
+    document.getElementById('triggerEmergencyStopBtn').addEventListener('click', async () => {
+        await triggerEmergencyStop();
     });
 
-    // Event listener for the "Revoke Affiliate" button click event
-    document.getElementById('revokeAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddress').value;
-        await revokeAffiliate(affiliateAddress);
+    // Event listener for the "Fetch Sales" button click event
+    document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
+        await fetchSales();
     });
-
-    
-    
-    document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
-    // Get the new commission rate from the input field
-    const newRateInput = document.getElementById('newCommissionRate').value.trim(); // Trim to remove leading/trailing whitespace
-    console.log("New rate input:", newRateInput);
-
-    // Log the length of the input value for further investigation
-    console.log("Length of input:", newRateInput.length);
-
-    // Check if the input is empty
-    if (newRateInput === "") {
-        console.error("Error setting commission rate: Commission rate cannot be empty.");
-        return; // Exit function early
-    }
-
-    // Parse the input value as a floating-point number
-    const newRate = parseFloat(newRateInput);
-    console.log("Parsed rate:", newRate);
-
-    // Call the setCommissionRate function with the new rate
-    await setCommissionRate(newRate);
-    });
-
-
-
-
-    // Event listener for the "Set AffiliateTracker Address" button click event
-    document.getElementById('setAffiliateTrackerAddressBtn').addEventListener('click', async () => {
-        const affiliateTrackerAddress = document.getElementById('affiliateTrackerAddress').value;
-        await setAffiliateTrackerAddress(affiliateTrackerAddress);
-    });
-
-   // Event listener for the "Toggle Direct Payment" button click event
-    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
-    try {
-        // Call the fetchDirectPaymentStatus function when the button is clicked
-        await fetchDirectPaymentStatus();
-    } catch (error) {
-        console.error("Error toggling direct payment:", error.message);
-    }
-    });
-
-    // Event listener for the "Fetch Direct Payment Status" button click event
-document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click', async () => {
-    await fetchDirectPaymentStatus();
-});
-
-   // Event listener for the "Toggle Direct Payment" button
-    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
-        try {
-            // Toggle the direct payment status when the button is clicked
-            await affiliateContract.toggleDirectPayment();
-
-            // Fetch and update the status after toggling
-            await fetchDirectPaymentStatus();
-        } catch (error) {
-            console.error("Error toggling direct payment:", error.message);
-        }
-    }); 
-
-
-
 
 });
