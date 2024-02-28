@@ -133,6 +133,24 @@ async function viewContractBalance() {
     }
 }
 
+    // JavaScript function to trigger emergency stop
+async function triggerEmergencyStop() {
+    try {
+        const tx = await nftContract.emergencyStop();
+        await tx.wait();
+        alert('Emergency stop successfully triggered.');
+    } catch (error) {
+        console.error('Error triggering emergency stop:', error);
+        alert('Failed to trigger emergency stop.');
+    }
+}
+
+// Event listener for emergencyStopBtn to trigger emergency stop
+document.getElementById('emergencyStopBtn').addEventListener('click', () => {
+    triggerEmergencyStop();
+});
+
+
 // Event listener for View Contract Balance button
 document.getElementById('viewContractBalanceBtn').addEventListener('click', () => {
     viewContractBalance();
