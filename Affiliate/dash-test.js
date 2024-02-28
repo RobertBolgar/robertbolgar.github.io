@@ -208,9 +208,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-   
-
-    // Add event listeners for other admin actions
+    
+    // Add event listeners admin actions
 
     // Event listener for the "Approve User" button click event
     document.getElementById('approveUserBtn').addEventListener('click', async () => {
@@ -218,58 +217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await approveUser(userAddress);
     });
 
-    // Event listener for fetching sales
-    document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
-        await fetchSales();
-    });
-
-        // Event listeners for other buttons
-    document.getElementById('revokeUserBtn').addEventListener('click', async () => {
-        const userAddress = document.getElementById('userAddress').value;
-        await revokeUser(userAddress);
-    });
-
-    document.getElementById('approveAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddress').value;
-        await approveAffiliate(affiliateAddress);
-    });
-
-    document.getElementById('revokeAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddress').value;
-        await revokeAffiliate(affiliateAddress);
-    });
-
-    document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
-        const newRate = document.getElementById('commissionRate').value;
-        await setCommissionRate(newRate);
-    });
-
-    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
-        await toggleDirectPayment();
-    });
-
-    document.getElementById('toggleDirectPaymentForUserBtn').addEventListener('click', async () => {
-        const userAddress = document.getElementById('userAddress').value;
-        await toggleDirectPaymentForUser(userAddress);
-    });
-
-    document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
-        const defaultAffiliateAddress = document.getElementById('defaultAffiliateAddress').value;
-        const commissionRate = document.getElementById('defaultCommissionRate').value;
-        await setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate);
-    });
-
-    document.getElementById('withdrawFundsBtn').addEventListener('click', async () => {
-        await withdrawFunds();
-    });
-
-    document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
-        await viewContractBalance();
-    });
-
-    document.getElementById('triggerEmergencyStopBtn').addEventListener('click', async () => {
-        await triggerEmergencyStop();
-    });
+   
 
 
 });
