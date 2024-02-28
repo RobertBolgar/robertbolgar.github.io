@@ -4,9 +4,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-   // Import ABIs
-    const mintAbi = require('./mint_abi.js');
-    const affiliateAbi = require('./affiliate_abi.js');
+   // Fetch ABI files asynchronously
+    const mintAbiResponse = await fetch('./mint_abi.json');
+    const mintAbi = await mintAbiResponse.json();
+
+    const affiliateAbiResponse = await fetch('./affiliate_abi.json');
+    const affiliateAbi = await affiliateAbiResponse.json();
 
     // Contract addresses
     const nftContractAddress = "0xd940B79622e07E8CC54DEB37037bD35c18387Dc2";
