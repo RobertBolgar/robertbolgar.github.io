@@ -164,15 +164,15 @@ async function setCommissionRate(newRate) {
 // Function to fetch the current status of direct payments
 async function fetchDirectPaymentStatus() {
     try {
-        // Call a function to check if direct payments are enabled or disabled
-        const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
+        // Call the isDirectPaymentEnabled function from the AffiliateTracker contract
+        const isEnabled = await affiliateTracker.isDirectPaymentEnabled();
 
         // Update the button text and display the current status
-        const toggleDirectPaymentBtn = document.getElementById('toggleDirectPaymentBtn');
-        if (isDirectPaymentEnabled) {
-            toggleDirectPaymentBtn.textContent = 'Disable Direct Payment';
+        const fetchDirectPaymentStatusBtn = document.getElementById('fetchDirectPaymentStatusBtn');
+        if (isEnabled) {
+            fetchDirectPaymentStatusBtn.textContent = 'Direct Payments Enabled';
         } else {
-            toggleDirectPaymentBtn.textContent = 'Enable Direct Payment';
+            fetchDirectPaymentStatusBtn.textContent = 'Direct Payments Disabled';
         }
     } catch (error) {
         console.error("Error fetching direct payment status:", error.message);
@@ -355,6 +355,11 @@ async function fetchDirectPaymentStatus() {
         console.error("Error toggling direct payment:", error.message);
     }
     });
+
+    // Event listener for the "Fetch Direct Payment Status" button click event
+document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click', async () => {
+    await fetchDirectPaymentStatus();
+});
 
 
   /*  // Event listener for the "Toggle Direct Payment" button
