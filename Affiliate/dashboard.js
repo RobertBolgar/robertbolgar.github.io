@@ -1665,4 +1665,4 @@ document.getElementById('resumeBtn').addEventListener('click', async () => {
     document.getElementById('fetchSalesBtn').addEventListener('click', () => {
         fetchSales();
     });
-  });
+ 
