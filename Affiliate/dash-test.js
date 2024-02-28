@@ -19,7 +19,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
+// Function to set the address of the new AffiliateTracker contract
+async function setAffiliateTrackerAddress(address) {
+    try {
+        // Validate the input address
+        if (!ethers.utils.isAddress(address)) {
+            throw new Error("Invalid address");
+        }
 
+        // Call the setAffiliateTrackerAddress function from the NFTmint contract
+        const tx = await nftContract.setAffiliateTrackerAddress(address);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("AffiliateTracker address set successfully");
+    } catch (error) {
+        console.error("Error setting AffiliateTracker address:", error.message);
+    }
+}
 // Admin function to approve a user
 async function approveUser(userAddress) {
     try {
@@ -290,6 +309,12 @@ async function setCommissionRate(newRate) {
     document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
         const newRate = document.getElementById('commissionRate').value;
         await setCommissionRate(newRate);
+    });
+
+    // Event listener for the Set AffiliateTracker Address button click event
+    document.getElementById('setAffiliateTrackerAddressBtn').addEventListener('click', async () => {
+        const address = document.getElementById('affiliateTrackerAddress').value;
+        await setAffiliateTrackerAddress(address);
     });
 
    /* // Event listener for the "Toggle Direct Payment" button click event
