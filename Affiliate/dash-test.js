@@ -241,36 +241,14 @@ async function fetchDirectPaymentStatus() {
 
     // Additional event listeners and functions
 
-    // Function to withdraw funds
-async function withdrawFunds() {
-    try {
-        // Get the contract balance
-        const contractBalance = await ethers.provider.getBalance(affiliateContract);
-
-        // Check if the contract has balance
-        if (contractBalance.gt(0)) {
-            // Get the signer
-            const signer = ethers.provider.getSigner();
-
-            // Send the contract balance to the signer's address
-            const tx = await signer.sendTransaction({
-                to: signer.getAddress(),
-                value: contractBalance
-            });
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("Funds withdrawn successfully");
-        } else {
-            console.log("Contract balance is zero");
-        }
-    } catch (error) {
-        console.error("Error withdrawing funds:", error.message);
+   // Function to prompt the user for confirmation
+function confirmWithdrawal() {
+    // Prompt the user with a confirmation dialog
+    if (confirm("Are you sure you want to withdraw funds from the contract?")) {
+        // If the user confirms, call the withdrawFunds() function
+        withdrawFunds();
     }
 }
-
 
      // Function to display the NFT contract balance in BNB
 async function displayNFTContractBalance() {
@@ -358,10 +336,9 @@ function displaySalesData(salesData) {
 
     // Additional event listeners for new buttons
 
-   // Event listener for the "Withdraw Funds" button click event
-document.getElementById('withdrawFundsBtn').addEventListener('click', async () => {
-    await withdrawFunds();
-});
+   // Event listener for the HTML button
+document.getElementById('withdrawFundsButton').addEventListener('click', confirmWithdrawal);
+
 
 
     // Add event listener for the "Display NFT Contract Balance" button
