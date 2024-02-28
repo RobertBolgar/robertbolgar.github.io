@@ -134,7 +134,7 @@ async function setCommissionRate(newRate) {
     }
 }
 
-    // Function to fetch the current status of direct payments
+   /* // Function to fetch the current status of direct payments
     async function fetchDirectPaymentStatus() {
         try {
             // Call a function to check if direct payments are enabled or disabled
@@ -150,9 +150,9 @@ async function setCommissionRate(newRate) {
         } catch (error) {
             console.error("Error fetching direct payment status:", error.message);
         }
-    }
+    } */
 
-    
+    /*
     async function toggleDirectPayment() {
     try {
         // Call the toggleDirectPayment function from the contract
@@ -166,8 +166,9 @@ async function setCommissionRate(newRate) {
     } catch (error) {
         console.error("Error toggling direct payment:", error.message);
     }
-}
+} */
     
+  /*
     async function toggleDirectPaymentForUser(userAddress) {
         try {
             // Validate user input
@@ -183,7 +184,7 @@ async function setCommissionRate(newRate) {
         } catch (error) {
             console.error("Error toggling direct payment for user:", error.message);
         }
-    }
+    } */
 
     async function setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate) {
         try {
@@ -290,12 +291,12 @@ async function setCommissionRate(newRate) {
         await setCommissionRate(newRate);
     });
 
-    // Event listener for the "Toggle Direct Payment" button click event
+   /* // Event listener for the "Toggle Direct Payment" button click event
     document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
         await toggleDirectPayment();
-    });
+    }); */
 
-    // Event listener for the "Toggle Direct Payment" button
+  /*  // Event listener for the "Toggle Direct Payment" button
     document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
         try {
             // Toggle the direct payment status when the button is clicked
@@ -306,7 +307,7 @@ async function setCommissionRate(newRate) {
         } catch (error) {
             console.error("Error toggling direct payment:", error.message);
         }
-    });
+    }); */
 
 
 
