@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
+    // Import ABIs
+    const mintAbi = require('./mint_abi.js');
+    const affiliateAbi = require('./affiliate_abi.js');
+
     // Contract addresses
     const nftContractAddress = "YOUR_NFT_CONTRACT_ADDRESS";
     const affiliateContractAddress = "YOUR_AFFILIATE_CONTRACT_ADDRESS";
