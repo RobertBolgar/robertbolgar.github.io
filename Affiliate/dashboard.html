@@ -5,77 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFT & Affiliate Management</title>
     <link rel="stylesheet" href="styles.css"> <!-- Ensure the CSS file is linked -->
+    <style>
+        /* Center the content on the page */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 400px; /* Adjust the width as needed */
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .container > div {
+            margin-bottom: 10px;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
-    <!-- Section for approving a user -->
-    <div id="approveUserSection">
-        <input type="text" id="userAddress" placeholder="Enter user address">
-        <button id="approveUserBtn">Approve User</button>
+    <div class="container">
+        <!-- Section for approving a user -->
+        <div id="approveUserSection">
+            <input type="text" id="userAddress" placeholder="Enter user address">
+            <button id="approveUserBtn">Approve User</button>
+        </div>
+
+        <!-- Section for revoking a user -->
+        <div id="revokeUserSection">
+            <input type="text" id="userAddressToRemove" placeholder="Enter user address">
+            <button id="revokeUserBtn">Revoke User</button>
+        </div>
+
+        <!-- Section for approving and registering an affiliate -->
+        <div>
+            <input type="text" id="affiliateAddress" placeholder="Enter Affiliate Address" required>
+            <input type="number" id="commissionRate" placeholder="Enter Commission Rate" min="0" max="100" required>
+            <button id="approveAndRegisterAffiliateBtn">Approve and Register Affiliate</button>
+        </div>
+
+        <!-- Section for revoking an affiliate -->
+        <div>
+            <input type="text" id="revokeAffiliateAddress" placeholder="Affiliate Address">
+            <button id="revokeAffiliateBtn">Revoke Affiliate</button>
+        </div>
+
+        <!-- Section for setting commission rate -->
+        <div>
+            <input type="number" id="newCommissionRate" placeholder="Enter new commission rate" min="0" max="100" required>
+            <button id="setCommissionRateBtn">Set Commission Rate</button>
+        </div>
+
+        <!-- Section for toggling direct payment -->
+        <div>
+            <button id="toggleDirectPaymentBtn">Toggle Direct Payment</button>
+            <p id="paymentStatus"></p>
+        </div>
+
+        <!-- Section for fetching the status of direct payments -->
+        <div>
+            <button id="fetchDirectPaymentStatusBtn">Fetch Direct Payment Status</button>
+        </div>
+
+        <!-- Section to display the status of direct payments -->
+        <div id="directPaymentStatus"></div>
+
+        <!-- Section for setting AffiliateTracker contract address -->
+        <div>
+            <input type="text" id="affiliateTrackerAddress" placeholder="Enter AffiliateTracker Address" />
+            <button id="setAffiliateTrackerAddressBtn">Set AffiliateTracker Address</button>
+        </div>
+
+        <!-- Additional buttons with spacing -->
+        <div style="margin-top: 20px;">
+            <button id="withdrawFundsBtn">Withdraw Funds</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button id="viewContractBalanceBtn">View Contract Balance</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button id="triggerEmergencyStopBtn">Trigger Emergency Stop</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button id="fetchSalesBtn">Fetch Sales</button>
+        </div>
     </div>
-
-    <!-- Section for revoking a user -->
-    <div id="revokeUserSection">
-        <input type="text" id="userAddressToRemove" placeholder="Enter user address">
-        <button id="revokeUserBtn">Revoke User</button>
-    </div>
-
-    <!-- Section for approving and registering an affiliate -->
-    <div>
-        <input type="text" id="affiliateAddress" placeholder="Enter Affiliate Address" required>
-        <input type="number" id="commissionRate" placeholder="Enter Commission Rate" min="0" max="100" required>
-        <button id="approveAndRegisterAffiliateBtn">Approve and Register Affiliate</button>
-    </div>
-
-    <!-- Section for revoking an affiliate -->
-    <div>
-        <input type="text" id="revokeAffiliateAddress" placeholder="Affiliate Address">
-        <button id="revokeAffiliateBtn">Revoke Affiliate</button>
-    </div>
-
-    <!-- Section for setting commission rate -->
-    <div>
-        <input type="number" id="newCommissionRate" placeholder="Enter new commission rate" min="0" max="100" required>
-        <button id="setCommissionRateBtn">Set Commission Rate</button>
-    </div>
-
-    <!-- Section for toggling direct payment -->
-    <div>
-        <button id="toggleDirectPaymentBtn">Toggle Direct Payment</button>
-        <p id="paymentStatus"></p>
-    </div>
-
-    <!-- Section for fetching the status of direct payments -->
-    <div>
-        <button id="fetchDirectPaymentStatusBtn">Fetch Direct Payment Status</button>
-    </div>
-
-    <!-- Section to display the status of direct payments -->
-    <div id="directPaymentStatus"></div>
-
-    <!-- Section for setting AffiliateTracker contract address -->
-    <div>
-        <input type="text" id="affiliateTrackerAddress" placeholder="Enter AffiliateTracker Address" />
-        <button id="setAffiliateTrackerAddressBtn">Set AffiliateTracker Address</button>
-    </div>
-
-    <!-- Additional buttons with spacing -->
-    <div style="margin-top: 20px;">
-        <button id="withdrawFundsBtn">Withdraw Funds</button>
-    </div>
-
-    <div style="margin-top: 20px;">
-        <button id="viewContractBalanceBtn">View Contract Balance</button>
-    </div>
-
-    <div style="margin-top: 20px;">
-        <button id="triggerEmergencyStopBtn">Trigger Emergency Stop</button>
-    </div>
-
-    <div style="margin-top: 20px;">
-        <button id="fetchSalesBtn">Fetch Sales</button>
-    </div>
-
     <script src="dash-test.js"></script> <!-- Link to the JavaScript file -->
 </body>
 </html>
