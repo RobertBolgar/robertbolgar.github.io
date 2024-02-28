@@ -20,44 +20,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
 
-    // Admin function to approve a user
-    async function approveUser(userAddress) {
-        try {
-            // Validate user input
-            if (!ethers.utils.isAddress(userAddress)) {
-                throw new Error("Invalid user address");
-            }
-
-            // Call the approveUser function from the contract
-            const tx = await nftContract.approveUser(userAddress);
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("User approved successfully");
-        } catch (error) {
-            console.error("Error approving user:", error.message);
+   // Admin function to approve a user
+async function approveUser(userAddress) {
+    try {
+        // Validate user input
+        if (!ethers.utils.isAddress(userAddress)) {
+            throw new Error("Invalid user address");
         }
+
+        // Call the approveUser function from the contract
+        const tx = await nftContract.approveUser(userAddress);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("User approved successfully");
+    } catch (error) {
+        console.error("Error approving user:", error.message);
     }
+}
 
 
-    async function revokeUser(userAddress) {
-        try {
-            // Validate user input
-            if (!ethers.utils.isAddress(userAddress)) {
-                throw new Error("Invalid user address");
-            }
 
-            // Implement the logic to revoke a user
-            // ...
-
-            // Provide feedback to the user
-            console.log("User revoked successfully");
-        } catch (error) {
-            console.error("Error revoking user:", error.message);
+   async function revokeUser(userAddress) {
+    try {
+        // Validate user input
+        if (!ethers.utils.isAddress(userAddress)) {
+            throw new Error("Invalid user address");
         }
+
+        // Call the contract function to revoke the user
+        const tx = await nftContract.revokeUser(userAddress);
+
+        // Wait for the transaction to be mined
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("User revoked successfully");
+    } catch (error) {
+        console.error("Error revoking user:", error.message);
     }
+}
+
+
 
     async function approveAffiliate(affiliateAddress) {
         try {
@@ -211,13 +217,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Add event listeners admin actions
 
-    // Event listener for the "Approve User" button click event
+    // Event listener for the approveUser button
     document.getElementById('approveUserBtn').addEventListener('click', async () => {
         const userAddress = document.getElementById('userAddress').value;
         await approveUser(userAddress);
     });
 
-   
+
+       // Add an event listener for the "Revoke User" button click event
+    document.getElementById('revokeUserBtn').addEventListener('click', async () => {
+        const userAddress = document.getElementById('userAddress').value;
+        await revokeUser(userAddress);
+    });
 
 
 });
