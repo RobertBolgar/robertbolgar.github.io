@@ -493,6 +493,19 @@
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "_affiliateTrackerAddress",
+				"type": "address"
+			}
+		],
+		"name": "setAffiliateTrackerAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "operator",
 				"type": "address"
 			},
