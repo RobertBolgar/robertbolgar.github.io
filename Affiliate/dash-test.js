@@ -314,11 +314,16 @@ async function setCommissionRate(newRate) {
         await revokeAffiliate(affiliateAddress);
     });
 
-  // Event listener for the "Set Commission Rate" button click event
-document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
+  document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
     // Get the new commission rate from the input field
-    const newRateInput = document.getElementById('commissionRate').value;
+    const newRateInput = document.getElementById('commissionRate').value.trim(); // Trim to remove leading/trailing whitespace
     console.log("New rate input:", newRateInput);
+
+    // Check if the input is empty
+    if (newRateInput === "") {
+        console.error("Error setting commission rate: Commission rate cannot be empty.");
+        return; // Exit function early
+    }
 
     // Parse the input value as a floating-point number
     const newRate = parseFloat(newRateInput);
