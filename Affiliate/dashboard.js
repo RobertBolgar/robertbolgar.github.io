@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Failed to toggle direct payment.');
         }
     }
+    
     async function toggleDirectPaymentForUser(userAddress) {
     try {
         const tx = await affiliateContract.toggleDirectPaymentForUser(userAddress);
@@ -92,6 +93,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Failed to toggle direct payment for user.');
     }
 }
+
+    async function setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate) {
+    try {
+        const tx = await nftContract.setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate);
+        await tx.wait();
+        alert(`Default affiliate set to ${defaultAffiliateAddress} with commission rate ${commissionRate}%.`);
+    } catch (error) {
+        console.error('Error setting default affiliate:', error);
+        alert('Failed to set default affiliate.');
+    }
+}
+
+document.getElementById('setDefaultAffiliateBtn').addEventListener('click', () => {
+    const defaultAffiliateAddress = document.getElementById('defaultAffiliateAddress').value;
+    const commissionRate = parseInt(document.getElementById('defaultAffiliateCommissionRate').value, 10);
+    setDefaultAffiliateWithRate(defaultAffiliateAddress, commissionRate);
+});
+
 
 document.getElementById('toggleDirectPaymentForUserBtn').addEventListener('click', () => {
     const userAddress = document.getElementById('userAddress').value;
