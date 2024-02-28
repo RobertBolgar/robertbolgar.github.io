@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
 
-    // Admin functions
+    // Admin function to approve a user
     async function approveUser(userAddress) {
         try {
             // Validate user input
@@ -28,8 +28,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error("Invalid user address");
             }
 
-            // Implement the logic to approve a user
-            // ...
+            // Call the approveUser function from the contract
+            const tx = await nftContract.approveUser(userAddress);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
 
             // Provide feedback to the user
             console.log("User approved successfully");
@@ -37,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error approving user:", error.message);
         }
     }
+
 
     async function revokeUser(userAddress) {
         try {
@@ -204,13 +208,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Event listeners for admin actions
+   
+
+    // Add event listeners for other admin actions
+
+    // Event listener for the "Approve User" button click event
     document.getElementById('approveUserBtn').addEventListener('click', async () => {
         const userAddress = document.getElementById('userAddress').value;
         await approveUser(userAddress);
     });
-
-    // Add event listeners for other admin actions
 
     // Event listener for fetching sales
     document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
