@@ -42,7 +42,7 @@ async function approveUser(userAddress) {
 }
 
 
-
+// Admin function to revoke a user
    async function revokeUser(userAddress) {
     try {
         // Validate user input
@@ -87,22 +87,27 @@ async function approveAffiliate(affiliateAddress) {
 }
 
 
-    async function revokeAffiliate(affiliateAddress) {
-        try {
-            // Validate affiliate input
-            if (!ethers.utils.isAddress(affiliateAddress)) {
-                throw new Error("Invalid affiliate address");
-            }
-
-            // Implement the logic to revoke an affiliate
-            // ...
-
-            // Provide feedback to the user
-            console.log("Affiliate revoked successfully");
-        } catch (error) {
-            console.error("Error revoking affiliate:", error.message);
+    // Function to revoke an affiliate
+async function revokeAffiliate(affiliateAddress) {
+    try {
+        // Validate affiliate input
+        if (!ethers.utils.isAddress(affiliateAddress)) {
+            throw new Error("Invalid affiliate address");
         }
+
+        // Call the revokeAffiliate function from the NFTmint contract
+        const tx = await nftContract.revokeAffiliate(affiliateAddress);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Affiliate revoked successfully");
+    } catch (error) {
+        console.error("Error revoking affiliate:", error.message);
     }
+}
+
 
     async function setCommissionRate(newRate) {
         try {
@@ -242,6 +247,11 @@ async function approveAffiliate(affiliateAddress) {
         await approveAffiliate(affiliateAddress);
     });
 
+    // Event listener for the "Revoke Affiliate" button click event
+    document.getElementById('revokeAffiliateBtn').addEventListener('click', async () => {
+        const affiliateAddress = document.getElementById('affiliateAddress').value;
+        await revokeAffiliate(affiliateAddress);
+});
 
 
 
