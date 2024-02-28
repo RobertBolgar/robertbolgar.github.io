@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const signer = provider.getSigner();
 
     // Contract addresses and ABIs
-    const nftContractAddress = "YOUR_NFT_CONTRACT_ADDRESS";
-    const affiliateContractAddress = "YOUR_AFFILIATE_CONTRACT_ADDRESS";
+    const nftContractAddress = "0xb87b83fc5f0F77b58c782310863E2592384289A5";
+    const affiliateContractAddress = "0xD6ff168e2E1B1A9dF1BcA634e1B68d6bdAcb207C";
     const nftContractABI = [
 	{
 		"inputs": [
