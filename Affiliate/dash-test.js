@@ -66,25 +66,29 @@ async function approveUser(userAddress) {
 
 
     // Admin function to approve an affiliate
-async function approveAffiliate(affiliateAddress) {
+async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
     try {
-        // Validate affiliate input
+        // Validate inputs
         if (!ethers.utils.isAddress(affiliateAddress)) {
             throw new Error("Invalid affiliate address");
         }
+        if (isNaN(commissionRate) || commissionRate < 0 || commissionRate > 100) {
+            throw new Error("Invalid commission rate");
+        }
 
-        // Call the approveAffiliate function from the nftContract
-        const tx = await nftContract.approveAffiliate(affiliateAddress);
+        // Call the approveAndRegisterAffiliate function from the NFTmint contract
+        const tx = await nftContract.approveAndRegisterAffiliate(affiliateAddress, commissionRate);
 
         // Wait for the transaction to be confirmed
         await tx.wait();
 
         // Provide feedback to the user
-        console.log("Affiliate approved successfully");
+        console.log("Affiliate approved and registered successfully");
     } catch (error) {
-        console.error("Error approving affiliate:", error.message);
+        console.error("Error approving and registering affiliate:", error.message);
     }
 }
+
 
 
     // Function to revoke an affiliate
@@ -257,11 +261,20 @@ async function setCommissionRate(newRate) {
         await revokeAffiliate(affiliateAddress);
     });
 
-       // Event listener for the "Set Commission Rate" button click event
+    // Event listener for the "Set Commission Rate" button click event
     document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
         const newRate = document.getElementById('commissionRate').value;
         await setCommissionRate(newRate);
     });
+
+    // Event listener for the "Approve and Register Affiliate" button click event
+    document.getElementById('approveAndRegisterAffiliateBtn').addEventListener('click', async () => {
+        const affiliateAddress = document.getElementById('affiliateAddress').value;
+        const commissionRate = document.getElementById('commissionRate').value;
+        await approveAndRegisterAffiliate(affiliateAddress, commissionRate);
+    });
+
+
 
 
 
