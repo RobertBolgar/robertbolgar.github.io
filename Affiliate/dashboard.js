@@ -1381,16 +1381,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateContractABI, signer);
 
     // Admin functions
-    async function approveUser(userAddress) {
-        try {
-            const tx = await nftContract.approveUser(userAddress);
-            await tx.wait();
-            alert(`User ${userAddress} approved.`);
-        } catch (error) {
-            console.error('Error approving user:', error);
-            alert('Failed to approve user.');
-        }
+    async function approveUser() {
+    const userAddress = document.getElementById('userAddress').value;
+    try {
+        // Call the approveUser function from the NFT contract
+        const tx = await nftContract.approveUser(userAddress);
+        await tx.wait();
+        alert(`User ${userAddress} approved.`);
+    } catch (error) {
+        console.error('Error approving user:', error);
+        alert('Failed to approve user.');
     }
+}
+
 
     async function revokeUser(userAddress) {
         try {
