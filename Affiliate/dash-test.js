@@ -286,17 +286,29 @@ async function displayNFTContractBalance() {
     }
 }
 
-
- // Function to trigger emergency stop
-async function triggerEmergencyStop() {
+// Function to activate the emergency stop
+async function activateEmergencyStop() {
     try {
-        // Replace this with your actual logic to trigger emergency stop
-        // For example, if you have a contract function to trigger emergency stop, call it here
-        
-        // Provide feedback to the user
-        console.log("Emergency stop triggered successfully");
+        const tx = await nftContract.setEmergencyStop(true);
+        await tx.wait(); // Wait for the transaction to be mined
+        console.log("Emergency stop activated successfully.");
+        alert("Emergency stop has been activated!");
     } catch (error) {
-        console.error("Error triggering emergency stop:", error.message);
+        console.error("Error activating emergency stop:", error.message);
+        alert("Failed to activate emergency stop: " + error.message);
+    }
+}
+
+// Function to deactivate the emergency stop
+async function deactivateEmergencyStop() {
+    try {
+        const tx = await nftContract.setEmergencyStop(false);
+        await tx.wait(); // Wait for the transaction to be mined
+        console.log("Emergency stop deactivated successfully.");
+        alert("Emergency stop has been deactivated!");
+    } catch (error) {
+        console.error("Error deactivating emergency stop:", error.message);
+        alert("Failed to deactivate emergency stop: " + error.message);
     }
 }
 
@@ -344,7 +356,6 @@ function displaySalesData(salesData) {
     });
 }
 
-
     // Additional event listeners for new buttons
 
    // Event listener for the "Withdraw Funds" button click event
@@ -359,10 +370,15 @@ document.getElementById('displayNFTContractBalanceBtn').addEventListener('click'
 });
  
 
- // Event listener for the "Trigger Emergency Stop" button click event
-document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
-    await triggerEmergencyStop();
+ // Event listener for the "Activate Emergency Stop" button
+document.getElementById('activateEmergencyStopBtn').addEventListener('click', async () => {
+    await activateEmergencyStop();
 });
+
+// Event listener for the "Deactivate Emergency Stop" button
+document.getElementById('deactivateEmergencyStopBtn').addEventListener('click', async () => {
+    await deactivateEmergencyStop();
+})
 
 
     // Event listener for the "Fetch Sales" button click event
