@@ -105,6 +105,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 }
 
+    // JavaScript function to handle Withdraw Funds button click event
+async function withdrawFunds() {
+    try {
+        // Call the withdrawFunds function on the NFTMint contract
+        const tx = await nftContract.withdrawFunds();
+        await tx.wait();
+        alert('Funds withdrawn successfully.'); // Display success message
+    } catch (error) {
+        console.error('Error withdrawing funds:', error);
+        alert('Failed to withdraw funds.'); // Display error message
+    }
+}
+
+    // JavaScript function to handle View Contract Balance button click event
+async function viewContractBalance() {
+    try {
+        // Call the balanceOf function on the NFTMint contract to get the contract balance
+        const balance = await provider.getBalance(nftContract.address);
+        const balanceInEth = ethers.utils.formatEther(balance); // Convert balance to Ether
+
+        // Display the contract balance to the user
+        alert(`Contract Balance: ${balanceInEth} ETH`);
+    } catch (error) {
+        console.error('Error fetching contract balance:', error);
+        alert('Failed to fetch contract balance.');
+    }
+}
+
+// Event listener for View Contract Balance button
+document.getElementById('viewContractBalanceBtn').addEventListener('click', () => {
+    viewContractBalance();
+});
+
+
+// Event listener for Withdraw Funds button
+document.getElementById('withdrawFundsBtn').addEventListener('click', () => {
+    withdrawFunds();
+});
+
+
 document.getElementById('setDefaultAffiliateBtn').addEventListener('click', () => {
     const defaultAffiliateAddress = document.getElementById('defaultAffiliateAddress').value;
     const commissionRate = parseInt(document.getElementById('defaultAffiliateCommissionRate').value, 10);
