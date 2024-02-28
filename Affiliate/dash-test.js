@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-    // Import ABIs
+   // Import ABIs
     const mintAbi = require('./mint_abi.js');
     const affiliateAbi = require('./affiliate_abi.js');
 
@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateContractAddress = "YOUR_AFFILIATE_CONTRACT_ADDRESS";
 
     // Contract instances
-    const nftContract = new ethers.Contract(nftContractAddress, [], signer);
-    const affiliateContract = new ethers.Contract(affiliateContractAddress, [], signer);
+    const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
+    const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
+
 
     // Admin functions
     async function approveUser(userAddress) {
