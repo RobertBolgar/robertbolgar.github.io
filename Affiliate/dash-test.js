@@ -245,7 +245,7 @@ async function fetchDirectPaymentStatus() {
 async function withdrawFunds() {
     try {
         // Get the contract balance
-        const contractBalance = await ethers.provider.getBalance(contractAddress);
+        const contractBalance = await ethers.provider.getBalance(affiliateContract);
 
         // Check if the contract has balance
         if (contractBalance.gt(0)) {
