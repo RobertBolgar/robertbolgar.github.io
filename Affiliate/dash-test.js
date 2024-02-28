@@ -130,8 +130,7 @@ async function revokeAffiliate(affiliateAddress) {
 }
 
 
-   /// Function to set commission rate using the NFTmint contract
-async function setCommissionRate() {
+  async function setCommissionRate() {
     try {
         // Get the commission rate input value
         const newRateInput = document.getElementById('commissionRate').value;
@@ -162,6 +161,7 @@ async function setCommissionRate() {
         console.error("Error setting commission rate:", error.message);
     }
 }
+
 
 
 
@@ -316,13 +316,14 @@ async function setCommissionRate() {
         await revokeAffiliate(affiliateAddress);
     });
 
-   // Event listener for the "Set Commission Rate" button click event
+  // Event listener for the "Set Commission Rate" button click event
 document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
-    const newRateValue = document.getElementById('commissionRate').value;
-    console.log("New rate value:", newRateValue); // Log the value to the console
-    const newRate = parseInt(newRateValue);
-    await setCommissionRate(newRate);
+    // Get the new commission rate from the input field
+    const newRate = document.getElementById('commissionRate').value;
+    // Call the setCommissionRate function with the new rate
+    await setCommissionRate(parseFloat(newRate));
 });
+
 
 
 
