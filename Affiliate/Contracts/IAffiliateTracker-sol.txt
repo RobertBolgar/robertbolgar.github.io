@@ -77,4 +77,10 @@ interface IAffiliateTracker {
      * @param user The address of the user for whom to toggle direct payments.
      */
     function toggleDirectPaymentUser(address user) external;
+
+    /**
+     * @dev Sets the address of the contract that is allowed to control all functions of the AffiliateTracker.
+     * @param contractAddress The address of the contract to set as the authorized contract.
+     */
+    function setAuthorizedContract(address contractAddress) external;
 }
