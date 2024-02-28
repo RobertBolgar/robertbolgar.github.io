@@ -308,9 +308,12 @@ async function setCommissionRate(newRate) {
 
    // Event listener for the "Set Commission Rate" button click event
 document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
-    const newRate = parseInt(document.getElementById('commissionRate').value);
+    const newRateValue = document.getElementById('commissionRate').value;
+    console.log("New rate value:", newRateValue); // Log the value to the console
+    const newRate = parseInt(newRateValue);
     await setCommissionRate(newRate);
 });
+
 
 
 
