@@ -177,7 +177,7 @@ async function fetchDirectPaymentStatus() {
 
 
 
-    /*
+   
     async function toggleDirectPayment() {
     try {
         // Call the toggleDirectPayment function from the contract
@@ -191,7 +191,7 @@ async function fetchDirectPaymentStatus() {
     } catch (error) {
         console.error("Error toggling direct payment:", error.message);
     }
-} */
+} 
     
   /*
     async function toggleDirectPaymentForUser(userAddress) {
@@ -358,7 +358,7 @@ document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click',
     await fetchDirectPaymentStatus();
 });
 
-  /*  // Event listener for the "Toggle Direct Payment" button
+   // Event listener for the "Toggle Direct Payment" button
     document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
         try {
             // Toggle the direct payment status when the button is clicked
@@ -369,7 +369,7 @@ document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click',
         } catch (error) {
             console.error("Error toggling direct payment:", error.message);
         }
-    }); */
+    }); 
 
 
 
