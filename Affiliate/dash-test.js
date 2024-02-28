@@ -335,8 +335,6 @@ async function setCommissionRate(newRate) {
 
 
 
-
-
     // Event listener for the "Set AffiliateTracker Address" button click event
     document.getElementById('setAffiliateTrackerAddressBtn').addEventListener('click', async () => {
         const affiliateTrackerAddress = document.getElementById('affiliateTrackerAddress').value;
