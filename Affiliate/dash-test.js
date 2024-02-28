@@ -249,10 +249,11 @@ async function setCommissionRate(newRate) {
     });
 
     
-    // Event listener for the "Approve Affiliate" button click event
-    document.getElementById('approveAffiliateBtn').addEventListener('click', async () => {
+    // Event listener for the "Approve and Register Affiliate" button click event
+    document.getElementById('approveAndRegisterAffiliateBtn').addEventListener('click', async () => {
         const affiliateAddress = document.getElementById('affiliateAddress').value;
-        await approveAffiliate(affiliateAddress);
+        const commissionRate = document.getElementById('commissionRate').value;
+        await approveAndRegisterAffiliate(affiliateAddress, commissionRate);
     });
 
     // Event listener for the "Revoke Affiliate" button click event
@@ -267,12 +268,7 @@ async function setCommissionRate(newRate) {
         await setCommissionRate(newRate);
     });
 
-    // Event listener for the "Approve and Register Affiliate" button click event
-    document.getElementById('approveAndRegisterAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddress').value;
-        const commissionRate = document.getElementById('commissionRate').value;
-        await approveAndRegisterAffiliate(affiliateAddress, commissionRate);
-    });
+    
 
 
 
