@@ -41,6 +41,21 @@
         <div id="buyMessage" class="message"></div>
     </section>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenId = urlParams.get('tokenId');
+    const affiliateCode = urlParams.get('affiliate');
+
+    // If tokenId is present in the URL, autofill the tokenId field in the Buy NFT form
+    if(tokenId) {
+        document.getElementById('tokenId').value = tokenId;
+    }
+
+    // Here, you might want to handle the affiliateCode, for example, by sending it to your backend or smart contract during the NFT purchase process
+    // This part depends on your backend or smart contract implementation
+});
+</script>
 
 <script src="mint-script.js"> </script> <!-- Link to the JavaScript file -->
 </body>
