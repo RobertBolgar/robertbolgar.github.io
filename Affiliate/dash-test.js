@@ -272,20 +272,17 @@ async function withdrawFunds() {
 }
 
 
-         // Function to view contract balance
-    async function viewContractBalance() {
+     // Function to display the NFT contract balance
+async function displayNFTContractBalance() {
     try {
-        // Call a function to get the contract balance
-        const contractBalance = await web3.eth.getBalance(contractAddress);
-
-        // Convert the balance to ether and display it
-        const balanceInEther = web3.utils.fromWei(contractBalance, 'ether');
-        document.getElementById('contractBalance').textContent = `Contract Balance: ${balanceInEther} ETH`;
-
-        // Provide feedback to the user
-        console.log("Contract balance viewed successfully");
+        // Use the provider to get the balance of the NFT contract
+        const contractBalance = await provider.getBalance(nftContractAddress);
+        const balanceInEther = ethers.utils.formatEther(contractBalance);
+        document.getElementById('nftContractBalanceResult').textContent = `NFT Contract Balance: ${balanceInEther} ETH`;
+        console.log("NFT contract balance displayed successfully");
     } catch (error) {
-        console.error("Error viewing contract balance:", error.message);
+        console.error("Error displaying NFT contract balance:", error.message);
+        document.getElementById('nftContractBalanceResult').textContent = "Error displaying NFT contract balance.";
     }
 }
 
@@ -325,9 +322,9 @@ document.getElementById('withdrawFundsBtn').addEventListener('click', async () =
 });
 
 
-    // Event listener for the "View Contract Balance" button click event
-document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
-    await viewContractBalance();
+    // Add event listener for the "Display NFT Contract Balance" button
+document.getElementById('displayNFTContractBalanceBtn').addEventListener('click', async () => {
+    await displayNFTContractBalance();
 });
  
 
