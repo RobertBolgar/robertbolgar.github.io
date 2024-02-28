@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateAbi = await affiliateAbiResponse.json();
 
     // Contract addresses
-    const nftContractAddress = "0xd940B79622e07E8CC54DEB37037bD35c18387Dc2";
+    const nftContractAddress = "0xDCe273D77326f888A441E65E4AaA6a008A5cAD66";
     const affiliateContractAddress = "0x761c5c5409D80D042242344f075B3B570c51Eb70";
 
     // Contract instances
