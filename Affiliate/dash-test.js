@@ -73,8 +73,8 @@ async function approveAffiliate(affiliateAddress) {
             throw new Error("Invalid affiliate address");
         }
 
-        // Call the approveAffiliate function from the contract
-        const tx = await affiliateContract.approveAffiliate(affiliateAddress);
+        // Call the approveAffiliate function from the nftContract
+        const tx = await nftContract.approveAffiliate(affiliateAddress);
 
         // Wait for the transaction to be confirmed
         await tx.wait();
@@ -236,11 +236,12 @@ async function approveAffiliate(affiliateAddress) {
     });
 
     
-    // Add an event listener for the "Approve Affiliate" button click event
+    // Event listener for the "Approve Affiliate" button click event
     document.getElementById('approveAffiliateBtn').addEventListener('click', async () => {
-        const affiliateAddress = document.getElementById('affiliateAddressToApprove').value;
+        const affiliateAddress = document.getElementById('affiliateAddress').value;
         await approveAffiliate(affiliateAddress);
     });
+
 
 
 
