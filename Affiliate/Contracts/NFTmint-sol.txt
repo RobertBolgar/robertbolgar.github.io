@@ -40,6 +40,11 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable {
         _;
     }
 
+    function setAffiliateTrackerAddress(address _affiliateTrackerAddress) public onlyOwner {
+    affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+    }
+
+
     function listNFTForSale(string memory uri, uint256 price) public onlyApprovedUser {
         uint256 tokenId = _tokenIdCounter++;
         _tokenURIs[tokenId] = uri;
