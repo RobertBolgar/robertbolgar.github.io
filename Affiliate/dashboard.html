@@ -9,6 +9,26 @@
 
 </head>
 <body>
+<section id="adminControls">
+    <h2>Admin Controls</h2>
+    <div id="userApproval">
+        <h3>User Approval</h3>
+        <input type="text" id="userAddress" placeholder="User Address">
+        <button onclick="approveUser()">Approve User</button>
+        <button onclick="revokeUser()">Revoke User</button>
+    </div>
+    <div id="affiliateApproval">
+        <h3>Affiliate Approval</h3>
+        <input type="text" id="affiliateAddress" placeholder="Affiliate Address">
+        <button onclick="approveAffiliate()">Approve Affiliate</button>
+        <button onclick="revokeAffiliate()">Revoke Affiliate</button>
+    </div>
+    <div id="commissionControl">
+        <h3>Commission Rate</h3>
+        <input type="number" id="commissionRate" placeholder="Commission Rate (%)">
+        <button onclick="setCommissionRate()">Set Rate</button>
+    </div>
+</section>
 
 
 
