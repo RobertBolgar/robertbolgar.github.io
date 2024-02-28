@@ -293,24 +293,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Additional event listeners for new buttons
 
-    // Event listener for the "Withdraw Funds" button click event
+   /* // Event listener for the "Withdraw Funds" button click event
     document.getElementById('withdrawFundsBtn').addEventListener('click', async () => {
         await withdrawFunds();
-    });
+    }); */
 
-    // Event listener for the "View Contract Balance" button click event
+    /* // Event listener for the "View Contract Balance" button click event
     document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
         await viewContractBalance();
-    });
+    }); */
 
-    // Event listener for the "Trigger Emergency Stop" button click event
+   /* // Event listener for the "Trigger Emergency Stop" button click event
     document.getElementById('triggerEmergencyStopBtn').addEventListener('click', async () => {
         await triggerEmergencyStop();
-    });
+    }); */
 
-    // Event listener for the "Fetch Sales" button click event
+    /* // Event listener for the "Fetch Sales" button click event
     document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
         await fetchSales();
-    });
+    }); */
 
 });
