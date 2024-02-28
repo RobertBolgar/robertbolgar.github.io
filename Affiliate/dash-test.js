@@ -302,18 +302,50 @@ async function displayNFTContractBalance() {
         }
     }
 
-    // Function to fetch and display sales
-    async function fetchSales() {
-        try {
-            // Implement the logic to fetch and display sales
-            // ...
+// Function to fetch and display sales
+async function fetchSales() {
+    try {
+        // Replace this with your actual logic to fetch sales data
+        const salesData = await getSalesData(); // Assuming you have a function to fetch sales data
 
-            // Provide feedback to the user
-            console.log("Sales fetched successfully");
-        } catch (error) {
-            console.error("Error fetching sales:", error.message);
-        }
+        // Display the sales data in the HTML
+        displaySalesData(salesData);
+        
+        // Provide feedback to the user
+        console.log("Sales fetched successfully");
+    } catch (error) {
+        console.error("Error fetching sales:", error.message);
     }
+}
+
+// Function to simulate fetching sales data
+async function getSalesData() {
+    // Simulated sales data
+    const salesData = [
+        { id: 1, product: "Product A", price: 100 },
+        { id: 2, product: "Product B", price: 200 },
+        { id: 3, product: "Product C", price: 150 }
+    ];
+
+    // Simulate delay to mimic asynchronous operation
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    return salesData;
+}
+
+// Function to display sales data in the HTML
+function displaySalesData(salesData) {
+    const salesDataElement = document.getElementById('salesData');
+    salesDataElement.innerHTML = ''; // Clear previous data
+
+    // Iterate over the sales data and create HTML elements to display it
+    salesData.forEach(sale => {
+        const saleElement = document.createElement('div');
+        saleElement.textContent = `Product: ${sale.product}, Price: ${sale.price}`;
+        salesDataElement.appendChild(saleElement);
+    });
+}
+
 
     // Additional event listeners for new buttons
 
@@ -334,9 +366,9 @@ document.getElementById('displayNFTContractBalanceBtn').addEventListener('click'
         await triggerEmergencyStop();
     }); */
 
-    /* // Event listener for the "Fetch Sales" button click event
-    document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
-        await fetchSales();
-    }); */
+    // Event listener for the "Fetch Sales" button click event
+document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
+    await fetchSales();
+});
 
 });
