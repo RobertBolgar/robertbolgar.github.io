@@ -161,25 +161,24 @@ async function setCommissionRate(newRate) {
 }
 
 
+// Function to fetch the current status of direct payments
+async function fetchDirectPaymentStatus() {
+    try {
+        // Call a function to check if direct payments are enabled or disabled
+        const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
 
-
-   /* // Function to fetch the current status of direct payments
-    async function fetchDirectPaymentStatus() {
-        try {
-            // Call a function to check if direct payments are enabled or disabled
-            const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
-
-            // Update the button text and display the current status
-            const toggleDirectPaymentBtn = document.getElementById('toggleDirectPaymentBtn');
-            if (isDirectPaymentEnabled) {
-                toggleDirectPaymentBtn.textContent = 'Disable Direct Payment';
-            } else {
-                toggleDirectPaymentBtn.textContent = 'Enable Direct Payment';
-            }
-        } catch (error) {
-            console.error("Error fetching direct payment status:", error.message);
+        // Update the button text and display the current status
+        const toggleDirectPaymentBtn = document.getElementById('toggleDirectPaymentBtn');
+        if (isDirectPaymentEnabled) {
+            toggleDirectPaymentBtn.textContent = 'Disable Direct Payment';
+        } else {
+            toggleDirectPaymentBtn.textContent = 'Enable Direct Payment';
         }
-    } */
+    } catch (error) {
+        console.error("Error fetching direct payment status:", error.message);
+    }
+}
+
 
     /*
     async function toggleDirectPayment() {
@@ -347,10 +346,16 @@ async function setCommissionRate(newRate) {
         await setAffiliateTrackerAddress(affiliateTrackerAddress);
     });
 
-   /* // Event listener for the "Toggle Direct Payment" button click event
+   // Event listener for the "Toggle Direct Payment" button click event
     document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
-        await toggleDirectPayment();
-    }); */
+    try {
+        // Call the fetchDirectPaymentStatus function when the button is clicked
+        await fetchDirectPaymentStatus();
+    } catch (error) {
+        console.error("Error toggling direct payment:", error.message);
+    }
+    });
+
 
   /*  // Event listener for the "Toggle Direct Payment" button
     document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
