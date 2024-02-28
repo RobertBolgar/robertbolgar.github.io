@@ -270,6 +270,28 @@ getApprovedUsers();
         }
     }
 
+
+    document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
+    try {
+        await contract.setEmergencyStop(true);
+        alert('Emergency stop activated');
+    } catch (error) {
+        console.error('Error setting emergency stop:', error);
+        alert('Failed to set emergency stop');
+    }
+});
+
+document.getElementById('resumeBtn').addEventListener('click', async () => {
+    try {
+        await contract.setEmergencyStop(false);
+        alert('Emergency stop lifted');
+    } catch (error) {
+        console.error('Error lifting emergency stop:', error);
+        alert('Failed to lift emergency stop');
+    }
+});
+
+
     // Event listener for fetching sales
     document.getElementById('fetchSalesBtn').addEventListener('click', () => {
         fetchSales();
