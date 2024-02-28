@@ -1,0 +1,144 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "./IAffiliateTracker.sol";
+
+contract NFTMint is ERC721, ERC721Burnable, Ownable {
+    using SafeMath for uint256;
+
+    uint256 private _tokenIdCounter = 1;
+    mapping(uint256 => string) private _tokenURIs;
+    mapping(uint256 => uint256) public tokenPrices;
+    mapping(address => bool) public approvedAffiliates;
+    mapping(uint256 => address) public tokenSellers;
+    mapping(address => bool) public approvedUsers; // Mapping for approved users
+    uint256 public commissionRate = 10; // Commission rate as a percentage
+    uint256 public mintingFee = 0.01 ether;
+    bool public emergencyStop = false; // Emergency stop flag
+
+    event AffiliatePaid(address indexed affiliate, uint256 amount);
+    event TokenSold(uint256 indexed tokenId, address indexed buyer, address indexed seller, uint256 salePrice, address affiliate);
+    event NFTListed(uint256 indexed tokenId, string uri, uint256 price);
+    event EmergencyStopActivated(bool status);
+
+    IAffiliateTracker private affiliateTracker;
+    address public defaultAffiliate;
+
+    constructor(string memory name, string memory symbol, address _affiliateTrackerAddress, address _initialOwner)
+    ERC721(name, symbol)
+    Ownable(_initialOwner) {
+        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+    }
+
+    modifier onlyApprovedUser() {
+        require(approvedUsers[msg.sender] || owner() == msg.sender, "NFTMint: Caller is not approved");
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        _;
+    }
+
+    function listNFTForSale(string memory uri, uint256 price) public onlyApprovedUser {
+        uint256 tokenId = _tokenIdCounter++;
+        _tokenURIs[tokenId] = uri;
+        tokenPrices[tokenId] = price;
+        tokenSellers[tokenId] = msg.sender;
+
+        emit NFTListed(tokenId, uri, price); // Emit the event when an NFT is listed for sale
+    }
+
+    function buyNFT(uint256 tokenId, address affiliate) public payable {
+        require(msg.value >= tokenPrices[tokenId], "NFTmint: Payment is below the price");
+        require(bytes(_tokenURIs[tokenId]).length != 0, "NFTmint: Token not for sale");
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+
+        uint256 commission = msg.value.mul(commissionRate).div(100);
+        uint256 sellerProceeds = msg.value.sub(commission);
+
+        payable(tokenSellers[tokenId]).transfer(sellerProceeds);
+
+        _safeMint(msg.sender, tokenId);
+
+        if (affiliate != address(0) && approvedAffiliates[affiliate]) {
+            payable(affiliate).transfer(commission);
+            emit AffiliatePaid(affiliate, commission);
+        } else if (defaultAffiliate != address(0)) {
+            payable(defaultAffiliate).transfer(commission);
+            emit AffiliatePaid(defaultAffiliate, commission);
+        }
+
+        emit TokenSold(tokenId, msg.sender, tokenSellers[tokenId], msg.value, affiliate);
+
+        delete _tokenURIs[tokenId];
+        delete tokenPrices[tokenId];
+        delete tokenSellers[tokenId];
+    }
+
+    // Function to activate or deactivate emergency stop
+    function setEmergencyStop(bool status) public onlyOwner {
+        emergencyStop = status;
+        emit EmergencyStopActivated(status);
+    }
+
+    // Function to approve and register an affiliate with a commission rate
+    function approveAndRegisterAffiliate(address affiliate, uint256 newCommissionRate) public onlyOwner {
+        require(affiliate != address(0), "NFTMint: Invalid affiliate address");
+        require(newCommissionRate <= 100, "NFTMint: Commission rate must be less than or equal to 100%");
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+
+        // Approve affiliate on NFTMint contract
+        approvedAffiliates[affiliate] = true;
+
+        // Register affiliate on AffiliateTracker contract
+        affiliateTracker.registerAffiliate(affiliate, newCommissionRate);
+    }
+
+    function setDefaultAffiliate(address _affiliate) public onlyOwner {
+        require(_affiliate != address(0), "NFTMint: Invalid affiliate address");
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        defaultAffiliate = _affiliate;
+        
+        // Set the commission rate for the default affiliate to 1%
+        affiliateTracker.setCommissionRate(_affiliate, 1);
+    }
+
+    function registerAffiliate(address _affiliate, uint256 _commissionRate) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        affiliateTracker.registerAffiliate(_affiliate, _commissionRate);
+    }
+
+    function approveUser(address user) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        approvedUsers[user] = true;
+    }
+
+    function revokeUser(address user) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        delete approvedUsers[user];
+    }
+
+    function setCommissionRate(uint256 rate) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        require(rate <= 100, "NFTMint: Commission rate must be less than or equal to 100%");
+        commissionRate = rate;
+    }
+
+    function approveAffiliate(address affiliate) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        approvedAffiliates[affiliate] = true;
+    }
+
+    function revokeAffiliate(address affiliate) public onlyOwner {
+        require(!emergencyStop, "NFTMint: Contract is in emergency stop mode");
+        approvedAffiliates[affiliate] = false;
+    }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(ownerOf(tokenId) != address(0), "NFTmint: URI query for nonexistent token");
+        return _tokenURIs[tokenId];
+    }
+
+    receive() external payable {}
+}
