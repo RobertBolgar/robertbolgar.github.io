@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Get the signer
             const signer = provider.getSigner();
 
-            const nftMintContractAddress = "0xbAa506cd0915e604c147570114d11d5dDDC5453c";
-            const affiliateTrackerContractAddress = "0xEFa8d83E017cc6A9e36d91fe08fA308bafDB7E8E";
+            const nftMintContractAddress = "0xb87b83fc5f0F77b58c782310863E2592384289A5";
+            const affiliateTrackerContractAddress = "0xD6ff168e2E1B1A9dF1BcA634e1B68d6bdAcb207C";
 
     const nftMintABI = [
 	{
@@ -42,6 +42,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 		],
 		"name": "approveAffiliate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "affiliate",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "newCommissionRate",
+				"type": "uint256"
+			}
+		],
+		"name": "approveAndRegisterAffiliate",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -332,6 +350,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "status",
+				"type": "bool"
+			}
+		],
+		"name": "EmergencyStopActivated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": true,
 				"internalType": "uint256",
 				"name": "tokenId",
@@ -371,6 +402,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_affiliate",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_commissionRate",
+				"type": "uint256"
+			}
+		],
+		"name": "registerAffiliate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -501,6 +550,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "status",
+				"type": "bool"
+			}
+		],
+		"name": "setEmergencyStop",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -516,10 +578,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 				"type": "address"
 			},
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "seller",
+				"type": "address"
+			},
+			{
 				"indexed": false,
 				"internalType": "uint256",
 				"name": "salePrice",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "affiliate",
+				"type": "address"
 			}
 		],
 		"name": "TokenSold",
@@ -668,6 +742,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "emergencyStop",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -878,37 +965,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		
 const affiliateTrackerABI = [
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_contract",
-				"type": "address"
-			}
-		],
-		"name": "allowContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "minter",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "allowed",
-				"type": "bool"
-			}
-		],
-		"name": "allowSettingCommissionRate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -933,6 +989,11 @@ const affiliateTrackerABI = [
 			}
 		],
 		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ReentrancyGuardReentrantCall",
 		"type": "error"
 	},
 	{
@@ -1021,6 +1082,19 @@ const affiliateTrackerABI = [
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isEnabled",
+				"type": "bool"
+			}
+		],
+		"name": "DirectPaymentToggled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": true,
 				"internalType": "address",
 				"name": "affiliate",
@@ -1054,6 +1128,168 @@ const affiliateTrackerABI = [
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "affiliateEarnings",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "affiliates",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "isRegistered",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "commissionRate",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_contract",
+				"type": "address"
+			}
+		],
+		"name": "allowContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "minter",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "allowed",
+				"type": "bool"
+			}
+		],
+		"name": "allowSettingCommissionRate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_salePrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_rate",
+				"type": "uint256"
+			}
+		],
+		"name": "calculateCommission",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "canSetCommissionRate",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "directPaymentEnabled",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "affiliate",
+				"type": "address"
+			}
+		],
+		"name": "getAffiliateEarnings",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -1127,6 +1363,13 @@ const affiliateTrackerABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "toggleDirectPayment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -1149,105 +1392,6 @@ const affiliateTrackerABI = [
 	{
 		"stateMutability": "payable",
 		"type": "receive"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "affiliateEarnings",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "affiliates",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "isRegistered",
-				"type": "bool"
-			},
-			{
-				"internalType": "uint256",
-				"name": "commissionRate",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_salePrice",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_rate",
-				"type": "uint256"
-			}
-		],
-		"name": "calculateCommission",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "pure",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "canSetCommissionRate",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	}
 ]; 
 
