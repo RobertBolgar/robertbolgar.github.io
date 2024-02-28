@@ -241,6 +241,24 @@ async function fetchDirectPaymentStatus() {
 
     // Additional event listeners and functions
 
+    // Function to confirm withdrawal of funds from the NFTMint contract
+async function confirmWithdrawal() {
+    try {
+        const confirmed = confirm("Are you sure you want to withdraw funds from the contract?");
+        if (confirmed) {
+            // Call the withdrawFunds function when confirmed
+            await withdrawFunds();
+        } else {
+            console.log("Withdrawal canceled");
+        }
+    } catch (error) {
+        console.error("Error confirming withdrawal:", error.message);
+    }
+}
+
+
+
+
   // Function to withdraw funds
 async function withdrawFunds() {
     try {
@@ -384,6 +402,8 @@ async function setDefaultAffiliate(affiliateAddress) {
 }
 
     // Additional event listeners for new buttons
+
+    
 
    // Event listener for the HTML button
 document.getElementById('withdrawFundsButton').addEventListener('click', confirmWithdrawal);
