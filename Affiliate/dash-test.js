@@ -109,22 +109,26 @@ async function revokeAffiliate(affiliateAddress) {
 }
 
 
-    async function setCommissionRate(newRate) {
-        try {
-            // Validate commission rate input
-            if (isNaN(newRate) || newRate < 0 || newRate > 100) {
-                throw new Error("Invalid commission rate");
-            }
-
-            // Implement the logic to set commission rate
-            // ...
-
-            // Provide feedback to the user
-            console.log("Commission rate set successfully");
-        } catch (error) {
-            console.error("Error setting commission rate:", error.message);
+    // Function to set commission rate using the NFTmint contract
+async function setCommissionRate(newRate) {
+    try {
+        // Validate commission rate input
+        if (isNaN(newRate) || newRate < 0 || newRate > 100) {
+            throw new Error("Invalid commission rate");
         }
+
+        // Call the setCommissionRate function from the NFTmint contract
+        const tx = await nftContract.setCommissionRate(newRate);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Commission rate set successfully");
+    } catch (error) {
+        console.error("Error setting commission rate:", error.message);
     }
+}
 
     async function toggleDirectPayment() {
         try {
@@ -251,7 +255,13 @@ async function revokeAffiliate(affiliateAddress) {
     document.getElementById('revokeAffiliateBtn').addEventListener('click', async () => {
         const affiliateAddress = document.getElementById('affiliateAddress').value;
         await revokeAffiliate(affiliateAddress);
-});
+    });
+
+       // Event listener for the "Set Commission Rate" button click event
+    document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
+        const newRate = document.getElementById('commissionRate').value;
+        await setCommissionRate(newRate);
+    });
 
 
 
