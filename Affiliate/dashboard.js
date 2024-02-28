@@ -81,6 +81,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Failed to toggle direct payment.');
         }
     }
+    async function toggleDirectPaymentForUser(userAddress) {
+    try {
+        const tx = await affiliateContract.toggleDirectPaymentForUser(userAddress);
+        await tx.wait();
+        const directPaymentEnabled = await affiliateContract.directPaymentEnabledForUser(userAddress);
+        alert(`Direct payment ${directPaymentEnabled ? 'enabled' : 'disabled'} for user ${userAddress}.`);
+    } catch (error) {
+        console.error('Error toggling direct payment for user:', error);
+        alert('Failed to toggle direct payment for user.');
+    }
+}
+
+document.getElementById('toggleDirectPaymentForUserBtn').addEventListener('click', () => {
+    const userAddress = document.getElementById('userAddress').value;
+    toggleDirectPaymentForUser(userAddress);
+});
+
 
     // Event listeners for admin actions
     document.getElementById('approveUserBtn').addEventListener('click', () => {
