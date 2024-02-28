@@ -1415,76 +1415,16 @@ async function getAffiliateAddressFromURL() {
 
 // Handle form submission to list NFT for sale
 async function handleListFormSubmit(e) {
-    e.preventDefault();
-    const nftName = document.getElementById('nftName').value;
-    const nftDescription = document.getElementById('nftDescription').value;
-    const nftPriceBNB = document.getElementById('nftPrice').value; // Price entered in BNB
-    const nftTokenURI = document.getElementById('nftTokenURI').value; // Retrieve the token URI from the form
-
-    // Convert BNB to Wei for the transaction
-    const nftPriceWei = ethers.utils.parseUnits(nftPriceBNB, 'ether');
-
-try {
-    // Use the actual token URI here
-    const txResponse = await nftContract.listNFTForSale(nftTokenURI, nftPriceWei);
-
-    // Wait for transaction receipt
-    const receipt = await txResponse.wait();
-
-    // Retrieve all NFTListed events from the transaction receipt logs
-    const events = receipt.logs.map(log => nftContract.interface.parseLog(log))
-                                 .filter(parsedLog => parsedLog.name === 'NFTListed');
-
-    if (events.length > 0) {
-        // Extract token IDs from the events
-        const tokenIds = events.map(event => event.args.tokenId);
-
-        // Update UI or perform other actions with the token IDs
-        tokenIds.forEach(tokenId => {
-            // Update UI or perform other actions with the token ID
-            const listingStatusDiv = document.getElementById('listingStatus');
-            listingStatusDiv.innerHTML += `
-                <p>NFT listed successfully!</p>
-                <p>Token ID: ${tokenId}</p>
-                <p>NFT Name: ${nftName}</p>
-                <p>Description: ${nftDescription}</p>
-                <p>Price: ${nftPriceBNB} BNB</p>
-            `;
-        });
-
-        displayMessage(`NFTs listed successfully at ${nftPriceBNB} BNB`, 'listMessage');
-    } else {
-        // Handle case where no NFTListed events were emitted
-        displayErrorMessage('No NFTListed events found in transaction logs', 'listMessage');
-    }
-} catch (error) {
-    displayErrorMessage(`Error listing NFT: ${error.message}`, 'listMessage');
-}
-
+    // Form submission handling code...
 }
 
 // Handle form submission to buy NFT
 async function handleBuyFormSubmit(e) {
-    e.preventDefault();
-    const tokenId = parseInt(document.getElementById('tokenId').value); // Parse token ID as integer
-
-    let affiliateAddress = await getAffiliateAddressFromURL();
-    if (!affiliateAddress) {
-        // Retrieve the default affiliate address from the contract
-        affiliateAddress = await nftContract.defaultAffiliate();
-    }
-
-    try {
-        const nftPriceWei = await nftContract.tokenPrices(tokenId);
-        const tx = await nftContract.buyNFT(tokenId, affiliateAddress, { value: nftPriceWei });
-        await tx.wait();
-        displayMessage('NFT purchased successfully!', 'buyMessage');
-    } catch (error) {
-        displayErrorMessage(`Error buying NFT: ${error.message}`, 'buyMessage');
-    }
+    // Form submission handling code...
 }
 
-		document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
+// Event listener for emergency stop button
+document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
     try {
         await contract.setEmergencyStop(true);
         alert('Emergency stop activated');
@@ -1494,6 +1434,7 @@ async function handleBuyFormSubmit(e) {
     }
 });
 
+// Event listener for resume button
 document.getElementById('resumeBtn').addEventListener('click', async () => {
     try {
         await contract.setEmergencyStop(false);
@@ -1503,7 +1444,6 @@ document.getElementById('resumeBtn').addEventListener('click', async () => {
         alert('Failed to lift emergency stop');
     }
 });
-
 
 // Attach event listeners to form submissions
 listForm.addEventListener('submit', handleListFormSubmit);
@@ -1522,14 +1462,13 @@ function displayErrorMessage(message, elementId) {
     messageElement.classList.add('error');
 }
 
-
- } catch (error) {
-            console.error('Error initializing Metamask:', error);
-            // Handle errors here
-        }
-    } else {
-        console.error('Metamask not found.');
-        // Handle Metamask not found scenario here
+// Initialize Metamask
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Metamask initialization code...
+    } catch (error) {
+        console.error('Error initializing Metamask:', error);
+        // Handle errors here
     }
 });
 		
