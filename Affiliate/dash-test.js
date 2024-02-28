@@ -287,20 +287,18 @@ async function displayNFTContractBalance() {
 }
 
 
-
-
-    // Function to trigger emergency stop
-    async function triggerEmergencyStop() {
-        try {
-            // Implement the logic to trigger emergency stop
-            // ...
-
-            // Provide feedback to the user
-            console.log("Emergency stop triggered successfully");
-        } catch (error) {
-            console.error("Error triggering emergency stop:", error.message);
-        }
+ // Function to trigger emergency stop
+async function triggerEmergencyStop() {
+    try {
+        // Replace this with your actual logic to trigger emergency stop
+        // For example, if you have a contract function to trigger emergency stop, call it here
+        
+        // Provide feedback to the user
+        console.log("Emergency stop triggered successfully");
+    } catch (error) {
+        console.error("Error triggering emergency stop:", error.message);
     }
+}
 
 // Function to fetch and display sales
 async function fetchSales() {
@@ -361,10 +359,11 @@ document.getElementById('displayNFTContractBalanceBtn').addEventListener('click'
 });
  
 
-   /* // Event listener for the "Trigger Emergency Stop" button click event
-    document.getElementById('triggerEmergencyStopBtn').addEventListener('click', async () => {
-        await triggerEmergencyStop();
-    }); */
+ // Event listener for the "Trigger Emergency Stop" button click event
+document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
+    await triggerEmergencyStop();
+});
+
 
     // Event listener for the "Fetch Sales" button click event
 document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
