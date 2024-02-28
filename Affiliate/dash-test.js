@@ -245,7 +245,7 @@ async function fetchDirectPaymentStatus() {
 async function withdrawFunds() {
     try {
         // Get the contract balance
-        const contractBalance = await ethers.provider.getBalance(contractAddress);
+        const contractBalance = await ethers.provider.getBalance(nftContractAddress);
 
         // Check if the contract has balance
         if (contractBalance.gt(0)) {
