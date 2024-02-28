@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT & Affiliate Management</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Ensure the CSS file is linked -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <section id="adminControls">
+        <h2>Admin Controls</h2>
+        <div id="userApproval">
+            <h3>User Approval</h3>
+            <input type="text" id="userAddress" placeholder="User Address">
+            <button onclick="approveUser()">Approve User</button>
+            <button onclick="revokeUser()">Revoke User</button>
+        </div>
+        <div id="affiliateApproval">
+            <h3>Affiliate Approval</h3>
+            <input type="text" id="affiliateAddress" placeholder="Affiliate Address">
+            <button onclick="approveAffiliate()">Approve Affiliate</button>
+            <button onclick="revokeAffiliate()">Revoke Affiliate</button>
+        </div>
+        <div id="commissionControl">
+            <h3>Commission Rate</h3>
+            <input type="number" id="commissionRate" placeholder="Commission Rate (%)">
+            <button onclick="setCommissionRate()">Set Rate</button>
+        </div>
+        <div id="toggleDirectPaymentForUser">
+            <h3>Toggle Direct Payment for User</h3>
+            <input type="text" id="userAddressToggle" placeholder="User Address">
+            <button id="toggleDirectPaymentForUserBtn">Toggle Direct Payment</button>
+        </div>
+
+        <div id="approvedAffiliates">
+            <h3>Approved Affiliates</h3>
+            <ul id="affiliateList"></ul>
+        </div>
+
+        <div id="approvedUsers">
+            <h3>Approved Users</h3>
+            <ul id="userList"></ul>
+        </div>
+
+        <div id="directPaymentControl">
+            <h3>Direct Payments</h3>
+            <label class="switch">
+                <input id="directPaymentToggle" type="checkbox">
+                <span class="slider round"></span>
+            </label>
+            <span id="directPaymentStatus">Direct Payments Enabled</span>
+        </div>
+        <button id="fetchSalesBtn">Fetch Sales</button> <!-- New button for fetching sales -->
+        <ul id="salesList"></ul> <!-- List to display fetched sales -->
+        <button id="viewContractBalanceBtn">View Contract Balance</button>
+        <button id="emergencyStopBtn">Emergency Stop</button>
+        <button id="resumeBtn">Resume</button>
+        <button id="withdrawFundsBtn">Withdraw Funds</button>
+    </section>
+</div>
+
+<script src="dash-test.js"></script> <!-- Link to the JavaScript file -->
+</body>
+</html>
