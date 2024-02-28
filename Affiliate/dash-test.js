@@ -152,19 +152,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Function to fetch the status of direct payments
-    async function fetchDirectPaymentStatus() {
-        try {
-            // Call a function to check if direct payments are enabled or disabled
-            const isDirectPaymentEnabled = await affiliateContract.getDirectPaymentStatus();
+   // Function to fetch the current status of direct payments
+async function fetchDirectPaymentStatus() {
+    try {
+        // Call the isDirectPaymentEnabled function from the AffiliateTracker contract
+        const isEnabled = await affiliateContract.isDirectPaymentEnabled();
 
-            // Update the content of the element based on the status
-            const directPaymentStatusElement = document.getElementById('directPaymentStatus');
-            directPaymentStatusElement.textContent = `Direct Payment Status: ${isDirectPaymentEnabled ? 'Enabled' : 'Disabled'}`;
-        } catch (error) {
-            console.error("Error fetching direct payment status:", error.message);
-        }
+        // Display the status on the dashboard
+        const statusElement = document.getElementById('directPaymentStatus');
+        statusElement.textContent = isEnabled ? 'Enabled' : 'Disabled';
+    } catch (error) {
+        console.error("Error fetching direct payment status:", error.message);
     }
+}
+
 
     // Function to toggle direct payment
     async function toggleDirectPayment() {
@@ -234,8 +235,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Event listener for the "Fetch Direct Payment Status" button click event
     document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click', async () => {
-        await fetchDirectPaymentStatus();
+    await fetchDirectPaymentStatus();
     });
+
 
     // Additional event listeners and functions
 
