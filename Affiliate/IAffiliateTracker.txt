@@ -38,8 +38,6 @@ interface IAffiliateTracker {
      */
     function getAffiliateEarnings(address affiliate) external view returns (uint256);
 
-    // Events
-
     /**
      * @dev Emitted when a new affiliate is registered.
      * @param affiliate The address of the registered affiliate.
@@ -70,7 +68,19 @@ interface IAffiliateTracker {
     event ContractAllowed(address contractAddress);
 
     /**
-     * @dev Toggles the ability to allow or disallow direct payments.
+     * @dev Toggles the ability to allow or disallow direct payments globally.
      */
-    function toggleDirectPayment() external;
+    function toggleDirectPaymentGlobal() external;
+
+    /**
+     * @dev Toggles the ability to allow or disallow direct payments for a specific user.
+     * @param user The address of the user for whom to toggle direct payments.
+     */
+    function toggleDirectPaymentUser(address user) external;
+
+    /**
+     * @dev Sets the address of the contract that is allowed to control all functions of the AffiliateTracker.
+     * @param contractAddress The address of the contract to set as the authorized contract.
+     */
+    function setAuthorizedContract(address contractAddress) external;
 }
