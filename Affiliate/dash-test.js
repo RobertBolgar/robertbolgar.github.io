@@ -226,9 +226,10 @@ async function approveUser(userAddress) {
 
        // Add an event listener for the "Revoke User" button click event
     document.getElementById('revokeUserBtn').addEventListener('click', async () => {
-        const userAddress = document.getElementById('userAddress').value;
+        const userAddress = document.getElementById('userAddressToRemove').value;
         await revokeUser(userAddress);
     });
+
 
 
 });
