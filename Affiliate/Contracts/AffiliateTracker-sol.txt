@@ -30,9 +30,16 @@ contract AffiliateTracker is Ownable, ReentrancyGuard {
         _;
     }
 
-constructor() Ownable(msg.sender) {}
+    modifier onlyOwnerOrAuthorized() {
+        require(msg.sender == owner() || msg.sender == linkedContract, "Not authorized");
+        _;
+    }
 
-    function registerAffiliate(address _affiliate, uint256 _commissionRate) external onlyOwner {
+    address public linkedContract;
+
+    constructor() Ownable(msg.sender) {}
+
+    function registerAffiliate(address _affiliate, uint256 _commissionRate) external onlyOwnerOrAuthorized {
         require(!affiliates[_affiliate].isRegistered, "Affiliate already registered");
         require(_commissionRate >= 1 && _commissionRate <= 100, "Invalid commission rate");
         affiliates[_affiliate] = Affiliate(true, _commissionRate);
@@ -64,7 +71,7 @@ constructor() Ownable(msg.sender) {}
         canSetCommissionRate[minter] = allowed;
     }
 
-    function setCommissionRate(address affiliate, uint256 newRate) external {
+    function setCommissionRate(address affiliate, uint256 newRate) external onlyOwnerOrAuthorized {
         require(canSetCommissionRate[msg.sender] || msg.sender == owner(), "Not authorized");
         require(affiliates[affiliate].isRegistered, "Affiliate not registered");
         require(newRate >= 1 && newRate <= 100, "Invalid commission rate");
@@ -84,6 +91,10 @@ constructor() Ownable(msg.sender) {}
 
     function getAffiliateEarnings(address affiliate) external view returns (uint256) {
         return affiliateEarnings[affiliate];
+    }
+
+    function setLinkedContract(address _contract) external onlyOwner {
+        linkedContract = _contract;
     }
 
     receive() external payable {
