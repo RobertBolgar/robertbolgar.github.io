@@ -272,19 +272,20 @@ async function withdrawFunds() {
 }
 
 
-     // Function to display the NFT contract balance
+     // Function to display the NFT contract balance in BNB
 async function displayNFTContractBalance() {
     try {
-        // Use the provider to get the balance of the NFT contract
+        // Ensure your provider is connected to the Binance Smart Chain
         const contractBalance = await provider.getBalance(nftContractAddress);
-        const balanceInEther = ethers.utils.formatEther(contractBalance);
-        document.getElementById('nftContractBalanceResult').textContent = `NFT Contract Balance: ${balanceInEther} ETH`;
-        console.log("NFT contract balance displayed successfully");
+        const balanceInBNB = ethers.utils.formatEther(contractBalance); // BNB has the same decimal resolution as Ether
+        document.getElementById('nftContractBalanceResult').textContent = `NFT Contract Balance: ${balanceInBNB} BNB`;
+        console.log("NFT contract balance displayed successfully in BNB");
     } catch (error) {
-        console.error("Error displaying NFT contract balance:", error.message);
-        document.getElementById('nftContractBalanceResult').textContent = "Error displaying NFT contract balance.";
+        console.error("Error displaying NFT contract balance in BNB:", error.message);
+        document.getElementById('nftContractBalanceResult').textContent = "Error displaying NFT contract balance in BNB.";
     }
 }
+
 
 
 
