@@ -148,6 +148,42 @@ document.getElementById('toggleDirectPaymentForUserBtn').addEventListener('click
         toggleDirectPayment();
     });
 
+
+    async function getApprovedAffiliates() {
+    try {
+        const affiliates = await affiliateContract.getApprovedAffiliates();
+        const affiliateList = document.getElementById('affiliateList');
+        affiliateList.innerHTML = '';
+        affiliates.forEach(affiliate => {
+            const listItem = document.createElement('li');
+            listItem.textContent = affiliate;
+            affiliateList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Error fetching approved affiliates:', error);
+    }
+}
+
+async function getApprovedUsers() {
+    try {
+        const users = await nftContract.getApprovedUsers();
+        const userList = document.getElementById('userList');
+        userList.innerHTML = '';
+        users.forEach(user => {
+            const listItem = document.createElement('li');
+            listItem.textContent = user;
+            userList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Error fetching approved users:', error);
+    }
+}
+
+// Call the functions to fetch and display the lists of approved affiliates and users
+getApprovedAffiliates();
+getApprovedUsers();
+
+
     // Function to fetch and display sales
     async function fetchSales() {
         try {
