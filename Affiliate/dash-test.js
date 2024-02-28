@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateAbi = require('./affiliate_abi.js');
 
     // Contract addresses
-    const nftContractAddress = "YOUR_NFT_CONTRACT_ADDRESS";
-    const affiliateContractAddress = "YOUR_AFFILIATE_CONTRACT_ADDRESS";
+    const nftContractAddress = "0xd940B79622e07E8CC54DEB37037bD35c18387Dc2";
+    const affiliateContractAddress = "0x17B4166EA43F770Bd6ff36D68E6A9De4D4d2Ff42";
 
     // Contract instances
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
