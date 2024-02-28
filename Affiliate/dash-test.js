@@ -319,9 +319,15 @@ async function revokeAffiliate(affiliateAddress) {
   // Event listener for the "Set Commission Rate" button click event
 document.getElementById('setCommissionRateBtn').addEventListener('click', async () => {
     // Get the new commission rate from the input field
-    const newRate = document.getElementById('commissionRate').value;
+    const newRateInput = document.getElementById('commissionRate').value;
+    console.log("New rate input:", newRateInput);
+
+    // Parse the input value as a floating-point number
+    const newRate = parseFloat(newRateInput);
+    console.log("Parsed rate:", newRate);
+
     // Call the setCommissionRate function with the new rate
-    await setCommissionRate(parseFloat(newRate));
+    await setCommissionRate(newRate);
 });
 
 
