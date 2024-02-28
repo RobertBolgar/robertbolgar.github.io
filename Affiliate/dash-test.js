@@ -356,10 +356,45 @@ function displaySalesData(salesData) {
     });
 }
 
+   // Function to set the default affiliate in the NFTMint contract
+async function setDefaultAffiliate(affiliateAddress) {
+    try {
+        // Check if the provided address is valid
+        if (!ethers.utils.isAddress(affiliateAddress)) {
+            throw new Error("Invalid affiliate address");
+        }
+
+        // Get the signer
+        const signer = await ethers.provider.getSigner();
+
+        // Get the instance of the NFTMint contract
+        const nftMintContract = new ethers.Contract(contractAddress, nftMintAbi, signer);
+
+        // Call the setDefaultAffiliate function
+        const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Default affiliate set successfully");
+    } catch (error) {
+        console.error("Error setting default affiliate:", error.message);
+    }
+}
+
     // Additional event listeners for new buttons
 
    // Event listener for the HTML button
 document.getElementById('withdrawFundsButton').addEventListener('click', confirmWithdrawal);
+
+    // Event listener for the "Set Default Affiliate" button click event
+document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
+    const affiliateAddress = prompt("Enter the address of the default affiliate:");
+    if (affiliateAddress) {
+        await setDefaultAffiliate(affiliateAddress);
+    }
+});
 
 
 
