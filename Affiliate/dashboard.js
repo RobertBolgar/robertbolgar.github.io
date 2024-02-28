@@ -1640,9 +1640,9 @@ getApprovedUsers();
     }
 
 
-    document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
+document.getElementById('emergencyStopBtn').addEventListener('click', async () => {
     try {
-        await contract.setEmergencyStop(true);
+        await nftContract.setEmergencyStop(true); // Corrected from contract to nftContract
         alert('Emergency stop activated');
     } catch (error) {
         console.error('Error setting emergency stop:', error);
@@ -1652,7 +1652,7 @@ getApprovedUsers();
 
 document.getElementById('resumeBtn').addEventListener('click', async () => {
     try {
-        await contract.setEmergencyStop(false);
+        await nftContract.setEmergencyStop(false); // Corrected from contract to nftContract
         alert('Emergency stop lifted');
     } catch (error) {
         console.error('Error lifting emergency stop:', error);
@@ -1665,4 +1665,4 @@ document.getElementById('resumeBtn').addEventListener('click', async () => {
     document.getElementById('fetchSalesBtn').addEventListener('click', () => {
         fetchSales();
     });
-
+  });
