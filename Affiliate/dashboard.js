@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize connection to Ethereum
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -71,6 +70,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    async function toggleDirectPayment() {
+        try {
+            const tx = await affiliateContract.toggleDirectPayment();
+            await tx.wait();
+            const directPaymentEnabled = await affiliateContract.directPaymentEnabled();
+            alert(`Direct payment ${directPaymentEnabled ? 'enabled' : 'disabled'}.`);
+        } catch (error) {
+            console.error('Error toggling direct payment:', error);
+            alert('Failed to toggle direct payment.');
+        }
+    }
+
     // Event listeners for admin actions
     document.getElementById('approveUserBtn').addEventListener('click', () => {
         const userAddress = document.getElementById('userAddress').value;
@@ -95,5 +106,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('setCommissionRateBtn').addEventListener('click', () => {
         const rate = parseInt(document.getElementById('commissionRate').value, 10);
         setCommissionRate(rate);
+    });
+
+    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', () => {
+        toggleDirectPayment();
+    });
+
+    // Function to fetch and display sales
+    async function fetchSales() {
+        try {
+            // Fetch past events from the NFTMint contract
+            const filter = nftContract.filters.NFTSold(null, null, null, null, null);
+            const events = await nftContract.queryFilter(filter);
+
+            // Display sale details
+            const salesList = document.getElementById('salesList');
+            salesList.innerHTML = ''; // Clear previous list
+            
+            events.forEach(event => {
+                const tokenId = event.args.tokenId.toString();
+                const buyer = event.args.buyer;
+                const seller = event.args.seller;
+                const affiliate = event.args.affiliate;
+                const salePrice = ethers.utils.formatEther(event.args.salePrice);
+
+                const listItem = document.createElement('li');
+                listItem.textContent = `Token ID: ${tokenId}, Buyer: ${buyer}, Seller: ${seller}, Affiliate: ${affiliate}, Sale Price: ${salePrice} ETH`;
+                salesList.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Error fetching sales:', error);
+            alert('Failed to fetch sales.');
+        }
+    }
+
+    // Event listener for fetching sales
+    document.getElementById('fetchSalesBtn').addEventListener('click', () => {
+        fetchSales();
     });
 });
