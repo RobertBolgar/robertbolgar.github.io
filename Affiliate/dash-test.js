@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
 
-   // Admin function to approve a user
+// Admin function to approve a user
 async function approveUser(userAddress) {
     try {
         // Validate user input
@@ -135,16 +135,19 @@ async function setCommissionRate(newRate) {
 }
 
     async function toggleDirectPayment() {
-        try {
-            // Implement the logic to toggle direct payment
-            // ...
+    try {
+        // Call the toggleDirectPayment function from the contract
+        const tx = await affiliateTracker.toggleDirectPayment();
 
-            // Provide feedback to the user
-            console.log("Direct payment toggled successfully");
-        } catch (error) {
-            console.error("Error toggling direct payment:", error.message);
-        }
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Direct payment toggled successfully");
+    } catch (error) {
+        console.error("Error toggling direct payment:", error.message);
     }
+}
     
     async function toggleDirectPaymentForUser(userAddress) {
         try {
@@ -268,7 +271,10 @@ async function setCommissionRate(newRate) {
         await setCommissionRate(newRate);
     });
 
-    
+    // Event listener for the "Toggle Direct Payment" button click event
+    document.getElementById('toggleDirectPaymentBtn').addEventListener('click', async () => {
+        await toggleDirectPayment();
+    });
 
 
 
