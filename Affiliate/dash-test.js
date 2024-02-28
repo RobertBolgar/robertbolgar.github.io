@@ -254,21 +254,23 @@ async function fetchDirectPaymentStatus() {
         }
     }
 
-   // Function to view contract balance
-async function viewContractBalance() {
+         // Function to view contract balance
+    async function viewContractBalance() {
     try {
-        // Call the appropriate method to get the contract balance
-        const contractBalance = await web3.eth.getBalance(affiliateContract.address);
+        // Call a function to get the contract balance
+        const contractBalance = await web3.eth.getBalance(contractAddress);
 
-        // Convert the balance to Ether
+        // Convert the balance to ether and display it
         const balanceInEther = web3.utils.fromWei(contractBalance, 'ether');
+        document.getElementById('contractBalance').textContent = `Contract Balance: ${balanceInEther} ETH`;
 
-        // Display the contract balance to the user
-        console.log("Contract balance:", balanceInEther, "ETH");
+        // Provide feedback to the user
+        console.log("Contract balance viewed successfully");
     } catch (error) {
         console.error("Error viewing contract balance:", error.message);
     }
 }
+
 
 
     // Function to trigger emergency stop
@@ -305,9 +307,10 @@ async function viewContractBalance() {
     }); */
 
     // Event listener for the "View Contract Balance" button click event
-    document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
-        await viewContractBalance();
-    }); 
+document.getElementById('viewContractBalanceBtn').addEventListener('click', async () => {
+    await viewContractBalance();
+});
+ 
 
    /* // Event listener for the "Trigger Emergency Stop" button click event
     document.getElementById('triggerEmergencyStopBtn').addEventListener('click', async () => {
