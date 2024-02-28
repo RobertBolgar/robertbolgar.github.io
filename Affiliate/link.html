@@ -7,19 +7,25 @@
 </head>
 <body>
     <h2>Affiliate Link Generator</h2>
+    <label for="tokenId">Token ID:</label>
+    <input type="text" id="tokenId" name="tokenId">
+    <br>
     <label for="affiliateCode">Your Wallet Address:</label>
     <input type="text" id="affiliateCode" name="affiliateCode">
+    <br>
     <button onclick="generateLink()">Generate Link</button>
     <p>Generated Link: <span id="generatedLink"></span></p>
 
     <script>
         function generateLink() {
             const baseNFTMintPageURL = 'https://robertbolgar.dev/Affiliate'; // Replace with your actual NFT mint page URL
+            const tokenIdInput = document.getElementById('tokenId');
             const affiliateCodeInput = document.getElementById('affiliateCode');
             const generatedLinkElement = document.getElementById('generatedLink');
             
+            const tokenId = tokenIdInput.value;
             const affiliateCode = affiliateCodeInput.value;
-            const generatedLink = `${baseNFTMintPageURL}?affiliate=${encodeURIComponent(affiliateCode)}`;
+            const generatedLink = `${baseNFTMintPageURL}?tokenId=${encodeURIComponent(tokenId)}&affiliate=${encodeURIComponent(affiliateCode)}`;
 
             generatedLinkElement.textContent = generatedLink;
             // Optionally, automatically copy the generated link to clipboard
