@@ -1664,5 +1664,6 @@ document.getElementById('resumeBtn').addEventListener('click', async () => {
     // Event listener for fetching sales
     document.getElementById('fetchSalesBtn').addEventListener('click', () => {
         fetchSales();
-    });
- }); 
+   
+});
+
