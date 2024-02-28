@@ -130,14 +130,16 @@ async function revokeAffiliate(affiliateAddress) {
 }
 
 
-    /// Function to set commission rate using the NFTmint contract
+   /// Function to set commission rate using the NFTmint contract
 async function setCommissionRate() {
     try {
         // Get the commission rate input value
         const newRateInput = document.getElementById('commissionRate').value;
-        
+        console.log("New rate input:", newRateInput);
+
         // Convert the input value to a number
         const newRate = parseFloat(newRateInput);
+        console.log("Parsed rate:", newRate);
 
         // Validate commission rate input
         if (isNaN(newRate) || newRate < 0 || newRate > 100) {
@@ -146,6 +148,7 @@ async function setCommissionRate() {
 
         // Convert commission rate to BigNumber if necessary
         const commissionRate = ethers.utils.parseUnits(newRate.toString(), 0); // Assuming rate is passed as a percentage
+        console.log("Commission rate in BigNumber:", commissionRate.toString());
 
         // Call the setCommissionRate function from the NFTmint contract
         const tx = await nftContract.setCommissionRate(commissionRate);
