@@ -1,4 +1,4 @@
-const mintAbi = [
+[
 	{
 		"inputs": [
 			{
@@ -934,6 +934,4 @@ const mintAbi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
-
-module.exports = mintAbi;
+]
