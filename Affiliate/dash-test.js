@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateAbiResponse = await fetch('./affiliate_abi.json');
     const affiliateAbi = await affiliateAbiResponse.json();
 
+    const { ethers } = require('ethers');
+
     // Contract addresses
     const nftContractAddress = "0x0D3f36AC41e73FDCAb1d119a239305e58bfb2568";
     const affiliateContractAddress = "0x4A6E0AbC1b0A6c3D1893bEe81e4aAe2BB8016CAA";
@@ -18,8 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Contract instances
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
-
-    const { ethers } = require('ethers');
 
 async function connectToProvider() {
     // Check if the provider is available
