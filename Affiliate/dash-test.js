@@ -263,7 +263,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fetchDirectPaymentStatus();
     });
 
-    // Additional event listeners and functions
 
     // Function to confirm withdrawal of funds from the NFTMint contract
     async function confirmWithdrawal() {
@@ -302,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
         console.log("Contract balance is zero");
     }
+}
     
     // Function to display the NFT contract balance in BNB
     async function displayNFTContractBalance() {
