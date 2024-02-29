@@ -287,15 +287,9 @@ async function confirmWithdrawal() {
 
 
 
-  // Function to withdraw funds
-async function withdrawFunds() {
-    try {
-        // Check if ethers provider is available
-        if (typeof ethers.provider === 'undefined') {
-            console.error("Ethers provider is not available");
-            return;
-        }
+ 
 
+        
         // Get the contract balance
         const contractBalance = await ethers.provider.getBalance(nftContractAddress);
 
@@ -447,7 +441,7 @@ document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setD
 
     
 // Event listener for the HTML button to withdraw funds
-    document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
+document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
 });
 
 
