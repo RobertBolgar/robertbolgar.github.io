@@ -26,42 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
-    // Function to withdraw funds
-    async function withdrawFunds() {
-        try {
-            const contractBalance = await provider.getBalance(nftContractAddress);
-            if (contractBalance.gt(0)) {
-                const tx = await signer.sendTransaction({
-                    to: await signer.getAddress(),
-                    value: contractBalance
-                });
-                await tx.wait();
-                console.log("Funds withdrawn successfully");
-            } else {
-                console.log("Contract balance is zero");
-            }
-        } catch (error) {
-            console.error("Error withdrawing funds:", error.message);
-        }
-    }
+    // Admin functions
 
-    // Function to set the AffiliateTracker contract address
-    async function setAffiliateTrackerAddress(address) {
-        try {
-            // Call the setAffiliateTrackerAddress function from the NFTmint contract
-            const tx = await nftContract.setAffiliateTrackerAddress(address);
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("AffiliateTracker address set successfully");
-        } catch (error) {
-            console.error("Error setting AffiliateTracker address:", error.message);
-        }
-    }
-
-    // Admin function to approve a user
+    // Function to approve a user
     async function approveUser(userAddress) {
         try {
             // Validate user input
@@ -82,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Admin function to revoke a user
+    // Function to revoke a user
     async function revokeUser(userAddress) {
         try {
             // Validate user input
@@ -103,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Admin function to approve and register an affiliate
+    // Function to approve and register an affiliate
     async function approveAndRegisterAffiliate(affiliateAddress, commissionRate) {
         try {
             // Validate inputs
@@ -175,6 +142,41 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Commission rate set successfully");
         } catch (error) {
             console.error("Error setting commission rate:", error.message);
+        }
+    }
+
+    // Function to set the AffiliateTracker contract address
+    async function setAffiliateTrackerAddress(address) {
+        try {
+            // Call the setAffiliateTrackerAddress function from the NFTmint contract
+            const tx = await nftContract.setAffiliateTrackerAddress(address);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("AffiliateTracker address set successfully");
+        } catch (error) {
+            console.error("Error setting AffiliateTracker address:", error.message);
+        }
+    }
+
+    // Function to withdraw funds
+    async function withdrawFunds() {
+        try {
+            const contractBalance = await provider.getBalance(nftContractAddress);
+            if (contractBalance.gt(0)) {
+                const tx = await signer.sendTransaction({
+                    to: await signer.getAddress(),
+                    value: contractBalance
+                });
+                await tx.wait();
+                console.log("Funds withdrawn successfully");
+            } else {
+                console.log("Contract balance is zero");
+            }
+        } catch (error) {
+            console.error("Error withdrawing funds:", error.message);
         }
     }
 
@@ -263,46 +265,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fetchDirectPaymentStatus();
     });
 
-
-    // Function to confirm withdrawal of funds from the NFTMint contract
-    async function confirmWithdrawal() {
-        try {
-            const confirmed = confirm("Are you sure you want to withdraw funds from the contract?");
-            if (confirmed) {
-                // Call the withdrawFunds function when confirmed
-                await withdrawFunds();
-            } else {
-                console.log("Withdrawal canceled");
-            }
-        } catch (error) {
-            console.error("Error confirming withdrawal:", error.message);
-        }
-    }
-
-    // Get the contract balance
-    const contractBalance = await ethers.provider.getBalance(nftContractAddress);
-
-    // Check if the contract has balance
-    if (contractBalance.gt(0)) {
-        // Get the signer
-        const signer = ethers.provider.getSigner();
-
-        // Send the contract balance to the signer's address
-        const tx = await signer.sendTransaction({
-            to: signer.getAddress(),
-            value: contractBalance
-        });
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Funds withdrawn successfully");
-    } else {
-        console.log("Contract balance is zero");
-    }
-}
-    
     // Function to display the NFT contract balance in BNB
     async function displayNFTContractBalance() {
         try {
@@ -416,6 +378,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error setting default affiliate:", error.message);
         }
     }
+
+    // Event listeners for additional actions
 
     // Event listener for the "Set Default Affiliate" button click event
     document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
