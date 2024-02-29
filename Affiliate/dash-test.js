@@ -349,41 +349,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-  // Function to set the default affiliate in the NFTMint contract
-    async function setDefaultAffiliate(affiliateAddress) {
-        try {
-            // Validate the affiliate address
-            if (!ethers.utils.isAddress(affiliateAddress)) {
-                throw new Error("Invalid affiliate address");
-            }
-
-            // Call the setDefaultAffiliate function
-            const tx = await nftContract.setDefaultAffiliate(affiliateAddress);
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("Default affiliate set successfully");
-        } catch (error) {
-            console.error("Error setting default affiliate:", error.message);
+  async function setDefaultAffiliate(affiliateAddress) {
+    try {
+        // Ensure the affiliate address is not empty
+        if (!affiliateAddress) {
+            console.error("Affiliate address is required");
+            alert("Please enter an affiliate address.");
+            return;
         }
-    }
 
-    // Event listeners for additional actions
+        // Call the setDefaultAffiliate function on your contract
+        const tx = await nftContract.setDefaultAffiliate(affiliateAddress);
+        console.log('Setting default affiliate...', tx.hash);
+
+        // Wait for the transaction to be mined
+        const receipt = await tx.wait();
+        console.log('Transaction confirmed:', receipt);
+
+        alert('Default affiliate set successfully!');
+    } catch (error) {
+        console.error('Error setting default affiliate:', error);
+        alert('Failed to set default affiliate. See console for more details.');
+    }
+}
+
 
 // Event listener for the "Set Default Affiliate" button
-    document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
-        try {
-            // Get the affiliate address from the input field
-            const affiliateAddress = document.getElementById('setDefaultAffiliateInput').value.trim();
-
-            // Call the setDefaultAffiliate function with the provided address
-            await setDefaultAffiliate(affiliateAddress);
-        } catch (error) {
-            console.error("Error:", error.message);
-        }
-    });
+   // Example usage: Listen for button click to set default affiliate
+document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
+    const affiliateAddress = document.getElementById('affiliateAddress').value.trim();
+    await setDefaultAffiliate(affiliateAddress);
+});
 
     // Event listener for the HTML button to withdraw funds
     document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
