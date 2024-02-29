@@ -409,8 +409,11 @@ function displaySalesData(salesData) {
 }
 
    // Function to set the default affiliate in the NFTMint contract
-async function setDefaultAffiliate(affiliateAddress) {
+async function setDefaultAffiliate() {
     try {
+        const affiliateAddress = prompt("Enter the address of the default affiliate:");
+        if (!affiliateAddress) return; // Exit if the user cancels
+
         // Check if the provided address is valid
         if (!ethers.utils.isAddress(affiliateAddress)) {
             throw new Error("Invalid affiliate address");
@@ -420,7 +423,7 @@ async function setDefaultAffiliate(affiliateAddress) {
         const signer = await ethers.provider.getSigner();
 
         // Get the instance of the NFTMint contract
-        const nftMintContract = new ethers.Contract(contractAddress, nftMintAbi, signer);
+        const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
 
         // Call the setDefaultAffiliate function
         const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
@@ -434,6 +437,10 @@ async function setDefaultAffiliate(affiliateAddress) {
         console.error("Error setting default affiliate:", error.message);
     }
 }
+
+// Event listener for the "Set Default Affiliate" button click event
+document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
+
 
     // Additional event listeners for new buttons
 
@@ -449,6 +456,7 @@ document.getElementById('setDefaultAffiliateBtn').addEventListener('click', asyn
         await setDefaultAffiliate(affiliateAddress);
     }
 });
+
 
 
 
