@@ -459,7 +459,7 @@ document.getElementById('activateEmergencyStopBtn').addEventListener('click', as
 // Event listener for the "Deactivate Emergency Stop" button
 document.getElementById('deactivateEmergencyStopBtn').addEventListener('click', async () => {
     await deactivateEmergencyStop();
-})
+});
 
 
     // Event listener for the "Fetch Sales" button click event
