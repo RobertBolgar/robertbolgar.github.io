@@ -19,6 +19,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
+    const { ethers } = require('ethers');
+
+async function connectToProvider() {
+    // Check if the provider is available
+    if (typeof window.ethereum !== 'undefined') {
+        // Initialize ethers provider using MetaMask provider
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        return provider;
+    } else {
+        console.error('Ethereum provider is not available');
+        return null;
+    }
+}
+
+async function withdrawFunds() {
+    try {
+        // Connect to ethers provider
+        const provider = await connectToProvider();
+        if (!provider) return;
+
+        // Get the contract balance
+        const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+        const contractBalance = await provider.getBalance(contractAddress);
+
+        // Continue with the withdrawal logic...
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+
     // Function to set the AffiliateTracker contract address
     async function setAffiliateTrackerAddress(address) {
         try {
@@ -412,8 +444,9 @@ async function setDefaultAffiliate(affiliateAddress) {
 
     
 
-   // Event listener for the HTML button
-document.getElementById('withdrawFundsButton').addEventListener('click', confirmWithdrawal);
+ // Event listener for the HTML button
+document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
+
 
     // Event listener for the "Set Default Affiliate" button click event
 document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
