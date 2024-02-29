@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IAffiliateTracker {
+    // Registers a new affiliate with a commission rate
+    function registerAffiliate(address affiliate, uint256 commissionRate) external;
+
+    // Pays commission to an affiliate for a sale
+    function payCommission(address affiliate, uint256 salePrice, address nft, uint256 tokenId) external;
+
+    // Sets or updates the commission rate for an affiliate
+    function setCommissionRate(address affiliate, uint256 newRate) external;
+
+    // Allows a contract to call the `payCommission` function
+    function allowContract(address _contract) external;
+
+    // Returns the total amount of commissions earned by a specific affiliate
+    function getAffiliateEarnings(address affiliate) external view returns (uint256);
+
+    // Toggles the global setting for allowing or disallowing direct payments
+    function toggleDirectPaymentGlobal() external;
+
+    // Toggles the direct payment ability for a specific user
+    function toggleDirectPaymentUser(address user) external;
+
+    // Sets the contract that is authorized to control all functions
+    function setAuthorizedContract(address contractAddress) external;
+
+    // Checks if direct payments are enabled globally
+    function isDirectPaymentEnabled() external view returns (bool);
+
+    // Events
+    event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
+    event CommissionPaid(address indexed affiliate, uint256 amount, address nft, uint256 tokenId);
+    event AffiliateCommissionRateUpdated(address indexed affiliate, uint256 newRate);
+    event ContractAllowed(address contractAddress);
+}
