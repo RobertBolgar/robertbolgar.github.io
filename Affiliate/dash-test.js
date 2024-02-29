@@ -349,35 +349,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Function to set the default affiliate in the NFTMint contract
-    async function setDefaultAffiliate() {
-        try {
-            const affiliateAddress = prompt("Enter the address of the default affiliate:");
-            if (!affiliateAddress) return; // Exit if the user cancels
-
-            // Check if the provided address is valid
-            if (!ethers.utils.isAddress(affiliateAddress)) {
-                throw new Error("Invalid affiliate address");
-            }
-
-            // Get the signer
-            const signer = await ethers.provider.getSigner();
-
-            // Get the instance of the NFTMint contract
-            const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
-
-            // Call the setDefaultAffiliate function
-            const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("Default affiliate set successfully");
-        } catch (error) {
-            console.error("Error setting default affiliate:", error.message);
+   // Function to set the default affiliate in the NFTMint contract
+async function setDefaultAffiliate() {
+    try {
+        if (!provider) {
+            console.error("Ethereum provider is not available");
+            return;
         }
+
+        const signer = provider.getSigner();
+        const affiliateAddress = prompt("Enter the address of the default affiliate:");
+        if (!affiliateAddress) return; // Exit if the user cancels
+
+        // Check if the provided address is valid
+        if (!ethers.utils.isAddress(affiliateAddress)) {
+            throw new Error("Invalid affiliate address");
+        }
+
+        // Get the instance of the NFTMint contract
+        const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
+
+        // Call the setDefaultAffiliate function
+        const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
+
+        // Wait for the transaction to be confirmed
+        await tx.wait();
+
+        // Provide feedback to the user
+        console.log("Default affiliate set successfully");
+    } catch (error) {
+        console.error("Error setting default affiliate:", error.message);
     }
+}
+
 
     // Event listeners for additional actions
 
