@@ -89,6 +89,11 @@ contract AffiliateTracker is Ownable, ReentrancyGuard {
         emit DirectPaymentToggled(directPaymentEnabled);
     }
 
+    function isDirectPaymentEnabled() external view returns (bool) {
+    return directPaymentEnabled;
+}
+
+
     function getAffiliateEarnings(address affiliate) external view returns (uint256) {
         return affiliateEarnings[affiliate];
     }
