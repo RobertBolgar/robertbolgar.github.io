@@ -449,16 +449,6 @@ document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setD
     document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
 });
 
-    // Event listener for the "Set Default Affiliate" button click event
-document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
-    const affiliateAddress = prompt("Enter the address of the default affiliate:");
-    if (affiliateAddress) {
-        await setDefaultAffiliate(affiliateAddress);
-    }
-});
-
-
-
 
     // Add event listener for the "Display NFT Contract Balance" button
 document.getElementById('displayNFTContractBalanceBtn').addEventListener('click', async () => {
