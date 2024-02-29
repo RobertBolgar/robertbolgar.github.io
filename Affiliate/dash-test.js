@@ -262,6 +262,12 @@ async function confirmWithdrawal() {
   // Function to withdraw funds
 async function withdrawFunds() {
     try {
+        // Check if ethers provider is available
+        if (typeof ethers.provider === 'undefined') {
+            console.error("Ethers provider is not available");
+            return;
+        }
+
         // Get the contract balance
         const contractBalance = await ethers.provider.getBalance(nftContractAddress);
 
@@ -288,6 +294,7 @@ async function withdrawFunds() {
         console.error("Error withdrawing funds:", error.message);
     }
 }
+
 
 
      // Function to display the NFT contract balance in BNB
