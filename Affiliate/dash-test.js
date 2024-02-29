@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error("Error withdrawing funds:", error.message);
         }
-    })
+    }
 
     // Function to set the AffiliateTracker contract address
     async function setAffiliateTrackerAddress(address) {
