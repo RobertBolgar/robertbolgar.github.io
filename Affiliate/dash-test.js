@@ -373,13 +373,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 }
 
-
 // Event listener for the "Set Default Affiliate" button
-   // Example usage: Listen for button click to set default affiliate
 document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
-    const affiliateAddress = document.getElementById('affiliateAddress').value.trim();
+    const affiliateAddress = document.getElementById('defaultAffiliateAddress').value.trim(); // Use the corrected ID here
     await setDefaultAffiliate(affiliateAddress);
 });
+
 
     // Event listener for the HTML button to withdraw funds
     document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
