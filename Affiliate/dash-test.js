@@ -441,7 +441,7 @@ async function setDefaultAffiliate() {
 
 // Event listener for the "Set Default Affiliate" button click event
 document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
-
+});
 
     // Additional event listeners for new buttons
 
