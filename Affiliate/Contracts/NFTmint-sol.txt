@@ -44,6 +44,23 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable {
     affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
     }
 
+    // Function to withdraw the contract's balance to the owner's address
+    function withdraw() public onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "NFTMint: No funds to withdraw");
+
+        // Transfer the entire balance to the owner's address
+        (bool success, ) = owner().call{value: balance}("");
+        require(success, "NFTMint: Withdrawal failed");
+        
+        emit Withdrawal(owner(), balance);
+    }
+
+    // Add an event for the withdrawal action
+    event Withdrawal(address indexed to, uint256 amount);
+
+
+
 
     function listNFTForSale(string memory uri, uint256 price) public onlyApprovedUser {
         uint256 tokenId = _tokenIdCounter++;
