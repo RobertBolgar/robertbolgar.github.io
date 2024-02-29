@@ -349,44 +349,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-   // Function to set the default affiliate in the NFTMint contract
-async function setDefaultAffiliate() {
-    try {
-        if (!provider) {
-            console.error("Ethereum provider is not available");
-            return;
+  // Function to set the default affiliate in the NFTMint contract
+    async function setDefaultAffiliate(affiliateAddress) {
+        try {
+            // Validate the affiliate address
+            if (!ethers.utils.isAddress(affiliateAddress)) {
+                throw new Error("Invalid affiliate address");
+            }
+
+            // Call the setDefaultAffiliate function
+            const tx = await nftContract.setDefaultAffiliate(affiliateAddress);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Default affiliate set successfully");
+        } catch (error) {
+            console.error("Error setting default affiliate:", error.message);
         }
-
-        const signer = provider.getSigner();
-        const affiliateAddress = prompt("Enter the address of the default affiliate:");
-        if (!affiliateAddress) return; // Exit if the user cancels
-
-        // Check if the provided address is valid
-        if (!ethers.utils.isAddress(affiliateAddress)) {
-            throw new Error("Invalid affiliate address");
-        }
-
-        // Get the instance of the NFTMint contract
-        const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
-
-        // Call the setDefaultAffiliate function
-        const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
-
-        // Wait for the transaction to be confirmed
-        await tx.wait();
-
-        // Provide feedback to the user
-        console.log("Default affiliate set successfully");
-    } catch (error) {
-        console.error("Error setting default affiliate:", error.message);
     }
-}
-
 
     // Event listeners for additional actions
 
-    // Event listener for the "Set Default Affiliate" button click event
-    document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
+// Event listener for the "Set Default Affiliate" button
+    document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
+        try {
+            // Get the affiliate address from the input field
+            const affiliateAddress = document.getElementById('setDefaultAffiliateInput').value.trim();
+
+            // Call the setDefaultAffiliate function with the provided address
+            await setDefaultAffiliate(affiliateAddress);
+        } catch (error) {
+            console.error("Error:", error.message);
+        }
+    });
 
     // Event listener for the HTML button to withdraw funds
     document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
