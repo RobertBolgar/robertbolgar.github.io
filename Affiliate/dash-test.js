@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Ethereum provider is not available');
         return;
     }
-}
+
     const signer = provider.getSigner();
 
     // Fetch ABI files asynchronously
