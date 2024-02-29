@@ -29,7 +29,11 @@ interface IAffiliateTracker {
     // Checks if direct payments are enabled globally
     function isDirectPaymentEnabled() external view returns (bool);
 
+    // Revokes an affiliate
+    function revokeAffiliate(address affiliate) external;
+
     // Events
+    event AffiliateRevoked(address indexed affiliate);
     event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
     event CommissionPaid(address indexed affiliate, uint256 amount, address nft, uint256 tokenId);
     event AffiliateCommissionRateUpdated(address indexed affiliate, uint256 newRate);
