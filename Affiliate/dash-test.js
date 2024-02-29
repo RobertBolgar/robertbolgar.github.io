@@ -45,8 +45,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-
-
     // Function to set the AffiliateTracker contract address
     async function setAffiliateTrackerAddress(address) {
         try {
@@ -180,20 +178,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-   // Function to fetch the current status of direct payments
-async function fetchDirectPaymentStatus() {
-    try {
-        // Call the isDirectPaymentEnabled function from the AffiliateTracker contract
-        const isEnabled = await affiliateContract.isDirectPaymentEnabled();
+    // Function to fetch the current status of direct payments
+    async function fetchDirectPaymentStatus() {
+        try {
+            // Call the isDirectPaymentEnabled function from the AffiliateTracker contract
+            const isEnabled = await affiliateContract.isDirectPaymentEnabled();
 
-        // Display the status on the dashboard
-        const statusElement = document.getElementById('directPaymentStatus');
-        statusElement.textContent = isEnabled ? 'Enabled' : 'Disabled';
-    } catch (error) {
-        console.error("Error fetching direct payment status:", error.message);
+            // Display the status on the dashboard
+            const statusElement = document.getElementById('directPaymentStatus');
+            statusElement.textContent = isEnabled ? 'Enabled' : 'Disabled';
+        } catch (error) {
+            console.error("Error fetching direct payment status:", error.message);
+        }
     }
-}
-
 
     // Function to toggle direct payment
     async function toggleDirectPayment() {
@@ -263,208 +260,186 @@ async function fetchDirectPaymentStatus() {
 
     // Event listener for the "Fetch Direct Payment Status" button click event
     document.getElementById('fetchDirectPaymentStatusBtn').addEventListener('click', async () => {
-    await fetchDirectPaymentStatus();
+        await fetchDirectPaymentStatus();
     });
-
 
     // Additional event listeners and functions
 
     // Function to confirm withdrawal of funds from the NFTMint contract
-async function confirmWithdrawal() {
-    try {
-        const confirmed = confirm("Are you sure you want to withdraw funds from the contract?");
-        if (confirmed) {
-            // Call the withdrawFunds function when confirmed
-            await withdrawFunds();
-        } else {
-            console.log("Withdrawal canceled");
+    async function confirmWithdrawal() {
+        try {
+            const confirmed = confirm("Are you sure you want to withdraw funds from the contract?");
+            if (confirmed) {
+                // Call the withdrawFunds function when confirmed
+                await withdrawFunds();
+            } else {
+                console.log("Withdrawal canceled");
+            }
+        } catch (error) {
+            console.error("Error confirming withdrawal:", error.message);
         }
-    } catch (error) {
-        console.error("Error confirming withdrawal:", error.message);
     }
-}
 
+    // Get the contract balance
+    const contractBalance = await ethers.provider.getBalance(nftContractAddress);
 
-
-
- 
-
-        
-        // Get the contract balance
-        const contractBalance = await ethers.provider.getBalance(nftContractAddress);
-
-        // Check if the contract has balance
-        if (contractBalance.gt(0)) {
-            // Get the signer
-            const signer = ethers.provider.getSigner();
-
-            // Send the contract balance to the signer's address
-            const tx = await signer.sendTransaction({
-                to: signer.getAddress(),
-                value: contractBalance
-            });
-
-            // Wait for the transaction to be confirmed
-            await tx.wait();
-
-            // Provide feedback to the user
-            console.log("Funds withdrawn successfully");
-        } else {
-            console.log("Contract balance is zero");
-        }
-    } catch (error) {
-        console.error("Error withdrawing funds:", error.message);
-    }
-}
-
-
-
-     // Function to display the NFT contract balance in BNB
-async function displayNFTContractBalance() {
-    try {
-        // Ensure your provider is connected to the Binance Smart Chain
-        const contractBalance = await provider.getBalance(nftContractAddress);
-        const balanceInBNB = ethers.utils.formatEther(contractBalance); // BNB has the same decimal resolution as Ether
-        document.getElementById('nftContractBalanceResult').textContent = `NFT Contract Balance: ${balanceInBNB} BNB`;
-        console.log("NFT contract balance displayed successfully in BNB");
-    } catch (error) {
-        console.error("Error displaying NFT contract balance in BNB:", error.message);
-        document.getElementById('nftContractBalanceResult').textContent = "Error displaying NFT contract balance in BNB.";
-    }
-}
-
-// Function to activate the emergency stop
-async function activateEmergencyStop() {
-    try {
-        const tx = await nftContract.setEmergencyStop(true);
-        await tx.wait(); // Wait for the transaction to be mined
-        console.log("Emergency stop activated successfully.");
-        alert("Emergency stop has been activated!");
-    } catch (error) {
-        console.error("Error activating emergency stop:", error.message);
-        alert("Failed to activate emergency stop: " + error.message);
-    }
-}
-
-// Function to deactivate the emergency stop
-async function deactivateEmergencyStop() {
-    try {
-        const tx = await nftContract.setEmergencyStop(false);
-        await tx.wait(); // Wait for the transaction to be mined
-        console.log("Emergency stop deactivated successfully.");
-        alert("Emergency stop has been deactivated!");
-    } catch (error) {
-        console.error("Error deactivating emergency stop:", error.message);
-        alert("Failed to deactivate emergency stop: " + error.message);
-    }
-}
-
-// Function to fetch and display sales
-async function fetchSales() {
-    try {
-        // Replace this with your actual logic to fetch sales data
-        const salesData = await getSalesData(); // Assuming you have a function to fetch sales data
-
-        // Display the sales data in the HTML
-        displaySalesData(salesData);
-        
-        // Provide feedback to the user
-        console.log("Sales fetched successfully");
-    } catch (error) {
-        console.error("Error fetching sales:", error.message);
-    }
-}
-
-// Function to simulate fetching sales data
-async function getSalesData() {
-    // Simulated sales data
-    const salesData = [
-        { id: 1, product: "Product A", price: 100 },
-        { id: 2, product: "Product B", price: 200 },
-        { id: 3, product: "Product C", price: 150 }
-    ];
-
-    // Simulate delay to mimic asynchronous operation
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    return salesData;
-}
-
-// Function to display sales data in the HTML
-function displaySalesData(salesData) {
-    const salesDataElement = document.getElementById('salesData');
-    salesDataElement.innerHTML = ''; // Clear previous data
-
-    // Iterate over the sales data and create HTML elements to display it
-    salesData.forEach(sale => {
-        const saleElement = document.createElement('div');
-        saleElement.textContent = `Product: ${sale.product}, Price: ${sale.price}`;
-        salesDataElement.appendChild(saleElement);
-    });
-}
-
-   // Function to set the default affiliate in the NFTMint contract
-async function setDefaultAffiliate() {
-    try {
-        const affiliateAddress = prompt("Enter the address of the default affiliate:");
-        if (!affiliateAddress) return; // Exit if the user cancels
-
-        // Check if the provided address is valid
-        if (!ethers.utils.isAddress(affiliateAddress)) {
-            throw new Error("Invalid affiliate address");
-        }
-
+    // Check if the contract has balance
+    if (contractBalance.gt(0)) {
         // Get the signer
-        const signer = await ethers.provider.getSigner();
+        const signer = ethers.provider.getSigner();
 
-        // Get the instance of the NFTMint contract
-        const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
-
-        // Call the setDefaultAffiliate function
-        const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
+        // Send the contract balance to the signer's address
+        const tx = await signer.sendTransaction({
+            to: signer.getAddress(),
+            value: contractBalance
+        });
 
         // Wait for the transaction to be confirmed
         await tx.wait();
 
         // Provide feedback to the user
-        console.log("Default affiliate set successfully");
-    } catch (error) {
-        console.error("Error setting default affiliate:", error.message);
+        console.log("Funds withdrawn successfully");
+    } else {
+        console.log("Contract balance is zero");
     }
-}
-
-// Event listener for the "Set Default Affiliate" button click event
-document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
-});
-
-    // Additional event listeners for new buttons
-
     
-// Event listener for the HTML button to withdraw funds
-document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
-});
+    // Function to display the NFT contract balance in BNB
+    async function displayNFTContractBalance() {
+        try {
+            // Ensure your provider is connected to the Binance Smart Chain
+            const contractBalance = await provider.getBalance(nftContractAddress);
+            const balanceInBNB = ethers.utils.formatEther(contractBalance); // BNB has the same decimal resolution as Ether
+            document.getElementById('nftContractBalanceResult').textContent = `NFT Contract Balance: ${balanceInBNB} BNB`;
+            console.log("NFT contract balance displayed successfully in BNB");
+        } catch (error) {
+            console.error("Error displaying NFT contract balance in BNB:", error.message);
+            document.getElementById('nftContractBalanceResult').textContent = "Error displaying NFT contract balance in BNB.";
+        }
+    }
 
+    // Function to activate the emergency stop
+    async function activateEmergencyStop() {
+        try {
+            const tx = await nftContract.setEmergencyStop(true);
+            await tx.wait(); // Wait for the transaction to be mined
+            console.log("Emergency stop activated successfully.");
+            alert("Emergency stop has been activated!");
+        } catch (error) {
+            console.error("Error activating emergency stop:", error.message);
+            alert("Failed to activate emergency stop: " + error.message);
+        }
+    }
+
+    // Function to deactivate the emergency stop
+    async function deactivateEmergencyStop() {
+        try {
+            const tx = await nftContract.setEmergencyStop(false);
+            await tx.wait(); // Wait for the transaction to be mined
+            console.log("Emergency stop deactivated successfully.");
+            alert("Emergency stop has been deactivated!");
+        } catch (error) {
+            console.error("Error deactivating emergency stop:", error.message);
+            alert("Failed to deactivate emergency stop: " + error.message);
+        }
+    }
+
+    // Function to fetch and display sales
+    async function fetchSales() {
+        try {
+            // Replace this with your actual logic to fetch sales data
+            const salesData = await getSalesData(); // Assuming you have a function to fetch sales data
+
+            // Display the sales data in the HTML
+            displaySalesData(salesData);
+            
+            // Provide feedback to the user
+            console.log("Sales fetched successfully");
+        } catch (error) {
+            console.error("Error fetching sales:", error.message);
+        }
+    }
+
+    // Function to simulate fetching sales data
+    async function getSalesData() {
+        // Simulated sales data
+        const salesData = [
+            { id: 1, product: "Product A", price: 100 },
+            { id: 2, product: "Product B", price: 200 },
+            { id: 3, product: "Product C", price: 150 }
+        ];
+
+        // Simulate delay to mimic asynchronous operation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        return salesData;
+    }
+
+    // Function to display sales data in the HTML
+    function displaySalesData(salesData) {
+        const salesDataElement = document.getElementById('salesData');
+        salesDataElement.innerHTML = ''; // Clear previous data
+
+        // Iterate over the sales data and create HTML elements to display it
+        salesData.forEach(sale => {
+            const saleElement = document.createElement('div');
+            saleElement.textContent = `Product: ${sale.product}, Price: ${sale.price}`;
+            salesDataElement.appendChild(saleElement);
+        });
+    }
+
+    // Function to set the default affiliate in the NFTMint contract
+    async function setDefaultAffiliate() {
+        try {
+            const affiliateAddress = prompt("Enter the address of the default affiliate:");
+            if (!affiliateAddress) return; // Exit if the user cancels
+
+            // Check if the provided address is valid
+            if (!ethers.utils.isAddress(affiliateAddress)) {
+                throw new Error("Invalid affiliate address");
+            }
+
+            // Get the signer
+            const signer = await ethers.provider.getSigner();
+
+            // Get the instance of the NFTMint contract
+            const nftMintContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
+
+            // Call the setDefaultAffiliate function
+            const tx = await nftMintContract.setDefaultAffiliate(affiliateAddress);
+
+            // Wait for the transaction to be confirmed
+            await tx.wait();
+
+            // Provide feedback to the user
+            console.log("Default affiliate set successfully");
+        } catch (error) {
+            console.error("Error setting default affiliate:", error.message);
+        }
+    }
+
+    // Event listener for the "Set Default Affiliate" button click event
+    document.getElementById('setDefaultAffiliateBtn').addEventListener('click', setDefaultAffiliate);
+
+    // Event listener for the HTML button to withdraw funds
+    document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
 
     // Add event listener for the "Display NFT Contract Balance" button
-document.getElementById('displayNFTContractBalanceBtn').addEventListener('click', async () => {
-    await displayNFTContractBalance();
-});
- 
+    document.getElementById('displayNFTContractBalanceBtn').addEventListener('click', async () => {
+        await displayNFTContractBalance();
+    });
 
- // Event listener for the "Activate Emergency Stop" button
-document.getElementById('activateEmergencyStopBtn').addEventListener('click', async () => {
-    await activateEmergencyStop();
-});
+    // Event listener for the "Activate Emergency Stop" button
+    document.getElementById('activateEmergencyStopBtn').addEventListener('click', async () => {
+        await activateEmergencyStop();
+    });
 
-// Event listener for the "Deactivate Emergency Stop" button
-document.getElementById('deactivateEmergencyStopBtn').addEventListener('click', async () => {
-    await deactivateEmergencyStop();
-});
-
+    // Event listener for the "Deactivate Emergency Stop" button
+    document.getElementById('deactivateEmergencyStopBtn').addEventListener('click', async () => {
+        await deactivateEmergencyStop();
+    });
 
     // Event listener for the "Fetch Sales" button click event
-document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
-    await fetchSales();
-});
-
+    document.getElementById('fetchSalesBtn').addEventListener('click', async () => {
+        await fetchSales();
+    });
 });
