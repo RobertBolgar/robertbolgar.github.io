@@ -40,7 +40,7 @@ async function withdrawFunds() {
         if (!provider) return;
 
         // Get the contract balance
-        const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+        const contractAddress = '0x0D3f36AC41e73FDCAb1d119a239305e58bfb2568';
         const contractBalance = await provider.getBalance(contractAddress);
 
         // Continue with the withdrawal logic...
