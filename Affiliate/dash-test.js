@@ -1,7 +1,13 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize connection to Ethereum
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
+    let provider;
+    if (typeof window.ethereum !== 'undefined') {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+    } else {
+        console.error('Ethereum provider is not available');
+        return;
+    }
     const signer = provider.getSigner();
 
     // Fetch ABI files asynchronously
@@ -11,8 +17,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const affiliateAbiResponse = await fetch('./affiliate_abi.json');
     const affiliateAbi = await affiliateAbiResponse.json();
 
-    const { ethers } = require('ethers');
-
     // Contract addresses
     const nftContractAddress = "0x0D3f36AC41e73FDCAb1d119a239305e58bfb2568";
     const affiliateContractAddress = "0x4A6E0AbC1b0A6c3D1893bEe81e4aAe2BB8016CAA";
@@ -21,33 +25,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
     const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
 
-async function connectToProvider() {
-    // Check if the provider is available
-    if (typeof window.ethereum !== 'undefined') {
-        // Initialize ethers provider using MetaMask provider
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        return provider;
-    } else {
-        console.error('Ethereum provider is not available');
-        return null;
+    // Function to withdraw funds
+    async function withdrawFunds() {
+        try {
+            const contractBalance = await provider.getBalance(nftContractAddress);
+            if (contractBalance.gt(0)) {
+                const tx = await signer.sendTransaction({
+                    to: await signer.getAddress(),
+                    value: contractBalance
+                });
+                await tx.wait();
+                console.log("Funds withdrawn successfully");
+            } else {
+                console.log("Contract balance is zero");
+            }
+        } catch (error) {
+            console.error("Error withdrawing funds:", error.message);
+        }
     }
-}
-
-async function withdrawFunds() {
-    try {
-        // Connect to ethers provider
-        const provider = await connectToProvider();
-        if (!provider) return;
-
-        // Get the contract balance
-        const contractAddress = '0x0D3f36AC41e73FDCAb1d119a239305e58bfb2568';
-        const contractBalance = await provider.getBalance(contractAddress);
-
-        // Continue with the withdrawal logic...
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
 
 
@@ -443,10 +438,9 @@ async function setDefaultAffiliate(affiliateAddress) {
     // Additional event listeners for new buttons
 
     
-
- // Event listener for the HTML button
-document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
-
+// Event listener for the HTML button to withdraw funds
+    document.getElementById('withdrawFundsButton').addEventListener('click', withdrawFunds);
+});
 
     // Event listener for the "Set Default Affiliate" button click event
 document.getElementById('setDefaultAffiliateBtn').addEventListener('click', async () => {
