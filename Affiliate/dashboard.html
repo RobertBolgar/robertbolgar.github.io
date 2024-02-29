@@ -5,34 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFT & Affiliate Management</title>
     <link rel="stylesheet" href="styles.css"> <!-- Ensure the CSS file is linked -->
-    <style>
-        /* Center the content on the page */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            width: 900px; /* Adjust the width to 900px */
-            margin: 0 auto; /* Center the container horizontally */
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: left; /* Align content to the left */
-        }
-        .container > div {
-            margin-bottom: 10px;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
-
- <div class="container">
         <!-- Section for approving a user -->
         <div id="approveUserSection">
             <input type="text" id="userAddress" placeholder="Enter user address">
@@ -45,13 +21,12 @@
             <button id="revokeUserBtn">Revoke User</button>
         </div>
 
-       <!-- Section for setting a default affiliate -->
-<div>
-    <label for="defaultAffiliateAddress">Affiliate Address:</label>
-    <input type="text" id="defaultAffiliateAddress" placeholder="Enter Affiliate Ethereum Address">
-    <button id="setDefaultAffiliateBtn">Set Default Affiliate</button>
-</div>
-
+        <!-- Section for setting a default affiliate -->
+        <div>
+            <label for="defaultAffiliateAddress">Affiliate Address:</label>
+            <input type="text" id="defaultAffiliateAddress" placeholder="Enter Affiliate Ethereum Address">
+            <button id="setDefaultAffiliateBtn">Set Default Affiliate</button>
+        </div>
 
         <!-- Section for approving and registering an affiliate -->
         <div id="approveRegisterAffiliateSection">
@@ -79,12 +54,7 @@
         </div>
 
         <!-- Section for fetching the status of direct payments -->
-        
-        <!-- Button to fetch the status of direct payments -->
         <button id="fetchDirectPaymentStatusBtn">Fetch Direct Payment Status</button>
-
-
-        <!-- Section to display the status of direct payments -->
         <div id="directPaymentStatus"></div>
 
         <!-- Section for setting AffiliateTracker contract address -->
@@ -95,34 +65,22 @@
 
         <!-- Additional buttons with spacing -->
         <div style="margin-top: 20px;">
-            <!-- Button to withdraw funds -->
-        <button id="withdrawFundsButton">Withdraw Funds</button>
-
-
+            <button id="withdrawFundsButton">Withdraw Funds</button>
         </div>
 
         <div style="margin-top: 20px;">
-      <button id="displayNFTContractBalanceBtn">Display NFT Contract Balance</button>
-<div id="nftContractBalanceResult">NFT Contract Balance: </div>
-
-
+            <button id="displayNFTContractBalanceBtn">Display NFT Contract Balance</button>
+            <div id="nftContractBalanceResult">NFT Contract Balance: </div>
         </div>
 
         <div style="margin-top: 20px;">
-            <!-- HTML button to trigger emergency stop -->
-<button id="activateEmergencyStopBtn">Activate Emergency Stop</button>
-<button id="deactivateEmergencyStopBtn">Deactivate Emergency Stop</button>
-
-
+            <button id="activateEmergencyStopBtn">Activate Emergency Stop</button>
+            <button id="deactivateEmergencyStopBtn">Deactivate Emergency Stop</button>
         </div>
 
         <div style="margin-top: 20px;">
-           <!-- HTML button to fetch sales -->
-<button id="fetchSalesBtn">Fetch Sales</button>
-
-<!-- Placeholder for displaying sales data -->
-<div id="salesData"></div>
-
+            <button id="fetchSalesBtn">Fetch Sales</button>
+            <div id="salesData"></div>
         </div>
     </div>
     <script src="dash-test.js"></script> <!-- Link to the JavaScript file -->
