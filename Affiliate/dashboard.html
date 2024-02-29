@@ -31,6 +31,8 @@
 </head>
 <body>
     <div class="container">
+
+ <div class="container">
         <!-- Section for approving a user -->
         <div id="approveUserSection">
             <input type="text" id="userAddress" placeholder="Enter user address">
@@ -43,26 +45,22 @@
             <button id="revokeUserBtn">Revoke User</button>
         </div>
 
-        
-         <!-- Section for setting a default affiliate -->
-<h1>Set Default Affiliate</h1>
-    <div>
-        <label for="affiliateAddress">Affiliate Address:</label>
-        <input type="text" id="affiliateAddress" placeholder="Enter Affiliate Ethereum Address">
-        <button id="setDefaultAffiliateBtn">Set Default Affiliate</button>
-    </div>
-
-        
+        <!-- Section for setting a default affiliate -->
+        <div id="setDefaultAffiliateSection">
+            <label for="defaultAffiliateAddress">Affiliate Address:</label>
+            <input type="text" id="defaultAffiliateAddress" placeholder="Enter Affiliate Ethereum Address">
+            <button id="setDefaultAffiliateBtn">Set Default Affiliate</button>
+        </div>
 
         <!-- Section for approving and registering an affiliate -->
-        <div>
-            <input type="text" id="affiliateAddress" placeholder="Enter Affiliate Address" required>
+        <div id="approveRegisterAffiliateSection">
+            <input type="text" id="registerAffiliateAddress" placeholder="Enter Affiliate Address" required>
             <input type="number" id="commissionRate" placeholder="Enter Commission Rate" min="0" max="100" required>
             <button id="approveAndRegisterAffiliateBtn">Approve and Register Affiliate</button>
         </div>
 
         <!-- Section for revoking an affiliate -->
-        <div>
+        <div id="revokeAffiliateSection">
             <input type="text" id="revokeAffiliateAddress" placeholder="Affiliate Address">
             <button id="revokeAffiliateBtn">Revoke Affiliate</button>
         </div>
