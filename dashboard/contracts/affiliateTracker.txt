@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./IAffiliateTracker.sol"; // Ensure this interface is correctly defined in your project
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract AffiliateTracker is Ownable(msg.sender), ReentrancyGuard, AccessControl {
+contract AffiliateTracker is AccessControl, ReentrancyGuard {
+    bytes32 public constant ADMIN_ROLE = DEFAULT_ADMIN_ROLE;
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     struct Affiliate {
@@ -14,11 +13,11 @@ contract AffiliateTracker is Ownable(msg.sender), ReentrancyGuard, AccessControl
         uint256 commissionRate; // Commission rate in percentage points
     }
 
-    bool public directPaymentEnabled = true; // Controls direct payment feature
+    bool public directPaymentEnabled = true;
     mapping(address => Affiliate) public affiliates;
-    mapping(address => uint256) public affiliateEarnings; // Tracks earnings of each affiliate
+    mapping(address => uint256) public affiliateEarnings;
     mapping(address => bool) public canSetCommissionRate;
-    mapping(address => bool) private allowedContracts; // Tracks contracts allowed to call payCommission
+    mapping(address => bool) private allowedContracts;
 
     event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
     event CommissionPaid(address indexed affiliate, uint256 amount, address nft, uint256 tokenId);
@@ -28,13 +27,9 @@ contract AffiliateTracker is Ownable(msg.sender), ReentrancyGuard, AccessControl
     event DirectPaymentToggled(bool isEnabled);
     event AffiliateRevoked(address indexed affiliate);
 
-    // Constructor
     constructor() {
-        // Grant the contract deployer the default admin role: they can grant/revoke any roles
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-
-        // Additionally assign the deployer as a manager
-        _grantRole(MANAGER_ROLE, msg.sender);
+        grantRole(ADMIN_ROLE, msg.sender); // Corrected to use grantRole
+        _setRoleAdmin(MANAGER_ROLE, ADMIN_ROLE); // Define who can manage MANAGER_ROLE permissions
     }
 
     modifier onlyAllowedContracts() {
@@ -42,21 +37,21 @@ contract AffiliateTracker is Ownable(msg.sender), ReentrancyGuard, AccessControl
         _;
     }
 
-    modifier onlyOwnerOrManager() {
-        require(owner() == _msgSender() || hasRole(MANAGER_ROLE, _msgSender()), "Caller is not the owner or manager");
+    modifier onlyAdminOrManager() {
+        require(hasRole(ADMIN_ROLE, _msgSender()) || hasRole(MANAGER_ROLE, _msgSender()), "Caller is not an admin or manager");
         _;
     }
 
-    function registerAffiliate(address _affiliate, uint256 _commissionRate) external onlyOwnerOrManager {
+    function registerAffiliate(address _affiliate, uint256 _commissionRate) external onlyAdminOrManager {
         require(!affiliates[_affiliate].isRegistered, "Affiliate already registered");
         require(_commissionRate >= 1 && _commissionRate <= 100, "Invalid commission rate");
         affiliates[_affiliate] = Affiliate(true, _commissionRate);
         emit AffiliateRegistered(_affiliate, _commissionRate);
     }
 
-    function revokeAffiliate(address _affiliate) external onlyOwnerOrManager {
+    function revokeAffiliate(address _affiliate) external onlyAdminOrManager {
         require(affiliates[_affiliate].isRegistered, "Affiliate not registered");
-        affiliates[_affiliate].isRegistered = false;
+        delete affiliates[_affiliate]; // Consider if you need to handle pending commissions
         emit AffiliateRevoked(_affiliate);
     }
 
@@ -81,24 +76,24 @@ contract AffiliateTracker is Ownable(msg.sender), ReentrancyGuard, AccessControl
         emit EarningsWithdrawn(msg.sender, earnings);
     }
 
-    function allowSettingCommissionRate(address minter, bool allowed) external onlyOwner {
+    function setCommissionRatePermission(address minter, bool allowed) external onlyAdminOrManager {
         canSetCommissionRate[minter] = allowed;
     }
 
-    function setCommissionRate(address affiliate, uint256 newRate) external onlyOwnerOrManager {
-        require(canSetCommissionRate[msg.sender] || msg.sender == owner(), "Not authorized");
+    function setCommissionRate(address affiliate, uint256 newRate) external onlyAdminOrManager {
+        require(canSetCommissionRate[msg.sender] || hasRole(ADMIN_ROLE, msg.sender), "Not authorized");
         require(affiliates[affiliate].isRegistered, "Affiliate not registered");
         require(newRate >= 1 && newRate <= 100, "Invalid commission rate");
         affiliates[affiliate].commissionRate = newRate;
         emit AffiliateCommissionRateUpdated(affiliate, newRate);
     }
 
-    function allowContract(address _contract) external onlyOwnerOrManager {
+    function allowContract(address _contract) external onlyAdminOrManager {
         allowedContracts[_contract] = true;
         emit ContractAllowed(_contract);
     }
 
-    function toggleDirectPayment() external onlyOwnerOrManager {
+    function toggleDirectPayment() external onlyAdminOrManager {
         directPaymentEnabled = !directPaymentEnabled;
         emit DirectPaymentToggled(directPaymentEnabled);
     }
