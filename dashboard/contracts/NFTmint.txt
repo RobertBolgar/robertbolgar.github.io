@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./IAffiliateTracker.sol";
 
 contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
-    using SafeMath for uint256;
-
     struct Affiliate {
         bool instantDirectPayment;
     }
@@ -18,7 +15,7 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
     mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => uint256) public tokenPrices;
     mapping(uint256 => address) public tokenSellers;
-    mapping(uint256 => uint256) public nftCommissionRates; // New mapping for NFT commission rates
+    mapping(uint256 => uint256) public nftCommissionRates;
     mapping(address => Affiliate) public affiliates;
     mapping(address => uint256) public affiliateCommissionRates;
     mapping(address => uint256) public affiliateEarnings;
@@ -28,6 +25,9 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
     uint256 public commissionRate = 10;
     bool public emergencyStop = false;
 
+    address public defaultAffiliate;
+    uint256 public defaultCommissionRate = 10;
+
     event TokenSold(uint256 indexed tokenId, address indexed buyer, uint256 salePrice);
     event NFTListed(uint256 indexed tokenId, string uri, uint256 price);
     event EmergencyStopActivated(bool status);
@@ -36,31 +36,25 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
     event CommissionPaid(address indexed affiliate, uint256 amount, uint256 tokenId);
     event DirectPaymentToggled(bool isEnabled);
     event CommissionRateUpdated(address indexed affiliate, uint256 newRate);
-    event NFTCommissionRateSet(uint256 indexed tokenId, uint256 commissionRate); // New event for setting NFT commission rates
+    event NFTCommissionRateSet(uint256 indexed tokenId, uint256 commissionRate);
 
     constructor(string memory name, string memory symbol, address _affiliateTrackerAddress)
     ERC721(name, symbol) {
         affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
     }
 
-   function setNFTCommissionRate(uint256 tokenId, uint256 newCommissionRate) public {
-    // This will revert if the token does not exist
-    address tokenOwner = ownerOf(tokenId);
-    
-    require(
-        _msgSender() == tokenOwner ||
-        getApproved(tokenId) == _msgSender() ||
-        isApprovedForAll(tokenOwner, _msgSender()),
-        "Caller is not owner nor approved"
-    );
-    require(newCommissionRate <= 100, "Commission rate cannot exceed 100");
-    nftCommissionRates[tokenId] = newCommissionRate;
-    emit NFTCommissionRateSet(tokenId, newCommissionRate);
-}
-
-
-
-
+    function setNFTCommissionRate(uint256 tokenId, uint256 newCommissionRate) public {
+        address tokenOwner = ownerOf(tokenId);
+        require(
+            _msgSender() == tokenOwner ||
+            getApproved(tokenId) == _msgSender() ||
+            isApprovedForAll(tokenOwner, _msgSender()),
+            "Caller is not owner nor approved"
+        );
+        require(newCommissionRate <= 100, "Commission rate cannot exceed 100");
+        nftCommissionRates[tokenId] = newCommissionRate;
+        emit NFTCommissionRateSet(tokenId, newCommissionRate);
+    }
 
     function buyNFT(uint256 tokenId, address affiliate) public payable {
         require(msg.value >= tokenPrices[tokenId], "Payment is below the price");
@@ -68,9 +62,9 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
         require(!emergencyStop, "Sales are currently stopped");
 
         uint256 salePrice = msg.value;
-        uint256 commissionRateForNFT = nftCommissionRates[tokenId]; // Retrieve commission rate for the NFT
-        uint256 commission = salePrice.mul(commissionRateForNFT).div(100); // Calculate commission based on NFT commission rate
-        uint256 sellerProceeds = salePrice.sub(commission);
+        uint256 commissionRateForNFT = nftCommissionRates[tokenId];
+        uint256 commission = (salePrice * commissionRateForNFT) / 100;
+        uint256 sellerProceeds = salePrice - commission;
 
         payable(tokenSellers[tokenId]).transfer(sellerProceeds);
         if (commission > 0) {
@@ -85,39 +79,29 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
         delete tokenSellers[tokenId];
     }
 
-    address public defaultAffiliate;
-    uint256 public defaultCommissionRate = 10; // Default commission rate
-
-    // Function to set the default affiliate
     function setDefaultAffiliate(address affiliate) public onlyOwner {
         defaultAffiliate = affiliate;
     }
 
-    // Function to set the default commission rate
     function setDefaultCommissionRate(uint256 newRate) public onlyOwner {
         require(newRate >= 1 && newRate <= 100, "Invalid commission rate");
         defaultCommissionRate = newRate;
     }
 
-    // Function to set or update the commission rate for a specific affiliate
     function setAffiliateCommissionRate(address affiliate, uint256 newRate) public onlyOwner {
         require(newRate >= 1 && newRate <= 100, "Invalid commission rate");
         affiliateCommissionRates[affiliate] = newRate;
     }
 
-    // Pays commission to an affiliate for a sale
     function payCommission(address affiliate, uint256 amount, uint256 tokenId) external {
         affiliateEarnings[affiliate] += amount;
         emit CommissionPaid(affiliate, amount, tokenId);
     }
 
-    // Modify withdrawEarnings to allow only non-instant direct payment affiliates to withdraw
-function withdrawEarnings() external view {
+    function withdrawEarnings() external view {
         require(!affiliates[msg.sender].instantDirectPayment, "Instant direct payment affiliates cannot withdraw earnings");
-        // Withdraw earnings logic remains the same
     }
 
-    // Function to grant or revoke instant direct payment privileges to affiliates
     function setInstantDirectPayment(address affiliate, bool allowInstantDirectPayment) public onlyOwner {
         affiliates[affiliate].instantDirectPayment = allowInstantDirectPayment;
     }
@@ -126,39 +110,31 @@ function withdrawEarnings() external view {
         affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
     }
 
-    // Registers an affiliate with a specific commission rate
     function registerAffiliate(address newAffiliateAddress, uint256 newCommissionRate) public onlyOwner {
         affiliateTracker.registerAffiliate(newAffiliateAddress, newCommissionRate);
         emit AffiliateRegistered(newAffiliateAddress, newCommissionRate);
     }
 
-     // Revokes an affiliate
     function revokeAffiliate(address affiliate) public onlyOwner {
         affiliateTracker.revokeAffiliate(affiliate);
         emit AffiliateRevoked(affiliate);
     }
 
+    function toggleDirectPaymentGlobal() public onlyOwner {
+        affiliateTracker.toggleDirectPaymentGlobal();
+    }
 
-// Toggles the global setting for direct payments
-function toggleDirectPaymentGlobal() public onlyOwner {
-    affiliateTracker.toggleDirectPaymentGlobal();
-}
+    function toggleDirectPaymentUser(address affiliate) public onlyOwner {
+        affiliateTracker.toggleDirectPaymentUser(affiliate);
+    }
 
-// Toggles direct payment for a specific affiliate
-function toggleDirectPaymentUser(address affiliate) public onlyOwner {
-    affiliateTracker.toggleDirectPaymentUser(affiliate);
-}
+    function setCommissionRate(address affiliate, uint256 newRate) public onlyOwner {
+        affiliateTracker.setCommissionRate(affiliate, newRate);
+    }
 
-// Sets or updates the commission rate for an affiliate
-function setCommissionRate(address affiliate, uint256 newRate) public onlyOwner {
-    affiliateTracker.setCommissionRate(affiliate, newRate);
-}
-
-// Allows a contract to call `payCommission`
-function allowContract(address _contract) public onlyOwner {
-    affiliateTracker.allowContract(_contract);
-}
-
+    function allowContract(address _contract) public onlyOwner {
+        affiliateTracker.allowContract(_contract);
+    }
 
     function listNFTForSale(string memory uri, uint256 price) public {
         require(msg.sender != address(0), "Invalid address");
@@ -174,19 +150,16 @@ function allowContract(address _contract) public onlyOwner {
         emit EmergencyStopActivated(status);
     }
 
-function tokenExists(uint256 tokenId) public view returns (bool) {
-    return _ownerOf(tokenId) != address(0);
-}
+    function tokenExists(uint256 tokenId) public view returns (bool) {
+        return _ownerOf(tokenId) != address(0);
+    }
 
-
-    // Function to return the token URI for a given token ID
-function tokenURI(uint256 tokenId) public view override returns (string memory) {
-    require(tokenExists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-
-    return string(abi.encodePacked(_baseURI(), _tokenURIs[tokenId]));
-}
-
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(tokenExists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        return string(abi.encodePacked(_baseURI(), _tokenURIs[tokenId]));
+    }
 
     receive() external payable {}
+
     fallback() external payable {}
 }
