@@ -1,14 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IAffiliateTracker.sol";
 
-contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
+contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     struct Affiliate {
         bool instantDirectPayment;
+    }
+    // Define a struct to store royalty information
+    struct RoyaltyInfo {
+        uint256 percentage; // Royalty percentage
+        address creator;    // Address of the NFT creator
     }
 
     uint256 private _tokenIdCounter = 1;
@@ -17,38 +23,50 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
     mapping(uint256 => address) public tokenSellers;
     mapping(uint256 => uint256) public nftCommissionRates;
     mapping(address => Affiliate) public affiliates;
-    mapping(address => uint256) public affiliateCommissionRates;
-    mapping(address => uint256) public affiliateEarnings;
+    mapping(uint256 => RoyaltyInfo) public royaltyInfo;
+
 
     IAffiliateTracker public affiliateTracker;
 
-    uint256 public commissionRate = 10;
-    bool public emergencyStop = false;
-
-    address public defaultAffiliate;
     uint256 public defaultCommissionRate = 10;
+    address public defaultAffiliate;
 
     event TokenSold(uint256 indexed tokenId, address indexed buyer, uint256 salePrice);
     event NFTListed(uint256 indexed tokenId, string uri, uint256 price);
-    event EmergencyStopActivated(bool status);
     event AffiliateRegistered(address indexed affiliate, uint256 commissionRate);
     event AffiliateRevoked(address indexed affiliate);
     event CommissionPaid(address indexed affiliate, uint256 amount, uint256 tokenId);
-    event DirectPaymentToggled(bool isEnabled);
+    event DirectPaymentToggled(address indexed affiliate, bool isEnabled);
     event CommissionRateUpdated(address indexed affiliate, uint256 newRate);
     event NFTCommissionRateSet(uint256 indexed tokenId, uint256 commissionRate);
+    // Event to log royalty settings
+    event RoyaltySet(uint256 indexed tokenId, uint256 percentage, address indexed creator);
+    // Event to log royalty payments
+    event RoyaltyPaid(address indexed creator, uint256 amount, uint256 tokenId);
+    event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI);
+
+
 
     constructor(string memory name, string memory symbol, address _affiliateTrackerAddress)
-    ERC721(name, symbol) {
-        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+    ERC721(name, symbol)
+    Ownable(msg.sender) // Pass the deployer's address as the initial owner
+{
+    affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+}
+
+    // Function to set royalty for a specific NFT
+    function setRoyalty(uint256 tokenId, uint256 percentage, address creator) public onlyOwner {
+        require(percentage <= 100, "Royalty percentage cannot exceed 100");
+        royaltyInfo[tokenId] = RoyaltyInfo(percentage, creator);
+        emit RoyaltySet(tokenId, percentage, creator);
     }
 
     function setNFTCommissionRate(uint256 tokenId, uint256 newCommissionRate) public {
         address tokenOwner = ownerOf(tokenId);
         require(
-            _msgSender() == tokenOwner ||
-            getApproved(tokenId) == _msgSender() ||
-            isApprovedForAll(tokenOwner, _msgSender()),
+            msg.sender == tokenOwner ||
+            getApproved(tokenId) == msg.sender ||
+            isApprovedForAll(tokenOwner, msg.sender),
             "Caller is not owner nor approved"
         );
         require(newCommissionRate <= 100, "Commission rate cannot exceed 100");
@@ -56,27 +74,48 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
         emit NFTCommissionRateSet(tokenId, newCommissionRate);
     }
 
-    function buyNFT(uint256 tokenId, address affiliate) public payable {
+    function buyNFT(uint256 tokenId, address affiliate) public payable nonReentrant {
         require(msg.value >= tokenPrices[tokenId], "Payment is below the price");
         require(bytes(_tokenURIs[tokenId]).length != 0, "Token not for sale");
-        require(!emergencyStop, "Sales are currently stopped");
 
         uint256 salePrice = msg.value;
-        uint256 commissionRateForNFT = nftCommissionRates[tokenId];
-        uint256 commission = (salePrice * commissionRateForNFT) / 100;
-        uint256 sellerProceeds = salePrice - commission;
-
-        payable(tokenSellers[tokenId]).transfer(sellerProceeds);
-        if (commission > 0) {
-            affiliateTracker.payCommission(affiliate, commission, address(this), tokenId);
-        }
-
-        _safeMint(msg.sender, tokenId);
-        emit TokenSold(tokenId, msg.sender, salePrice);
+        uint256 commissionRateForNFT = nftCommissionRates[tokenId] > 0 ? nftCommissionRates[tokenId] : defaultCommissionRate;
+        uint256 commission = calculateCommission(salePrice, commissionRateForNFT);
 
         delete _tokenURIs[tokenId];
         delete tokenPrices[tokenId];
         delete tokenSellers[tokenId];
+
+        payable(tokenSellers[tokenId]).transfer(salePrice - commission);
+
+        // Pay royalties to the creator
+        payRoyalty(tokenId, salePrice);
+
+        // Pay commission to the affiliate
+        if (commission > 0) {
+            if (affiliate != address(0)) {
+                affiliateTracker.payCommission(affiliate, salePrice, address(this), tokenId);
+            } else {
+                affiliateTracker.payCommission(defaultAffiliate, salePrice, address(this), tokenId);
+            }
+        }
+
+        _safeMint(msg.sender, tokenId);
+        emit TokenSold(tokenId, msg.sender, salePrice);
+    }
+
+    // Function to calculate and pay royalties upon NFT sale
+    function payRoyalty(uint256 tokenId, uint256 salePrice) internal {
+        RoyaltyInfo memory royalty = royaltyInfo[tokenId];
+        require(royalty.creator != address(0), "Royalty not set for this NFT");
+
+        uint256 royaltyAmount = (salePrice * royalty.percentage) / 100;
+        payable(royalty.creator).transfer(royaltyAmount);
+        emit RoyaltyPaid(royalty.creator, royaltyAmount, tokenId);
+    }
+
+    function calculateCommission(uint256 _salePrice, uint256 _rate) public pure returns (uint256) {
+        return (_salePrice * _rate) / 100;
     }
 
     function setDefaultAffiliate(address affiliate) public onlyOwner {
@@ -90,24 +129,8 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
 
     function setAffiliateCommissionRate(address affiliate, uint256 newRate) public onlyOwner {
         require(newRate >= 1 && newRate <= 100, "Invalid commission rate");
-        affiliateCommissionRates[affiliate] = newRate;
-    }
-
-    function payCommission(address affiliate, uint256 amount, uint256 tokenId) external {
-        affiliateEarnings[affiliate] += amount;
-        emit CommissionPaid(affiliate, amount, tokenId);
-    }
-
-    function withdrawEarnings() external view {
-        require(!affiliates[msg.sender].instantDirectPayment, "Instant direct payment affiliates cannot withdraw earnings");
-    }
-
-    function setInstantDirectPayment(address affiliate, bool allowInstantDirectPayment) public onlyOwner {
-        affiliates[affiliate].instantDirectPayment = allowInstantDirectPayment;
-    }
-
-    function setAffiliateTrackerAddress(address _affiliateTrackerAddress) public onlyOwner {
-        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+        affiliateTracker.setCommissionRate(affiliate, newRate);
+        emit CommissionRateUpdated(affiliate, newRate);
     }
 
     function registerAffiliate(address newAffiliateAddress, uint256 newCommissionRate) public onlyOwner {
@@ -120,20 +143,29 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
         emit AffiliateRevoked(affiliate);
     }
 
+    function setInstantDirectPayment(address affiliate, bool allowInstantDirectPayment) public onlyOwner {
+        affiliates[affiliate].instantDirectPayment = allowInstantDirectPayment;
+        emit DirectPaymentToggled(affiliate, allowInstantDirectPayment);
+    }
+
     function toggleDirectPaymentGlobal() public onlyOwner {
+        bool isEnabled = affiliateTracker.isDirectPaymentEnabled();
         affiliateTracker.toggleDirectPaymentGlobal();
+        emit DirectPaymentToggled(address(0), !isEnabled);
     }
 
     function toggleDirectPaymentUser(address affiliate) public onlyOwner {
-        affiliateTracker.toggleDirectPaymentUser(affiliate);
-    }
-
-    function setCommissionRate(address affiliate, uint256 newRate) public onlyOwner {
-        affiliateTracker.setCommissionRate(affiliate, newRate);
+        bool currentState = affiliates[affiliate].instantDirectPayment;
+        affiliates[affiliate].instantDirectPayment = !currentState;
+        emit DirectPaymentToggled(affiliate, !currentState);
     }
 
     function allowContract(address _contract) public onlyOwner {
         affiliateTracker.allowContract(_contract);
+    }
+
+    function setAffiliateTrackerAddress(address _affiliateTrackerAddress) public onlyOwner {
+        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
     }
 
     function listNFTForSale(string memory uri, uint256 price) public {
@@ -143,11 +175,6 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable(msg.sender) {
         tokenPrices[tokenId] = price;
         tokenSellers[tokenId] = msg.sender;
         emit NFTListed(tokenId, uri, price);
-    }
-
-    function setEmergencyStop(bool status) public onlyOwner {
-        emergencyStop = status;
-        emit EmergencyStopActivated(status);
     }
 
     function tokenExists(uint256 tokenId) public view returns (bool) {
