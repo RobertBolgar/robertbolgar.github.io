@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract RewardPool is Ownable {
+    address public rewardPoolAddress;
+
+    event RewardPoolUpdated(address indexed newRewardPool);
+
+    constructor(address _initialRewardPool) {
+        rewardPoolAddress = _initialRewardPool;
+    }
+
+    function updateRewardPool(address _newRewardPool) external onlyOwner {
+        require(_newRewardPool != address(0), "Invalid reward pool address");
+        rewardPoolAddress = _newRewardPool;
+        emit RewardPoolUpdated(_newRewardPool);
+    }
+}
