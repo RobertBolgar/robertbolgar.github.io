@@ -1,0 +1,121 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// Import the PLRT token interface
+interface PLRTToken {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+}
+
+contract PromotionTracker {
+    // Define the structure for each promotional slot
+    struct PromotionalSlot {
+        uint256 duration; // Duration of the promotional slot in seconds
+        uint256 price; // Price of the slot in PLRT tokens
+        address reservedBy; // Address of the creator who reserved the slot
+        uint256 reservedUntil; // Timestamp until which the slot is reserved
+    }
+    
+    // Address of the owner
+    address public owner;
+    
+    // Address of the PLRT token contract
+    address public plrtTokenAddress;
+    // Instance of the PLRT token contract
+    PLRTToken public plrtTokenContract;
+    
+    // Array to store the available promotional slots
+    PromotionalSlot[] public promotionalSlots;
+    
+    // Mapping to keep track of which slots are reserved
+    mapping(uint256 => bool) public isSlotReserved;
+    
+    // Event to emit when a slot is successfully reserved
+    event SlotReserved(uint256 slotIndex, address reservedBy, uint256 reservedUntil);
+    
+    // Event to emit when the slot price is updated
+    event SlotPriceUpdated(uint256 slotIndex, uint256 newPrice);
+    
+    // Modifier to check if the caller is the owner
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+    
+    // Constructor to initialize the contract and set the owner
+    constructor(address _plrtTokenAddress) {
+        owner = msg.sender;
+        plrtTokenAddress = _plrtTokenAddress;
+        plrtTokenContract = PLRTToken(_plrtTokenAddress);
+        // Add initial promotional slots
+        // (duration, price)
+        addPromotionalSlot(24 hours, 100); // Example slot: 24 hours for 100 PLRT tokens
+        addPromotionalSlot(48 hours, 180); // Example slot: 48 hours for 180 PLRT tokens
+        addPromotionalSlot(72 hours, 250); // Example slot: 72 hours for 250 PLRT tokens
+        // Add more slots as needed
+    }
+    
+    // Function to add a new promotional slot
+    function addPromotionalSlot(uint256 _duration, uint256 _price) private {
+        promotionalSlots.push(PromotionalSlot(_duration, _price, address(0), 0));
+    }
+    
+    // Function to allow the owner to update the price of a promotional slot
+    function updateSlotPrice(uint256 _slotIndex, uint256 _newPrice) external onlyOwner {
+        require(_slotIndex < promotionalSlots.length, "Invalid slot index");
+        promotionalSlots[_slotIndex].price = _newPrice;
+        emit SlotPriceUpdated(_slotIndex, _newPrice);
+    }
+    
+    // Function to reserve a promotional slot
+    function reserveSlot(uint256 _slotIndex) external {
+        require(_slotIndex < promotionalSlots.length, "Invalid slot index");
+        require(!isSlotReserved[_slotIndex], "Slot already reserved");
+        
+        PromotionalSlot storage slot = promotionalSlots[_slotIndex];
+        
+        // Transfer PLRT tokens from the caller to the contract
+        require(plrtTokenContract.transferFrom(msg.sender, address(this), slot.price), "PLRT transfer failed");
+        
+        // Update slot reservation details
+        slot.reservedBy = msg.sender;
+        slot.reservedUntil = block.timestamp + slot.duration;
+        isSlotReserved[_slotIndex] = true;
+        
+        // Emit event
+        emit SlotReserved(_slotIndex, msg.sender, slot.reservedUntil);
+    }
+
+    // Function to release a reserved slot if its reservation period has expired
+    function releaseExpiredSlot(uint256 _slotIndex) external onlyOwner {
+        require(_slotIndex < promotionalSlots.length, "Invalid slot index");
+        require(isSlotReserved[_slotIndex], "Slot not reserved");
+        
+        PromotionalSlot storage slot = promotionalSlots[_slotIndex];
+        
+        // Check if the reservation period has expired
+        require(block.timestamp >= slot.reservedUntil, "Reservation period not expired");
+        
+        // Release the slot
+        slot.reservedBy = address(0);
+        slot.reservedUntil = 0;
+        isSlotReserved[_slotIndex] = false;
+    }
+    
+    // Function to cancel a reserved slot and refund the PLRT tokens
+    function cancelReservedSlot(uint256 _slotIndex) external {
+        require(_slotIndex < promotionalSlots.length, "Invalid slot index");
+        require(isSlotReserved[_slotIndex], "Slot not reserved");
+        require(msg.sender == promotionalSlots[_slotIndex].reservedBy, "Caller is not the creator");
+        
+        PromotionalSlot storage slot = promotionalSlots[_slotIndex];
+        
+        // Refund PLRT tokens to the creator
+        require(plrtTokenContract.transfer(slot.reservedBy, slot.price), "PLRT transfer failed");
+        
+        // Release the slot
+        slot.reservedBy = address(0);
+        slot.reservedUntil = 0;
+        isSlotReserved[_slotIndex] = false;
+    }
+}
