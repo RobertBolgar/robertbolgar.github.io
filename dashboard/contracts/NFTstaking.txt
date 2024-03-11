@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract NFTStaking is Ownable {
+    // Struct to represent a staking position
+    struct StakingPosition {
+        uint256 amount; // Amount of NFTs staked
+        uint256 stakingTime; // Time when the NFTs were staked
+    }
+
+    // Mapping to keep track of staking positions for each user
+    mapping(address => StakingPosition) public stakingPositions;
+
+    // Token contracts
+    IERC721 public nftToken; // NFT token contract
+    IERC20 public rewardToken; // Reward token contract
+
+    // Staking parameters
+    uint256 public stakingDuration; // Duration for staking in seconds
+    uint256 public rewardRate; // Reward rate per second
+
+    // Events
+    event NFTStaked(address indexed user, uint256 amount);
+    event NFTWithdrawn(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, uint256 amount);
+
+    constructor(address _nftTokenAddress, address _rewardTokenAddress, uint256 _stakingDuration, uint256 _rewardRate, address _owner) Ownable(_owner) {
+    nftToken = IERC721(_nftTokenAddress);
+    rewardToken = IERC20(_rewardTokenAddress);
+    stakingDuration = _stakingDuration;
+    rewardRate = _rewardRate;
+}
+
+
+    // Function to stake NFTs
+    function stakeNFTs(uint256 _amount) external {
+        require(stakingPositions[msg.sender].amount == 0, "You already have a staking position");
+        require(_amount > 0, "Amount must be greater than 0");
+
+        // Transfer NFTs from user to contract
+    nftToken.safeTransferFrom(address(this), msg.sender, stakingPositions[msg.sender].amount);
+
+        // Update staking position
+        stakingPositions[msg.sender] = StakingPosition(_amount, block.timestamp);
+
+        emit NFTStaked(msg.sender, _amount);
+    }
+
+    // Function to withdraw staked NFTs
+    function withdrawNFTs() external {
+        require(stakingPositions[msg.sender].amount > 0, "You don't have a staking position");
+
+        // Transfer NFTs from contract to user
+        nftToken.safeTransferFrom(address(this), msg.sender, stakingPositions[msg.sender].amount);
+
+
+        // Clear staking position
+        delete stakingPositions[msg.sender];
+
+        emit NFTWithdrawn(msg.sender, stakingPositions[msg.sender].amount);
+    }
+
+    // Function to claim rewards
+    function claimRewards() external {
+        require(stakingPositions[msg.sender].amount > 0, "You don't have a staking position");
+
+        uint256 rewards = calculateRewards(msg.sender);
+        rewardToken.transfer(msg.sender, rewards);
+
+        emit RewardsClaimed(msg.sender, rewards);
+    }
+
+    // Function to calculate rewards
+    function calculateRewards(address _user) public view returns (uint256) {
+        if (stakingPositions[_user].amount == 0) {
+            return 0;
+        }
+
+        uint256 stakingTime = block.timestamp - stakingPositions[_user].stakingTime;
+        if (stakingTime > stakingDuration) {
+            stakingTime = stakingDuration;
+        }
+
+        return stakingTime * rewardRate;
+    }
+
+    // Function to update staking parameters (onlyOwner)
+    function updateStakingParameters(uint256 _stakingDuration, uint256 _rewardRate) external onlyOwner {
+        stakingDuration = _stakingDuration;
+        rewardRate = _rewardRate;
+    }
+}
