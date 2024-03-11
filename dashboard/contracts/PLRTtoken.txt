@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract PLRToken is ERC20, ERC20Burnable, Ownable {
+    uint256 public constant MAX_SUPPLY = 100_000_000 * (10 ** 18); // 100 million tokens
+
+    uint256 public constant TREASURY_ALLOCATION = MAX_SUPPLY * 10 / 100;
+    uint256 public constant LIQUIDITY_ALLOCATION = MAX_SUPPLY * 25 / 100;
+    uint256 public constant PRESALE_ALLOCATION = MAX_SUPPLY * 25 / 100;
+    uint256 public constant TEAM_ALLOCATION = MAX_SUPPLY * 15 / 100;
+    uint256 public constant RD_ALLOCATION = MAX_SUPPLY * 10 / 100;
+    uint256 public constant MARKETING_ALLOCATION = MAX_SUPPLY * 15 / 100;
+
+    address public treasuryWallet;
+    address public liquidityWallet;
+    address public vestingContract; // To be set post-deployment
+    address public marketingWallet;
+    address public rdWallet; 
+
+    bool private allocationsSet = false;
+
+    constructor() ERC20("PLRToken", "PLRT") Ownable(msg.sender) {
+        _mint(msg.sender, MAX_SUPPLY);
+    }
+
+
+    function setWalletAddresses(
+        address _treasuryWallet,
+        address _liquidityWallet,
+        address _vestingContract,
+        address _marketingWallet,
+        address _rdWallet
+    ) external onlyOwner {
+        require(!allocationsSet, "Wallet addresses can only be set once");
+
+        treasuryWallet = _treasuryWallet;
+        liquidityWallet = _liquidityWallet;
+        vestingContract = _vestingContract;
+        marketingWallet = _marketingWallet;
+        rdWallet = _rdWallet;
+
+        allocationsSet = true; // Prevent further modification of wallet addresses.
+    }
+
+    // Allows owner to burn unsold presale tokens, adjusting for actual sales.
+    function burnUnsoldPresaleTokens(uint256 amount) public onlyOwner {
+        _burn(msg.sender, amount);
+    }
+}
