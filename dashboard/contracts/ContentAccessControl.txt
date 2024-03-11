@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract ContentAccessControl is Ownable {
+    // Mapping to store the content access permissions for each NFT
+    mapping(address => mapping(uint256 => bool)) private contentAccess;
+
+    // NFT Marketplace contract address
+    address public marketplaceContract;
+
+    // Event to emit when content access is granted to an NFT
+    event ContentAccessGranted(address indexed nftContract, uint256 indexed tokenId);
+
+    // Modifier to restrict access to the NFT Marketplace contract
+    modifier onlyMarketplace() {
+        require(msg.sender == marketplaceContract, "Caller is not the NFT Marketplace contract");
+        _;
+    }
+
+    // Function to grant content access to an NFT
+    function grantContentAccess(address nftContract, uint256 tokenId) external onlyMarketplace {
+        contentAccess[nftContract][tokenId] = true;
+        emit ContentAccessGranted(nftContract, tokenId);
+    }
+
+    // Function to check if an NFT has content access
+    function hasContentAccess(address nftContract, uint256 tokenId) public view returns (bool) {
+        return contentAccess[nftContract][tokenId];
+    }
+
+    // Function to revoke content access from an NFT
+    function revokeContentAccess(address nftContract, uint256 tokenId) external onlyMarketplace {
+        contentAccess[nftContract][tokenId] = false;
+    }
+
+    // Function to set the address of the NFT Marketplace contract
+    function setMarketplaceContract(address _marketplaceContract) external onlyOwner {
+        marketplaceContract = _marketplaceContract;
+    }
+}
