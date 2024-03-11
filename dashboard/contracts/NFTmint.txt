@@ -6,15 +6,16 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IAffiliateTracker.sol";
+import "./IERC20.sol";
 
 contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     struct Affiliate {
         bool instantDirectPayment;
     }
-    // Define a struct to store royalty information
+
     struct RoyaltyInfo {
-        uint256 percentage; // Royalty percentage
-        address creator;    // Address of the NFT creator
+        uint256 percentage;
+        address creator;
     }
 
     uint256 private _tokenIdCounter = 1;
@@ -25,11 +26,11 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     mapping(address => Affiliate) public affiliates;
     mapping(uint256 => RoyaltyInfo) public royaltyInfo;
 
-
     IAffiliateTracker public affiliateTracker;
-
     uint256 public defaultCommissionRate = 10;
     address public defaultAffiliate;
+
+    IERC20 public PLRT;
 
     event TokenSold(uint256 indexed tokenId, address indexed buyer, uint256 salePrice);
     event NFTListed(uint256 indexed tokenId, string uri, uint256 price);
@@ -39,22 +40,19 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     event DirectPaymentToggled(address indexed affiliate, bool isEnabled);
     event CommissionRateUpdated(address indexed affiliate, uint256 newRate);
     event NFTCommissionRateSet(uint256 indexed tokenId, uint256 commissionRate);
-    // Event to log royalty settings
     event RoyaltySet(uint256 indexed tokenId, uint256 percentage, address indexed creator);
-    // Event to log royalty payments
     event RoyaltyPaid(address indexed creator, uint256 amount, uint256 tokenId);
     event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI);
+    event PaymentMade(address indexed buyer, uint256 amount, uint256 discountedAmount, address tokenAddress);
 
+    constructor(string memory name, string memory symbol, address _affiliateTrackerAddress, address _PLRTAddress)
+        ERC721(name, symbol)
+        Ownable(msg.sender)
+    {
+        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+        PLRT = IERC20(_PLRTAddress);
+    }
 
-
-    constructor(string memory name, string memory symbol, address _affiliateTrackerAddress)
-    ERC721(name, symbol)
-    Ownable(msg.sender) // Pass the deployer's address as the initial owner
-{
-    affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
-}
-
-    // Function to set royalty for a specific NFT
     function setRoyalty(uint256 tokenId, uint256 percentage, address creator) public onlyOwner {
         require(percentage <= 100, "Royalty percentage cannot exceed 100");
         royaltyInfo[tokenId] = RoyaltyInfo(percentage, creator);
@@ -74,29 +72,39 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
         emit NFTCommissionRateSet(tokenId, newCommissionRate);
     }
 
-    function buyNFT(uint256 tokenId, address affiliate) public payable nonReentrant {
-        require(msg.value >= tokenPrices[tokenId], "Payment is below the price");
-        require(bytes(_tokenURIs[tokenId]).length != 0, "Token not for sale");
+    function buyNFT(uint256 tokenId, address affiliate, address paymentToken) public payable nonReentrant {
+        uint256 salePrice = tokenPrices[tokenId];
+        require(salePrice > 0, "Token not for sale");
 
-        uint256 salePrice = msg.value;
         uint256 commissionRateForNFT = nftCommissionRates[tokenId] > 0 ? nftCommissionRates[tokenId] : defaultCommissionRate;
         uint256 commission = calculateCommission(salePrice, commissionRateForNFT);
+
+        if (paymentToken == address(0)) { // BNB payment
+            require(msg.value >= salePrice, "Insufficient BNB sent");
+        } else if (paymentToken == address(PLRT)) { // PLRT payment
+            require(PLRT.transferFrom(msg.sender, address(this), salePrice), "PLRT transfer failed");
+        } else {
+            revert("Invalid payment token");
+        }
 
         delete _tokenURIs[tokenId];
         delete tokenPrices[tokenId];
         delete tokenSellers[tokenId];
 
-        payable(tokenSellers[tokenId]).transfer(salePrice - commission);
+        if (paymentToken == address(0)) { // BNB payment
+            payable(tokenSellers[tokenId]).transfer(salePrice - commission);
+        } else { // PLRT payment
+            require(PLRT.transfer(tokenSellers[tokenId], salePrice - commission), "PLRT transfer failed");
+        }
 
-        // Pay royalties to the creator
-        payRoyalty(tokenId, salePrice);
+        payRoyalty(tokenId, salePrice, paymentToken);
 
-        // Pay commission to the affiliate
+        require(PLRT.transferFrom(msg.sender, address(this), commission), "PLRT transfer failed");
         if (commission > 0) {
             if (affiliate != address(0)) {
-                affiliateTracker.payCommission(affiliate, salePrice, address(this), tokenId);
+                affiliateTracker.payCommission(affiliate, commission, address(PLRT), tokenId);
             } else {
-                affiliateTracker.payCommission(defaultAffiliate, salePrice, address(this), tokenId);
+                affiliateTracker.payCommission(defaultAffiliate, commission, address(PLRT), tokenId);
             }
         }
 
@@ -104,15 +112,19 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
         emit TokenSold(tokenId, msg.sender, salePrice);
     }
 
-    // Function to calculate and pay royalties upon NFT sale
-    function payRoyalty(uint256 tokenId, uint256 salePrice) internal {
-        RoyaltyInfo memory royalty = royaltyInfo[tokenId];
-        require(royalty.creator != address(0), "Royalty not set for this NFT");
+   function payRoyalty(uint256 tokenId, uint256 salePrice, address paymentToken) internal {
+    require(paymentToken == address(PLRT), "Invalid payment token");
 
-        uint256 royaltyAmount = (salePrice * royalty.percentage) / 100;
-        payable(royalty.creator).transfer(royaltyAmount);
-        emit RoyaltyPaid(royalty.creator, royaltyAmount, tokenId);
-    }
+    RoyaltyInfo memory royalty = royaltyInfo[tokenId];
+    require(royalty.creator != address(0), "Royalty not set for this NFT");
+
+    uint256 royaltyAmount = (salePrice * royalty.percentage) / 100;
+    // Transfer royalty amount in PLRT tokens to the creator
+    require(PLRT.transferFrom(msg.sender, royalty.creator, royaltyAmount), "PLRT transfer failed");
+
+    emit RoyaltyPaid(royalty.creator, royaltyAmount, tokenId);
+}
+
 
     function calculateCommission(uint256 _salePrice, uint256 _rate) public pure returns (uint256) {
         return (_salePrice * _rate) / 100;
@@ -186,7 +198,25 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
         return string(abi.encodePacked(_baseURI(), _tokenURIs[tokenId]));
     }
 
-    receive() external payable {}
+    function makePayment(uint256 amount, address tokenAddress) external {
+    uint256 discountedAmount;
+    if (tokenAddress == address(0)) {
+        // Process payment in BNB
+        discountedAmount = amount;
+    } else if (tokenAddress == address(PLRT)) {
+        // Process payment in PLRT with 7% discount
+        discountedAmount = amount * 93 / 100; // Apply 7% discount
+        // Transfer PLRT tokens from user to contract
+        require(PLRT.transferFrom(msg.sender, address(this), amount), "PLRT transfer failed");
+    } else {
+        revert("Invalid token");
+    }
+    
+    // Emit event
+    emit PaymentMade(msg.sender, amount, discountedAmount, tokenAddress);
+    
+    // Other payment processing logic...
+}
 
-    fallback() external payable {}
+   
 }
