@@ -156,7 +156,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "nftToken",
+		"name": "nftTokenContract",
 		"outputs": [
 			{
 				"internalType": "contract IERC721",
@@ -245,6 +245,58 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_nftTokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "setNFTTokenAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_rewardRate",
+				"type": "uint256"
+			}
+		],
+		"name": "setRewardRate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_rewardTokenAddress",
+				"type": "address"
+			}
+		],
+		"name": "setRewardTokenAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_stakingDuration",
+				"type": "uint256"
+			}
+		],
+		"name": "setStakingDuration",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
