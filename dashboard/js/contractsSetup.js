@@ -1,16 +1,24 @@
 // contractsSetup.js
 export async function setupContracts(provider) {
     const signer = provider.getSigner();
+    const contracts = {};
 
-    const mintAbi = await (await fetch('./mint_abi.json')).json();
-    const affiliateAbi = await (await fetch('./affiliate_abi.json')).json();
+    // Contract configuration
+    const contractConfig = [
+        { name: "PLRToken", address: "0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB", abiPath: "./ABI/PLRToken_ABI.json" },
+        { name: "PromotionTracker", address: "0x8f37006580c0D4f6584c18A4cfed6C4647415272", abiPath: "./ABI/Promotion_ABI.json" },
+        { name: "AffiliateTracker", address: "0xE5729c133b3192E1540c466EDB443D6dB10E2800", abiPath: "./ABI/affiliate_abi.json" },
+        { name: "NFTMint", address: "0xe9Ac226DBC108dAEeba3dbe55B8b1cE3ae52381E", abiPath: "./ABI/mint_abi.json" },
+        { name: "ContentAccessControl", address: "0xfe9B191772256FAd10A1378740D622Df981405b4", abiPath: "./ABI/Access_ABI.json" },
+        { name: "NFTStaking", address: "0xab378329d0c310b1Bcb71F34FFDf9b3B61882165", abiPath: "./ABI/Staking_ABI.json" },
+        { name: "NFTMarketplace", address: "0xC6f089b1A49Ec443e3891695CcEAD602683BdCba", abiPath: "./ABI/Marketplace_ABI.json" },
+    ];
 
-    const nftContractAddress = "0x0D3f36AC41e73FDCAb1d119a239305e58bfb2568";
-    const affiliateContractAddress = "0x4A6E0AbC1b0A6c3D1893bEe81e4aAe2BB8016CAA";
+    // Fetch and setup contracts
+    for (const contract of contractConfig) {
+        const abi = await (await fetch(contract.abiPath)).json();
+        contracts[contract.name] = new ethers.Contract(contract.address, abi, signer);
+    }
 
-    const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
-    const affiliateContract = new ethers.Contract(affiliateContractAddress, affiliateAbi, signer);
-
-    return { nftContract, affiliateContract };
+    return contracts;
 }
-
