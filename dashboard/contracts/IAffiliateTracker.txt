@@ -31,6 +31,10 @@ interface IAffiliateTracker {
 
     // Revokes an affiliate
     function revokeAffiliate(address affiliate) external;
+  
+    function calculateCommission(uint256 _salePrice, uint256 _rate) external pure returns (uint256);
+    function getAffiliateCommissionRate(address affiliate) external view returns (uint256);
+    // Add other functions as needed
 
     // Events
     event DirectPaymentToggled(bool isEnabled);
@@ -42,3 +46,4 @@ interface IAffiliateTracker {
     event ContractAllowed(address contractAddress);
     event EarningsWithdrawn(address indexed affiliate, uint256 amount);
 }
+ 
