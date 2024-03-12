@@ -1,0 +1,117 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./IAffiliateTracker.sol";
+import "./PromotionTracker.sol";
+import "./NFTstaking.sol"; 
+
+contract NFTMarketplace is ReentrancyGuard, Ownable {
+    IERC721 public nftContract;
+    IERC20 public plrtToken;
+    IAffiliateTracker public affiliateTracker;
+    PromotionTracker public promotionTracker;
+    NFTStaking public nftStakingContract;
+
+    struct Listing {
+        uint256 tokenId;
+        address seller;
+        uint256 price;
+        bool isActive;
+    }
+
+    mapping(uint256 => Listing) public listings;
+
+    event ItemListed(uint256 indexed tokenId, address indexed seller, uint256 price);
+    event ItemSold(uint256 indexed tokenId, address indexed buyer, uint256 price);
+    event ItemPriceUpdated(uint256 indexed tokenId, uint256 newPrice);
+    event ItemRemoved(uint256 indexed tokenId);
+
+    constructor(
+        address _nftContractAddress,
+        address _plrtTokenAddress,
+        address _affiliateTrackerAddress,
+        address _promotionTrackerAddress,
+        address _nftStakingContractAddress,
+        address initialOwner
+    ) Ownable(initialOwner) {
+        nftContract = IERC721(_nftContractAddress);
+        plrtToken = IERC20(_plrtTokenAddress);
+        affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
+        promotionTracker = PromotionTracker(_promotionTrackerAddress);
+        nftStakingContract = NFTStaking(_nftStakingContractAddress);
+    }
+
+    function listNFTForSale(uint256 tokenId, uint256 price) public {
+        require(nftContract.ownerOf(tokenId) == msg.sender, "Caller must be the NFT owner.");
+        require(price > 0, "Price must be greater than zero.");
+        require(nftContract.isApprovedForAll(msg.sender, address(this)), "Marketplace not approved to manage this NFT.");
+        
+        listings[tokenId] = Listing({
+            tokenId: tokenId,
+            seller: msg.sender,
+            price: price,
+            isActive: true
+        });
+
+        emit ItemListed(tokenId, msg.sender, price);
+    }
+
+    function buyNFT(uint256 tokenId, address affiliate) public nonReentrant {
+        Listing storage listing = listings[tokenId];
+        require(listing.isActive, "NFT is not currently for sale.");
+        require(plrtToken.transferFrom(msg.sender, listing.seller, listing.price), "Failed to transfer payment.");
+
+        // If an affiliate is involved, calculate and transfer commission
+        if (affiliate != address(0) && address(affiliateTracker) != address(0)) {
+            uint256 commissionAmount = affiliateTracker.calculateCommission(listing.price, affiliateTracker.getAffiliateCommissionRate(affiliate));
+            require(plrtToken.transferFrom(msg.sender, affiliate, commissionAmount), "Failed to transfer commission.");
+            affiliateTracker.payCommission(affiliate, commissionAmount, address(nftContract), tokenId);
+        }
+
+        nftContract.safeTransferFrom(address(this), msg.sender, tokenId);
+        listing.isActive = false;
+
+        emit ItemSold(tokenId, msg.sender, listing.price);
+    }
+
+    function updateListingPrice(uint256 tokenId, uint256 newPrice) public {
+        Listing storage listing = listings[tokenId];
+        require(msg.sender == listing.seller, "Only the seller can update the price.");
+        require(newPrice > 0, "Price must be greater than zero.");
+
+        listing.price = newPrice;
+
+        emit ItemPriceUpdated(tokenId, newPrice);
+    }
+
+    function removeListing(uint256 tokenId) public {
+        Listing storage listing = listings[tokenId];
+        require(msg.sender == listing.seller, "Only the seller can remove the listing.");
+
+        nftContract.transferFrom(address(this), msg.sender, tokenId);
+        delete listings[tokenId];
+
+        emit ItemRemoved(tokenId);
+    }
+
+    // Optional: Stake NFT immediately after purchase
+    function buyAndStakeNFT(uint256 tokenId, address affiliate) public nonReentrant {
+    buyNFT(tokenId, affiliate);
+    require(nftContract.isApprovedForAll(msg.sender, address(nftStakingContract)), "Staking contract must be approved to transfer NFT.");
+    nftContract.safeTransferFrom(msg.sender, address(nftStakingContract), tokenId);
+    nftStakingContract.stakeNFTs(1); // Assuming you want to stake 1 NFT per call
+}
+
+
+    // Utility function for emergency withdrawal of NFTs by the owner
+    // Consider including this for handling any unforeseen issues, with appropriate safeguards and logging
+    function emergencyNFTWithdrawal(uint256 tokenId) external onlyOwner {
+        require(!listings[tokenId].isActive, "Cannot withdraw an active listing.");
+        nftContract.safeTransferFrom(address(this), owner(), tokenId);
+        // Optionally log an event here
+    }
+}
