@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IAffiliateTracker.sol";
 import "./IERC20.sol";
+import "./PromotionTracker.sol";
+
 
 contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     struct Affiliate {
@@ -45,12 +47,15 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
     event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI);
     event PaymentMade(address indexed buyer, uint256 amount, uint256 discountedAmount, address tokenAddress);
 
+   PromotionTracker public promotionTracker;
+
     constructor(string memory name, string memory symbol, address _affiliateTrackerAddress, address _PLRTAddress)
         ERC721(name, symbol)
         Ownable(msg.sender)
     {
         affiliateTracker = IAffiliateTracker(_affiliateTrackerAddress);
         PLRT = IERC20(_PLRTAddress);
+        promotionTracker = new PromotionTracker(_PLRTAddress);
     }
 
     function setRoyalty(uint256 tokenId, uint256 percentage, address creator) public onlyOwner {
@@ -220,3 +225,4 @@ contract NFTMint is ERC721, ERC721Burnable, Ownable, ReentrancyGuard {
 
    
 }
+ 
