@@ -2,13 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ContentAccessControl is Ownable {
+contract ContentAccessControl {
     mapping(address => mapping(uint256 => bool)) private contentAccess;
+    address public owner;
     address public marketplaceContract;
 
     event ContentAccessGranted(address indexed nftContract, uint256 indexed tokenId);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
 
     modifier onlyMarketplace() {
         require(msg.sender == marketplaceContract, "Caller is not the NFT Marketplace contract");
@@ -16,7 +21,9 @@ contract ContentAccessControl is Ownable {
     }
 
     // Adjusted constructor to accept an initial owner address
-    constructor(address initialOwner) Ownable(initialOwner) {}
+    constructor(address initialOwner) {
+        owner = initialOwner;
+    }
 
     function grantContentAccess(address nftContract, uint256 tokenId) external onlyMarketplace {
         contentAccess[nftContract][tokenId] = true;
