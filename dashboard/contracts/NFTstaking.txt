@@ -1,116 +1,158 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
 
-contract NFTStaking is ERC721Holder, Ownable {
-    // Struct to represent a staking position
+abstract contract Ownable is Context {
+    address private _owner;
+
+    error OwnableUnauthorizedAccount(address account);
+    error OwnableInvalidOwner(address owner);
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    constructor(address initialOwner) {
+        if (initialOwner == address(0)) {
+            revert OwnableInvalidOwner(address(0));
+        }
+        _transferOwnership(initialOwner);
+    }
+
+    modifier onlyOwner() {
+        _checkOwner();
+        _;
+    }
+
+    function owner() public view virtual returns (address) {
+        return _owner;
+    }
+
+    function _checkOwner() internal view virtual {
+        if (owner() != _msgSender()) {
+            revert OwnableUnauthorizedAccount(_msgSender());
+        }
+    }
+
+    function renounceOwnership() public virtual onlyOwner {
+        _transferOwnership(address(0));
+    }
+
+    function transferOwnership(address newOwner) public virtual onlyOwner {
+        if (newOwner == address(0)) {
+            revert OwnableInvalidOwner(address(0));
+        }
+        _transferOwnership(newOwner);
+    }
+
+    function _transferOwnership(address newOwner) internal virtual {
+        address oldOwner = _owner;
+        _owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
+    }
+}
+
+contract NFTStaking is ERC721Holder, ReentrancyGuard, Ownable {
     struct StakingPosition {
-        uint256 amount; // Amount of NFTs staked
-        uint256 stakingTime; // Time when the NFTs were staked
+        uint256 amount;
+        uint256 stakingTime;
     }
 
-    // Token contracts
-    IERC721 public nftTokenContract; // NFT token contract
-    IERC20 public rewardToken; // Reward token contract
+    IERC721 public nftTokenContract;
+    IERC20 public rewardToken;
 
-    // Staking parameters
-    uint256 public stakingDuration; // Duration for staking in seconds
-    uint256 public rewardRate; // Reward rate per second
+    uint256 public stakingDuration;
+    uint256 public minimumDistributionAmount = 100 * (10**18); // For PLRT assuming 18 decimal places
+    uint256 public accumulatedFunds;
 
-    // Mapping to keep track of staking positions for each user
+
     mapping(address => StakingPosition) public stakingPositions;
+    mapping(address => uint256) public rewardsOwed;
+    mapping(uint256 => address) public nftOwners;
 
-    // Events
-    event NFTStaked(address indexed user, uint256 amount);
-    event NFTWithdrawn(address indexed user, uint256 amount);
+
+    event NFTStaked(address indexed user, uint256 indexed nftId);
+    event NFTWithdrawn(address indexed user, uint256 indexed nftId);
     event RewardsClaimed(address indexed user, uint256 amount);
+    event RevenueShared(uint256 amount);
 
-    constructor(address _nftTokenAddress, address _rewardTokenAddress, uint256 _stakingDuration, uint256 _rewardRate, address _initialOwner) Ownable(_initialOwner) {
+    constructor(address _nftTokenAddress, address _rewardTokenAddress, uint256 _stakingDuration, address initialOwner)
+        Ownable(initialOwner) 
+    {
         nftTokenContract = IERC721(_nftTokenAddress);
         rewardToken = IERC20(_rewardTokenAddress);
         stakingDuration = _stakingDuration;
-        rewardRate = _rewardRate;
     }
 
-    // Function to set NFT token address
-    function setNFTTokenAddress(address _nftTokenAddress) external onlyOwner {
-        nftTokenContract = IERC721(_nftTokenAddress);
+    function updateMinimumDistributionAmount(uint256 _newAmount) external onlyOwner {
+        minimumDistributionAmount = _newAmount;
     }
 
-    // Function to set reward token address
-    function setRewardTokenAddress(address _rewardTokenAddress) external onlyOwner {
-        rewardToken = IERC20(_rewardTokenAddress);
+
+    function stakeNFT(uint256 nftId) external {
+        require(nftTokenContract.ownerOf(nftId) == msg.sender, "Not the NFT owner");
+        require(nftOwners[nftId] == address(0), "NFT already staked");
+
+        nftTokenContract.safeTransferFrom(msg.sender, address(this), nftId);
+        nftOwners[nftId] = msg.sender;
+
+        emit NFTStaked(msg.sender, nftId);
     }
 
-    // Function to set staking duration
-    function setStakingDuration(uint256 _stakingDuration) external onlyOwner {
-        stakingDuration = _stakingDuration;
+    function withdrawNFT(uint256 nftId) external {
+        require(nftOwners[nftId] == msg.sender, "Not the NFT owner");
+
+        nftTokenContract.safeTransferFrom(address(this), msg.sender, nftId);
+        delete nftOwners[nftId];
+
+        emit NFTWithdrawn(msg.sender, nftId);
     }
 
-    // Function to set reward rate
-    function setRewardRate(uint256 _rewardRate) external onlyOwner {
-        rewardRate = _rewardRate;
-    }
-
-    // Function to stake NFTs
-    function stakeNFTs(uint256 _amount) external {
-        require(stakingPositions[msg.sender].amount == 0, "You already have a staking position");
-        require(_amount > 0, "Amount must be greater than 0");
-
-        // Transfer NFTs from user to contract
-        nftTokenContract.safeTransferFrom(msg.sender, address(this), _amount);
-
-        // Update staking position
-        stakingPositions[msg.sender] = StakingPosition(_amount, block.timestamp);
-
-        emit NFTStaked(msg.sender, _amount);
-    }
-
-    // Function to withdraw staked NFTs
-    function withdrawNFTs() external {
-        require(stakingPositions[msg.sender].amount > 0, "You don't have a staking position");
-
-        // Transfer NFTs from contract to user
-        nftTokenContract.safeTransferFrom(address(this), msg.sender, stakingPositions[msg.sender].amount);
-
-        // Clear staking position
-        delete stakingPositions[msg.sender];
-
-        emit NFTWithdrawn(msg.sender, stakingPositions[msg.sender].amount);
-    }
-
-    // Function to claim rewards
-    function claimRewards() external {
-        require(stakingPositions[msg.sender].amount > 0, "You don't have a staking position");
-
-        uint256 rewards = calculateRewards(msg.sender);
+    function claimRewards() external nonReentrant {
+        uint256 rewards = rewardsOwed[msg.sender];
+        require(rewards > 0, "No rewards to claim.");
+        
+        rewardsOwed[msg.sender] = 0;
         rewardToken.transfer(msg.sender, rewards);
 
         emit RewardsClaimed(msg.sender, rewards);
     }
 
-    // Function to calculate rewards
-    function calculateRewards(address _user) public view returns (uint256) {
-        if (stakingPositions[_user].amount == 0) {
-            return 0;
-        }
+    function receiveFundsFromMarketplace(uint256 _amount) external nonReentrant {
+        require(msg.sender == address(nftTokenContract), "Only the marketplace can transfer funds");
+        accumulatedFunds += _amount;
 
-        uint256 stakingTime = block.timestamp - stakingPositions[_user].stakingTime;
-        if (stakingTime > stakingDuration) {
-            stakingTime = stakingDuration;
+        if (accumulatedFunds >= minimumDistributionAmount) {
+            distributeRewards();
+            accumulatedFunds = 0;
         }
-
-        return stakingTime * rewardRate;
     }
 
-    // Function to update staking parameters (onlyOwner)
-    function updateStakingParameters(uint256 _stakingDuration, uint256 _rewardRate) external onlyOwner {
-        stakingDuration = _stakingDuration;
-        rewardRate = _rewardRate;
+    function distributeRewards() internal {
+        uint256 totalStakedNFTs = getTotalStakedNFTs();
+        require(totalStakedNFTs > 0, "No NFTs are staked.");
+
+        uint256 rewardPerNFT = accumulatedFunds / totalStakedNFTs;
+        for (uint256 i = 0; i < totalStakedNFTs; i++) {
+            address owner = nftOwners[i];
+            if (owner != address(0)) {
+                rewardsOwed[owner] += rewardPerNFT;
+            }
+        }
+
+        emit RevenueShared(accumulatedFunds);
+    }
+
+    function getTotalStakedNFTs() public view returns (uint256) {
+        uint256 totalStaked = 0;
+        for (uint256 i = 0; i < 10000; i++) { // Adjust based on your NFT collection size
+            if (nftOwners[i] != address(0)) {
+                totalStaked++;
+            }
+        }
+        return totalStaked;
     }
 }
- 
