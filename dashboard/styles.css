@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-    max-width: 600px; /* Adjusted for responsiveness */
+    max-width: 800px; /* Adjusted for responsiveness */
     width: 90%; /* Adjusts width on smaller screens */
     margin: 0 auto;
     padding: 20px;
