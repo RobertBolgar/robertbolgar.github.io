@@ -106,6 +106,12 @@ contract AffiliateTracker is AccessControl, ReentrancyGuard, IAffiliateTracker {
         return directPaymentEnabled;
     }
 
+    function getAffiliateCommissionRate(address affiliate) external view returns (uint256) {
+    require(affiliates[affiliate].isRegistered, "Affiliate not registered");
+    return affiliates[affiliate].commissionRate;
+}
+
+
     function getAffiliateEarnings(address affiliate) external view override returns (uint256) {
         require(affiliates[affiliate].isRegistered, "Affiliate not registered");
         return affiliates[affiliate].earnings;
@@ -120,4 +126,6 @@ contract AffiliateTracker is AccessControl, ReentrancyGuard, IAffiliateTracker {
     function revokeManagerRole(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(MANAGER_ROLE, account);
     }
+    
 }
+ 
