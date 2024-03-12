@@ -6,6 +6,8 @@ AffilateTracker: 0xE5729c133b3192E1540c466EDB443D6dB10E2800
 
 NFTmint:  0xe9Ac226DBC108dAEeba3dbe55B8b1cE3ae52381E
 
+ContentAccessControl: 0xa1B9418edb47D8bFF7cfc1ebC640009Dd0d2C465
+
 NFTStaking: 
 
 
