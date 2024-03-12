@@ -9,49 +9,22 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>NFT Mint</h1>
-        <form id="mintForm">
-            <div>
-                <label for="tokenURI">Token URI:</label>
-                <input type="text" id="tokenURI" name="tokenURI" required>
-            </div>
-            <div>
-                <label for="price">Price:</label>
-                <input type="number" id="price" name="price" required>
-            </div>
-            <div>
-                <input type="submit" value="Mint NFT">
-            </div>
-        </form>
-    </div>
+    <h1>Mint an NFT</h1>
+    <form id="mintForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
 
-    <script>
-        // Listen for form submission
-        document.getElementById("mintForm").addEventListener("submit", async (event) => {
-            event.preventDefault();
+        <label for="tokenURI">Token URI:</label>
+        <input type="text" id="tokenURI" name="tokenURI" required><br>
 
-            // Get input values
-            const tokenURI = document.getElementById("tokenURI").value;
-            const price = document.getElementById("price").value;
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required><br>
 
-            // Fetch contract setup
-            try {
-                const { nftMintContract } = await setupContracts(web3.currentProvider);
+        <button type="submit">Mint NFT</button>
+    </form>
 
-                // Mint NFT
-                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                const from = accounts[0];
-
-                await nftMintContract.methods.listNFTForSale(tokenURI, price).send({ from });
-
-                alert("NFT minted successfully!");
-            } catch (error) {
-                console.error(error);
-                alert("Failed to mint NFT!");
-            }
-        });
-    </script>
+    <!-- Include your JavaScript file -->
+    <script src="./js/NFTMint.js"></script>
 </body>
 
 </body>
