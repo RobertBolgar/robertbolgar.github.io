@@ -1,32 +1,27 @@
 import { ethers } from 'ethers';
-import NFTMint_ABI from './ABI/NFTMint_ABI.json';
+import { connectToNFTMint, listNFTForSale, buyNFT } from './NFTMint.js';
 
-const NFTMint_ADDRESS = '0xe9Ac226DBC108dAEeba3dbe55B8b1cE3ae52381E';
-
-export async function connectToNFTMint(provider) {
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(NFTMint_ADDRESS, NFTMint_ABI, signer);
-    return contract;
+// Initialize connection to Ethereum
+let provider;
+if (typeof window.ethereum !== 'undefined') {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+} else {
+    console.error('Ethereum provider is not available');
 }
 
-export async function listNFTForSale(contract, uri, price) {
-    try {
-        const tx = await contract.listNFTForSale(uri, price);
-        await tx.wait();
-        console.log('NFT listed for sale successfully');
-    } catch (error) {
-        console.error('Error listing NFT for sale:', error);
-    }
-}
+// Connect to NFTMint contract
+const nftMintContract = await connectToNFTMint(provider);
 
-export async function buyNFT(contract, tokenId, affiliate, paymentToken) {
-    try {
-        const tx = await contract.buyNFT(tokenId, affiliate, paymentToken);
-        await tx.wait();
-        console.log('NFT bought successfully');
-    } catch (error) {
-        console.error('Error buying NFT:', error);
-    }
-}
+// Example usage: List an NFT for sale
+const uri = 'https://example.com/nft-metadata';
+const price = ethers.utils.parseEther('1'); // Price in ether
+await listNFTForSale(nftMintContract, uri, price);
 
-// Add other functions as needed for interacting with the NFTMint contract
+// Example usage: Buy an NFT
+const tokenId = 1;
+const affiliate = '0x...'; // Address of the affiliate (optional)
+const paymentToken = ethers.constants.AddressZero; // Ether
+await buyNFT(nftMintContract, tokenId, affiliate, paymentToken);
+
+// You can add more function calls or event listeners here as needed
