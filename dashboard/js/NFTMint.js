@@ -1,4 +1,4 @@
-
+import { ethers } from '/ethers';
 import { connectToNFTMint, listNFTForSale, buyNFT } from './js/NFTMint.js';
 
 // Initialize connection to Ethereum
