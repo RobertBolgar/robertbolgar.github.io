@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error minting NFT:", error.message);
             alert("Failed to mint NFT. See console for more details.");
         }
+        } 
 
     // Admin functions
 
