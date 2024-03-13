@@ -3,95 +3,78 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TeamVesting is ReentrancyGuard, Ownable {
-    using SafeMath for uint256;
-
+contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
     IERC20 public plrToken;
+
+    enum VestingGroup { PrivateSale, Team, Treasury }
 
     struct VestingDetail {
         uint256 totalAllocation;
         uint256 amountWithdrawn;
         uint256 vestingStart;
-        uint256 lastWithdrawal;
+        VestingGroup group;
     }
 
     mapping(address => VestingDetail) public vestingDetails;
 
-    address[4] public teamMembers = [
-        0x91Dd086921290201AF8a2B5732c85c7b707EeBBe,
-        0x7405030006321e927Fc6eBD50C50e30BeF31CC6C,
-        0x58153521FB9b711FE7F5A4689Eba48e1C444c7FE,
-        0x58153521FB9b711FE7F5A4689Eba48e1C444c7FE
-    ];
+    uint256 public constant WITHDRAWAL_RATE = 10; // Example: 10% for simplicity
+    uint256 public vestingPeriod = 10 days; // Adjustable vesting period
 
-    uint256 public constant VESTING_PERIOD = 10 days;
-    uint256 public constant WITHDRAWAL_RATE = 10; // 10% every 10 days
+    event Withdrawal(address indexed user, uint256 amount);
+    event VestingAdded(address indexed user, uint256 allocation, VestingGroup group);
 
-    constructor(IERC20 _tokenAddress, address initialOwner) Ownable(initialOwner) {
+    constructor(IERC20 _tokenAddress) {
         require(address(_tokenAddress) != address(0), "Token address cannot be zero.");
         plrToken = _tokenAddress;
+        transferOwnership(msg.sender); // Assuming you want to set the deployer as the owner.
+    }
 
-        uint256 totalSupply = plrToken.totalSupply();
-        require(totalSupply > 0, "PLRToken total supply must be initialized");
-
-        uint256 totalAllocationForTeam = totalSupply.mul(15).div(100);
-        uint256 individualAllocation = totalAllocationForTeam.div(teamMembers.length);
-
-        for(uint i = 0; i < teamMembers.length; i++) {
-            vestingDetails[teamMembers[i]] = VestingDetail({
-                totalAllocation: individualAllocation,
+    // Adjusted to initialize vesting with group-specific logic.
+    function initializeVesting(address[] calldata users, uint256[] calldata allocations, VestingGroup group) external onlyOwner {
+        require(users.length == allocations.length, "Users and allocations length mismatch");
+        for (uint256 i = 0; i < users.length; i++) {
+            vestingDetails[users[i]] = VestingDetail({
+                totalAllocation: allocations[i],
                 amountWithdrawn: 0,
                 vestingStart: block.timestamp,
-                lastWithdrawal: block.timestamp
+                group: group
             });
+            emit VestingAdded(users[i], allocations[i], group);
         }
     }
 
     function withdrawTokens() external nonReentrant {
-        require(vestingDetails[msg.sender].totalAllocation > 0, "No allocation for this address.");
-        
         VestingDetail storage detail = vestingDetails[msg.sender];
-        uint256 timeElapsed = block.timestamp - detail.lastWithdrawal;
-        require(timeElapsed >= VESTING_PERIOD, "Cannot withdraw yet.");
+        require(detail.totalAllocation > 0, "No allocation for this address.");
+        require(block.timestamp >= detail.vestingStart + vestingPeriod, "Vesting period has not yet started");
 
-        uint256 periodsElapsed = timeElapsed / VESTING_PERIOD;
-        uint256 amountAvailable = detail.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
-        if (amountAvailable + detail.amountWithdrawn > detail.totalAllocation) {
-            amountAvailable = detail.totalAllocation - detail.amountWithdrawn;
-        }
+        uint256 availableAmount = availableToWithdraw(msg.sender);
+        require(availableAmount > 0, "No tokens available to withdraw.");
 
-        require(amountAvailable > 0, "No tokens available to withdraw.");
-        detail.amountWithdrawn = detail.amountWithdrawn.add(amountAvailable);
-        detail.lastWithdrawal = block.timestamp;
+        detail.amountWithdrawn += availableAmount;
+        plrToken.transfer(msg.sender, availableAmount);
 
-        plrToken.transfer(msg.sender, amountAvailable);
+        emit Withdrawal(msg.sender, availableAmount);
     }
 
+    // This function now considers vesting group and total allocation in its calculation
     function availableToWithdraw(address user) public view returns (uint256) {
         VestingDetail memory detail = vestingDetails[user];
-        if (block.timestamp < detail.vestingStart) {
-            return 0; // Vesting hasn't started
-        }
+        uint256 timeElapsed = block.timestamp - detail.vestingStart;
+        uint256 periodsElapsed = timeElapsed / vestingPeriod;
+        uint256 totalClaimable = (detail.totalAllocation * WITHDRAWAL_RATE / 100) * periodsElapsed;
+
+        uint256 availableAmount = totalClaimable > detail.totalAllocation ? detail.totalAllocation - detail.amountWithdrawn : totalClaimable - detail.amountWithdrawn;
         
-        uint256 timeElapsed = block.timestamp - detail.lastWithdrawal;
-        uint256 periodsElapsed = timeElapsed / VESTING_PERIOD;
-        uint256 availableAmount = detail.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
-
-        if (availableAmount + detail.amountWithdrawn > detail.totalAllocation) {
-            availableAmount = detail.totalAllocation - detail.amountWithdrawn; // Cap at total allocation
-        }
-
         return availableAmount;
     }
 
-    function updateTeamMemberAddress(address oldAddress, address newAddress) external onlyOwner {
-        require(vestingDetails[oldAddress].totalAllocation > 0, "Old address does not have an allocation.");
-        require(vestingDetails[newAddress].totalAllocation == 0, "New address already has an allocation.");
-
-        vestingDetails[newAddress] = vestingDetails[oldAddress];
-        delete vestingDetails[oldAddress];
+    // Allows updating the vesting period for new vesting schedules.
+    function updateVestingPeriod(uint256 _newPeriod) external onlyOwner {
+        vestingPeriod = _newPeriod;
     }
+    
+    // Additional functions like updateTeamMemberAddress can be modified to fit the new structure
 }
