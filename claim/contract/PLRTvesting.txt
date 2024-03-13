@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract TeamVesting is ReentrancyGuard, Ownable {
+    using SafeMath for uint256;
+
+    IERC20 public plrToken;
+
+    struct VestingDetail {
+        uint256 totalAllocation;
+        uint256 amountWithdrawn;
+        uint256 vestingStart;
+        uint256 lastWithdrawal;
+    }
+
+    mapping(address => VestingDetail) public vestingDetails;
+
+    address[4] public teamMembers = [
+        0x91Dd086921290201AF8a2B5732c85c7b707EeBBe,
+        0x7405030006321e927Fc6eBD50C50e30BeF31CC6C,
+        0x58153521FB9b711FE7F5A4689Eba48e1C444c7FE,
+        0x58153521FB9b711FE7F5A4689Eba48e1C444c7FE
+    ];
+
+    uint256 public constant VESTING_PERIOD = 10 days;
+    uint256 public constant WITHDRAWAL_RATE = 10; // 10% every 10 days
+
+    constructor(IERC20 _tokenAddress, address initialOwner) Ownable(initialOwner) {
+        require(address(_tokenAddress) != address(0), "Token address cannot be zero.");
+        plrToken = _tokenAddress;
+
+        uint256 totalSupply = plrToken.totalSupply();
+        require(totalSupply > 0, "PLRToken total supply must be initialized");
+
+        uint256 totalAllocationForTeam = totalSupply.mul(15).div(100);
+        uint256 individualAllocation = totalAllocationForTeam.div(teamMembers.length);
+
+        for(uint i = 0; i < teamMembers.length; i++) {
+            vestingDetails[teamMembers[i]] = VestingDetail({
+                totalAllocation: individualAllocation,
+                amountWithdrawn: 0,
+                vestingStart: block.timestamp,
+                lastWithdrawal: block.timestamp
+            });
+        }
+    }
+
+    function withdrawTokens() external nonReentrant {
+        require(vestingDetails[msg.sender].totalAllocation > 0, "No allocation for this address.");
+        
+        VestingDetail storage detail = vestingDetails[msg.sender];
+        uint256 timeElapsed = block.timestamp - detail.lastWithdrawal;
+        require(timeElapsed >= VESTING_PERIOD, "Cannot withdraw yet.");
+
+        uint256 periodsElapsed = timeElapsed / VESTING_PERIOD;
+        uint256 amountAvailable = detail.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
+        if (amountAvailable + detail.amountWithdrawn > detail.totalAllocation) {
+            amountAvailable = detail.totalAllocation - detail.amountWithdrawn;
+        }
+
+        require(amountAvailable > 0, "No tokens available to withdraw.");
+        detail.amountWithdrawn = detail.amountWithdrawn.add(amountAvailable);
+        detail.lastWithdrawal = block.timestamp;
+
+        plrToken.transfer(msg.sender, amountAvailable);
+    }
+
+    function availableToWithdraw(address user) public view returns (uint256) {
+        VestingDetail memory detail = vestingDetails[user];
+        if (block.timestamp < detail.vestingStart) {
+            return 0; // Vesting hasn't started
+        }
+        
+        uint256 timeElapsed = block.timestamp - detail.lastWithdrawal;
+        uint256 periodsElapsed = timeElapsed / VESTING_PERIOD;
+        uint256 availableAmount = detail.totalAllocation.mul(WITHDRAWAL_RATE).mul(periodsElapsed).div(100);
+
+        if (availableAmount + detail.amountWithdrawn > detail.totalAllocation) {
+            availableAmount = detail.totalAllocation - detail.amountWithdrawn; // Cap at total allocation
+        }
+
+        return availableAmount;
+    }
+
+    function updateTeamMemberAddress(address oldAddress, address newAddress) external onlyOwner {
+        require(vestingDetails[oldAddress].totalAllocation > 0, "Old address does not have an allocation.");
+        require(vestingDetails[newAddress].totalAllocation == 0, "New address already has an allocation.");
+
+        vestingDetails[newAddress] = vestingDetails[oldAddress];
+        delete vestingDetails[oldAddress];
+    }
+}
