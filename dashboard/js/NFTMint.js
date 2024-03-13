@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Contract instance
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
 
-
     // Function to mint an NFT
     async function mintNFT(event) {
         event.preventDefault(); // Prevent form submission
@@ -33,12 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const price = document.getElementById('price').value;
 
         try {
-            // Call the mintNFT function from the contract
-            const tx = await nftContract.mintNFT(name, tokenURI, price);
-            const receipt = await tx.wait(); // Wait for the transaction to be confirmed
+            // Call the listNFTForSale function from the contract to effectively mint the NFT
+            await nftContract.listNFTForSale(tokenURI, price);
 
-            // Get the NFT ID from the transaction receipt
-            const nftId = receipt.events[0].args[0].toNumber();
+            // Get the latest NFT ID
+            const nftId = await nftContract._tokenIdCounter();
 
             // Update the HTML to display the NFT ID
             document.getElementById('nftIdDisplay').innerText = `NFT ID: ${nftId}`;
