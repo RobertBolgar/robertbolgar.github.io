@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLRT Team Token Withdrawal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Withdraw Your Vested PLRT Tokens</h1>
+    </header>
+
+    <main>
+        <section class="wallet-connect">
+            <h2 id="connectWalletText">Connect Your Wallet to Withdraw PLRT Tokens</h2>
+<button id="connectWalletButton" class="button">Connect Wallet</button>
+
+            
+            <div id="walletAddressDisplay" class="info-item" style="display: none;">
+                <label>Your Connected Wallet Address:</label>
+                <span id="walletAddress"></span>
+            </div>
+  
+        </section>
+
+        <section id="vestingDetailsDisplay" class="info-item" style="display: none;">
+            <h3>Vesting Details:</h3>
+            <p><strong>Total Allocation:</strong> <span id="totalAllocation"></span> PLRT</p>
+            <p><strong>Amount Withdrawn:</strong> <span id="amountWithdrawn"></span> PLRT</p>
+            <p><strong>Available to Withdraw:</strong> <span id="availableToWithdraw"></span> </p>
+            <p><strong>Vesting Start:</strong> <span id="vestingStart"></span></p>
+            <p><strong>Last Withdrawal:</strong> <span id="lastWithdrawal"></span></p>
+            <p><strong>Tokens Available to Withdraw:</strong> <span id="tokensAvailableForWithdrawal"></span></p>
+            <p><strong>Days until next withdrawal:</strong> <span id="daysUntilNextWithdrawal"></span></p>
+            <button id="withdrawTokensButton" class="button">Withdraw Tokens</button>
+            <p id="withdrawalStatus"></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 PLRT Token. Redefining Licensed Digital Content.</p>
+    </footer>
+    <script type="module" src="utils.js"></script>
+    <script type="module" src="custom-script.js"></script>
+</body>
+</html>
