@@ -1,0 +1,181 @@
+/* General styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2; /* Light gray background */
+}
+
+header {
+  background-color: #11111E; /* Dark blue color */
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+main {
+  padding: 20px;
+  max-width: 900px; /* Limit the maximum width for larger screens */
+  margin: 0 auto; /* Center the main content horizontally */
+}
+
+section {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #333; /* Dark gray color */
+}
+
+.logout-btn,
+.generate-link-btn,
+.button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #2A6578; /* Black-green color */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover,
+.generate-link-btn:hover,
+.button:hover {
+  background-color: #20E9FF; /* Secondary toxic color */
+}
+
+footer {
+  background-color: #11111E; /* Dark blue color */
+  color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.copied-message {
+  margin-left: 10px; /* Adjust margin as needed */
+  color: #4CAF50; /* Green color for success message */
+  font-size: 14px; /* Adjust font size as needed */
+}
+
+
+/* User dashboard/profile page specific styles */
+.info-item,
+.stats-item,
+.token-item,
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.info-item label,
+.stats-item p,
+.token-item p,
+.transaction-item p {
+  font-weight: bold;
+}
+
+/* Referral link generation page specific styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Continue from your existing styles */
+
+/* Enhanced button styles */
+button,
+.button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #4CAF50; /* Green for success actions like 'Copy Link' */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block; /* For side-by-side with input */
+  margin-left: 10px; /* Space between input and button */
+}
+
+button:hover,
+.button:hover {
+  background-color: #45a049;
+}
+
+/* Style adjustments for referral link input */
+input[type="text"] {
+  margin-top: 10px;
+  padding: 10px;
+  width: calc(100% - 22px); /* Adjust based on padding */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: inline-block;
+  width: 70%; /* Adjust width for side-by-side with 'Copy' button */
+}
+
+/* Adding styles for tips section for successful referrals */
+.tips {
+  background-color: #e7f3fe; /* Light blue background for tips section */
+  border-left: 5px solid #3498db; /* Blue border on the left for emphasis */
+  padding: 10px 15px; /* Slightly smaller padding for a tighter section */
+  margin-bottom: 20px; /* Consistent with other sections */
+  border-radius: 5px; /* Rounded corners for aesthetics */
+}
+
+.tips h2 {
+  color: #2c3e50; /* Dark blue color for the title to stand out */
+}
+
+.tips ul {
+  list-style-type: disc; /* Bullet points for clarity */
+  padding-left: 20px; /* Indent items for better readability */
+}
+
+.tips li {
+  margin-bottom: 10px; /* Space between tips for legibility */
+}
+
+/* Adjustments for mobile responsiveness */
+@media (max-width: 768px) {
+  input[type="text"],
+  button,
+  .button {
+    width: auto; /* Full width on smaller screens */
+    display: block; /* Stack vertically on smaller screens */
+    margin-top: 10px;
+  }
+
+  .info-item {
+    flex-direction: column; /* Stack label and input vertically on smaller screens */
+    align-items: flex-start; /* Align to the start for a cleaner look */
+  }
+
+  /* Add this new section for #walletAddress */
+  #walletAddress {
+    font-size: 14px; /* Adjust the font size as needed to fit the screen */
+    word-wrap: break-word; /* Ensures long addresses wrap and don't overflow */
+  }
+}
