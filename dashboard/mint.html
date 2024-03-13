@@ -1,35 +1,36 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MINT Page</title>
-   <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Mint an NFT</h1>
-    <form id="mintForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br>
+    <div class="container">
+        <h1>Mint an NFT</h1>
+        <form id="mintForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
 
-        <label for="tokenURI">Token URI:</label>
-        <input type="text" id="tokenURI" name="tokenURI" required><br>
+            <div class="form-group">
+                <label for="tokenURI">Token URI:</label>
+                <input type="text" id="tokenURI" name="tokenURI" required>
+            </div>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" required><br>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required>
+            </div>
 
-        <button type="submit">Mint NFT</button>
-    </form>
-
-    <button></button>
+            <button type="submit" class="btn">Mint NFT</button>
+        </form>
+    </div>
 
     <!-- Include your JavaScript file -->
     <script src="js/NFTMint.js" type="module"></script>
-
-</body>
-
 </body>
 </html>
