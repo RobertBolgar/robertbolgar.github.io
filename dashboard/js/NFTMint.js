@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const signer = provider.getSigner();
 
     // Fetch ABI files asynchronously
-    const mintAbiResponse = await fetch('./contracts/ABI/NFTMint_ABI.json');
+    const mintAbiResponse = await fetch('./contracts/ABI/mint_abi.json');
     const mintAbi = await mintAbiResponse.json();
 
     // Contract address
