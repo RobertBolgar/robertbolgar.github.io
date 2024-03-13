@@ -24,6 +24,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Contract instance
     const nftContract = new ethers.Contract(nftContractAddress, mintAbi, signer);
 
+
+    // Function to mint an NFT
+    async function mintNFT(event) {
+        event.preventDefault(); // Prevent form submission
+
+        const name = document.getElementById('name').value;
+        const tokenURI = document.getElementById('tokenURI').value;
+        const price = document.getElementById('price').value;
+
+        try {
+            // Call the mintNFT function from the contract
+            const tx = await nftContract.mintNFT(name, tokenURI, price);
+            await tx.wait(); // Wait for the transaction to be confirmed
+
+            // Provide feedback to the user
+            console.log("NFT minted successfully");
+            alert("NFT minted successfully!");
+        } catch (error) {
+            console.error("Error minting NFT:", error.message);
+            alert("Failed to mint NFT. See console for more details.");
+        }
+
     // Admin functions
 
     // Function to approve a user
@@ -133,7 +155,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Event listeners for admin actions
+    // Add event listener to the mint form submission
+    document.getElementById('mintForm').addEventListener('submit', mintNFT);
 
     // Event listener for the "Approve User" button click event
     document.getElementById('approveUserBtn').addEventListener('click', async () => {
