@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Add event listener to the mint form submission
     document.getElementById('mintForm').addEventListener('submit', mintNFT);
+    });
 
     // Event listener for the "Approve User" button click event
     document.getElementById('approveUserBtn').addEventListener('click', async () => {
