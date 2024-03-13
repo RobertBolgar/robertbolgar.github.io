@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const signer = provider.getSigner();
 
     // Fetch ABI files asynchronously
-    const mintAbiResponse = await fetch('./contracts/ABI/mint_abi.json');
+    const mintAbiResponse = await fetch('./contracts/ABI/NFTMint_ABI.json');
     const mintAbi = await mintAbiResponse.json();
 
     // Contract address
@@ -35,7 +35,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // Call the mintNFT function from the contract
             const tx = await nftContract.mintNFT(name, tokenURI, price);
-            await tx.wait(); // Wait for the transaction to be confirmed
+            const receipt = await tx.wait(); // Wait for the transaction to be confirmed
+
+            // Get the NFT ID from the transaction receipt
+            const nftId = receipt.events[0].args[0].toNumber();
+
+            // Update the HTML to display the NFT ID
+            document.getElementById('nftIdDisplay').innerText = `NFT ID: ${nftId}`;
 
             // Provide feedback to the user
             console.log("NFT minted successfully");
@@ -44,9 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Error minting NFT:", error.message);
             alert("Failed to mint NFT. See console for more details.");
         }
-    } // Missing closing curly brace for mintNFT function
-
-    // Admin functions...
+    }
 
     // Add event listener to the mint form submission
     document.getElementById('mintForm').addEventListener('submit', mintNFT);
