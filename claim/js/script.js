@@ -103,7 +103,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
-        const lastWithdrawal = new Date(details.lastWithdrawal * 1000).toLocaleString();
+        const lastWithdrawal = details.lastWithdrawal ? new Date(details.lastWithdrawal * 1000).toLocaleString() : 'N/A';
         document.getElementById('vestingStart').innerText = vestingStart;
         document.getElementById('lastWithdrawal').innerText = lastWithdrawal;
 
@@ -157,6 +157,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
+
 
 
 
