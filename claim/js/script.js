@@ -147,6 +147,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         } else {
             console.error('Last withdrawal time is undefined');
             // Handle the case where last withdrawal time is undefined
+            document.getElementById('lastWithdrawal').innerText = 'Last withdrawal time not available';
         }
 
         showElement('vestingDetailsDisplay');
@@ -156,6 +157,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
+
 
 
 
