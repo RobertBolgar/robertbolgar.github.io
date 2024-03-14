@@ -15,6 +15,40 @@ async function fetchABI(path) {
     return await response.json();
 }
 
+// Determine the user's role
+async function determineUserRole() {
+    try {
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        const userAddress = accounts[0];
+
+        // Check if the user is the treasury owner
+        const isTreasuryOwner = userAddress === ownerAddress; // Assuming ownerAddress is the treasury owner's address
+
+        if (isTreasuryOwner) {
+            return 'Treasury';
+        } else {
+            // Check if the user has an NFT balance
+            const nftBalance = await nftContract.balanceOf(userAddress);
+            if (nftBalance.toNumber() > 0) {
+                return 'NFTHolder';
+            } else {
+                // Check if the user is a team member
+                const isTeamMember = await vestingContract.vestingDetails(userAddress)
+                                        .then(details => details.group === 'TeamMember')
+                                        .catch(err => false);
+                if (isTeamMember) {
+                    return 'TeamMember';
+                } else {
+                    return 'Unknown';
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error determining user role:', error);
+        return 'Unknown';
+    }
+}
+
 // Initialize Ethereum contracts for NFT holders
 async function initNFTHolderContracts() {
     try {
@@ -103,8 +137,10 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Check if the user is an NFT holder, team member, or treasury
-        const userRole = /* Logic to determine the user's role */;
+        // Determine the user's role
+        const userRole = await determineUserRole();
+
+        // Initialize contracts based on the user's role
         switch (userRole) {
             case 'NFTHolder':
                 await initNFTHolderContracts();
