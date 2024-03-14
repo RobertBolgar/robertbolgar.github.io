@@ -44,10 +44,23 @@ async function initContracts() {
 
         // Check NFT ownership before enabling withdrawal
         await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
+
+        // Fetch team membership status
+        const isTeamMember = await vestingContract.vestingDetails(userAddress);
+        if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Assuming 'Team' is 1 and 'PrivateSale' is 0
+            // Display special features for team members and private sale participants
+        }
+
+        // Check if the connected wallet is the Treasury
+        const isTreasury = (userAddress === treasuryWalletAddress);
+        if (isTreasury) {
+            // Display special features for the Treasury wallet
+        }
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
 }
+
 
 
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
