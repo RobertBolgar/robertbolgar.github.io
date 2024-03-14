@@ -7,7 +7,7 @@ const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
 let contract; // This will hold the contract instance
 
 // Placeholder ABI array - replace with your contract's ABI
-const contractABI = []; // <-- Your contract ABI goes here
+const contractABI = [abi/vesting_abi.json]; // <-- Your contract ABI goes here
 
 async function detectAndConnectMetaMaskAutomatically() {
     if (window.ethereum && window.ethereum.isMetaMask) {
