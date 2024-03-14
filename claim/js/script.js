@@ -152,15 +152,18 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
         showElement('vestingDetailsDisplay');
 
+        // Check if the user is a team member and display the appropriate section
+        const isTeamMember = await vestingContract.vestingDetails(walletAddress);
+        if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Assuming 'Team' is 1 and 'PrivateSale' is 0
+            // Display special features for team members and private sale participants
+            document.getElementById('teamMembershipDetails').innerText = `You are a member of the PLRT team.`;
+            showElement('teamMembershipDetails');
+        }
     } catch (error) {
         console.error('Error fetching vesting details:', error);
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
-
-
-
-
 
 
 document.addEventListener('DOMContentLoaded', async () => {
