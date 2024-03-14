@@ -5,11 +5,24 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
-    IERC20 public plrToken;
+interface IERC721 {
+    function balanceOf(address owner) external view returns (uint256);
+}
 
+contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
+    // State variables
+    IERC20 public plrToken;
+    IERC721 public nftToken;
+    bool public initialDepositMade = false;
+    uint256 public constant TOKENS_PER_NFT = 20_000;
+    uint256 public constant WITHDRAWAL_RATE_PER_PERIOD = 10;
+    uint256 public PERIOD_DURATION = 7 days;
+    
+
+    // Enumerations
     enum VestingGroup { PrivateSale, Team, Treasury }
 
+    // Structs
     struct VestingDetail {
         uint256 totalAllocation;
         uint256 amountWithdrawn;
@@ -17,21 +30,74 @@ contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
         VestingGroup group;
     }
 
+    // Mappings
     mapping(address => VestingDetail) public vestingDetails;
+    mapping(address => bool) public isFirstConnection; // Mapping to track first connection
 
-    uint256 public constant WITHDRAWAL_RATE = 10; // Example: 10% for simplicity
-    uint256 public vestingPeriod = 10 days; // Adjustable vesting period
+    // Constants
+    uint256 public constant INITIAL_TOKEN_AMOUNT = 1000;
+    uint256 public constant INITIAL_TOKEN_DELAY = 30 seconds;
 
+    // Events
+    event TokensGranted(address indexed user, uint256 amount);
     event Withdrawal(address indexed user, uint256 amount);
     event VestingAdded(address indexed user, uint256 allocation, VestingGroup group);
+    event InitialDepositMade(uint256 totalAmount, uint256 timestamp);
 
-    constructor(IERC20 _tokenAddress) {
+    // Constructor
+    constructor(IERC20 _tokenAddress, IERC721 _nftToken) {
         require(address(_tokenAddress) != address(0), "Token address cannot be zero.");
         plrToken = _tokenAddress;
-        transferOwnership(msg.sender); // Assuming you want to set the deployer as the owner.
+        nftToken = _nftToken;
+
+        // Example: Grant initial tokens immediately after deployment
+        grantInitialTokens();
+    }
+    // Function to grant initial tokens
+    function grantInitialTokens() public {
+        require(!isFirstConnection[msg.sender], "Tokens already granted for this user");
+        
+        // Mark user as connected
+        isFirstConnection[msg.sender] = true;
+
+        // Transfer initial tokens
+        plrToken.transfer(msg.sender, INITIAL_TOKEN_AMOUNT);
+
+        // Emit event
+        emit TokensGranted(msg.sender, INITIAL_TOKEN_AMOUNT);
     }
 
-    // Adjusted to initialize vesting with group-specific logic.
+    // Function to initialize Treasury Vesting
+    function initializeTreasuryVesting(uint256 totalAllocation) external onlyOwner {
+        require(!initialDepositMade, "Initial deposit already made or treasury already initialized");
+        uint256 treasuryAllocation = totalAllocation;
+        address treasuryAddress = owner();
+
+        vestingDetails[treasuryAddress] = VestingDetail({
+            totalAllocation: treasuryAllocation,
+            amountWithdrawn: 0,
+            vestingStart: block.timestamp,
+            group: VestingGroup.Treasury
+        });
+        
+        initialDepositMade = true;
+    }
+
+    // Function to Withdraw Treasury Tokens
+    function withdrawTreasuryTokens() external nonReentrant onlyOwner {
+        VestingDetail storage detail = vestingDetails[msg.sender];
+        require(detail.group == VestingGroup.Treasury, "Not authorized or treasury details not set");
+
+        uint256 availableAmount = availableToWithdraw(msg.sender);
+        require(availableAmount > 0, "No treasury tokens available to withdraw.");
+
+        detail.amountWithdrawn += availableAmount;
+        plrToken.transfer(msg.sender, availableAmount);
+
+        emit Withdrawal(msg.sender, availableAmount);
+    }
+
+    // Function to initialize vesting
     function initializeVesting(address[] calldata users, uint256[] calldata allocations, VestingGroup group) external onlyOwner {
         require(users.length == allocations.length, "Users and allocations length mismatch");
         for (uint256 i = 0; i < users.length; i++) {
@@ -45,10 +111,11 @@ contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
         }
     }
 
+    // Function to withdraw tokens
     function withdrawTokens() external nonReentrant {
         VestingDetail storage detail = vestingDetails[msg.sender];
         require(detail.totalAllocation > 0, "No allocation for this address.");
-        require(block.timestamp >= detail.vestingStart + vestingPeriod, "Vesting period has not yet started");
+        require(block.timestamp >= detail.vestingStart + PERIOD_DURATION, "Vesting period has not yet started");
 
         uint256 availableAmount = availableToWithdraw(msg.sender);
         require(availableAmount > 0, "No tokens available to withdraw.");
@@ -59,22 +126,41 @@ contract PLRTVesting is Ownable(msg.sender), ReentrancyGuard {
         emit Withdrawal(msg.sender, availableAmount);
     }
 
-    // This function now considers vesting group and total allocation in its calculation
+    // Function to calculate available tokens for withdrawal
     function availableToWithdraw(address user) public view returns (uint256) {
-        VestingDetail memory detail = vestingDetails[user];
-        uint256 timeElapsed = block.timestamp - detail.vestingStart;
-        uint256 periodsElapsed = timeElapsed / vestingPeriod;
-        uint256 totalClaimable = (detail.totalAllocation * WITHDRAWAL_RATE / 100) * periodsElapsed;
-
-        uint256 availableAmount = totalClaimable > detail.totalAllocation ? detail.totalAllocation - detail.amountWithdrawn : totalClaimable - detail.amountWithdrawn;
-        
-        return availableAmount;
+    VestingDetail memory detail = vestingDetails[user];
+    if (detail.group != VestingGroup.PrivateSale) {
+        return 0;
     }
 
-    // Allows updating the vesting period for new vesting schedules.
+    uint256 nftCount = nftToken.balanceOf(user);
+    uint256 totalAllocationBasedOnNFT = nftCount * TOKENS_PER_NFT;
+    uint256 timeElapsedSinceVestingStart = block.timestamp - detail.vestingStart;
+
+    if (timeElapsedSinceVestingStart < PERIOD_DURATION) {
+        return 0;
+    }
+
+    uint256 periodsElapsed = timeElapsedSinceVestingStart / PERIOD_DURATION;
+    uint256 totalClaimable = (totalAllocationBasedOnNFT * WITHDRAWAL_RATE_PER_PERIOD / 100) * periodsElapsed;
+    uint256 availableAmount = totalClaimable - detail.amountWithdrawn;
+
+    return availableAmount > totalAllocationBasedOnNFT ? totalAllocationBasedOnNFT - detail.amountWithdrawn : availableAmount;
+}
+
+
+    // Function to update the vesting period
     function updateVestingPeriod(uint256 _newPeriod) external onlyOwner {
-        vestingPeriod = _newPeriod;
+        PERIOD_DURATION = _newPeriod;
     }
-    
-    // Additional functions like updateTeamMemberAddress can be modified to fit the new structure
+
+    // Function to handle initial deposit
+    function makeInitialDeposit(uint256 _totalAmount) external onlyOwner {
+        require(!initialDepositMade, "Initial deposit already made");
+        require(_totalAmount > 0, "Amount must be greater than 0");
+        require(plrToken.transferFrom(msg.sender, address(this), _totalAmount), "Token transfer failed");
+
+        initialDepositMade = true;
+        emit InitialDepositMade(_totalAmount, block.timestamp);
+    }
 }
