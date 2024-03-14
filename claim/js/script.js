@@ -1,7 +1,7 @@
 async function fetchAndDisplayVestingDetails(walletAddress) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract(vestingContractAddress, vestingABI, signer); // Fix here
+    const contract = vestingContract.connect(signer);
     
     try {
         const details = await contract.vestingDetails(walletAddress);
