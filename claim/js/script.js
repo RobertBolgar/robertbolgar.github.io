@@ -52,7 +52,8 @@ async function initContracts() {
         }
 
         // Check if the connected wallet is the Treasury
-        const isTreasury = (userAddress === treasuryWalletAddress);
+        const ownerAddress = await vestingContract.owner();
+        const isTreasury = (userAddress === ownerAddress);
         if (isTreasury) {
             // Display special features for the Treasury wallet
         }
@@ -60,7 +61,6 @@ async function initContracts() {
         console.error("An error occurred during contract initialization:", error);
     }
 }
-
 
 
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
