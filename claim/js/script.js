@@ -93,7 +93,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const details = await contract.vestingDetails(walletAddress);
        
-        document.getElementById('totalAllocation').innerText = await convertEthToPlrt(ethers.utils.formatEther(details.totalAllocation));
+        document.getElementById('totalAllocation').innerText = (await convertEthToPlrt(ethers.utils.formatEther(details.totalAllocation))).toFixed(8) + ' PLRT';
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
