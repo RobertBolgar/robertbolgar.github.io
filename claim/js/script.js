@@ -47,11 +47,12 @@ async function initContracts() {
 
         // Fetch team membership status
         const isTeamMember = await vestingContract.vestingDetails(userAddress);
-        if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Assuming 'Team' is 1 and 'PrivateSale' is 0
-            // Display special features for team members and private sale participants
-            document.getElementById('teamMembershipDetails').innerText = `You are a team member with a total allocation of ${isTeamMember.totalAllocation} PLRT`;
-            showElement('teamMembershipDetails');
-        }
+if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Team or Private Sale
+    document.getElementById('teamMembershipDetails').innerText = `You are a team member with a total allocation of ${isTeamMember.totalAllocation} PLRT`;
+    showElement('teamMembershipDetails');
+    showElement('vestingDetailsDisplay'); // Make the section visible
+}
+
         
         // Check if the connected wallet is the Treasury
         const ownerAddress = await vestingContract.owner();
