@@ -1,7 +1,8 @@
 
+PLRToken: 0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB
+
+PLRTMintpass:0x7CbCC978336624be38Ce0c52807aEbf119081EA9
 
 https://mint.plrtoken.com/#test
-
-
 
 https://testnet.bscscan.com/address/0x7CbCC978336624be38Ce0c52807aEbf119081EA9
