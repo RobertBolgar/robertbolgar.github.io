@@ -158,6 +158,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
             // Display special features for team members and private sale participants
             document.getElementById('teamMembershipDetails').innerText = `You are a member of the PLRT team.`;
             showElement('teamMembershipDetails');
+            showElement('vestingDetailsDisplay'); // Ensure the entire section is visible
+
         }
     } catch (error) {
         console.error('Error fetching vesting details:', error);
