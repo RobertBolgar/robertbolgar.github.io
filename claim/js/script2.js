@@ -22,7 +22,7 @@ async function determineUserRole() {
         const userAddress = accounts[0];
 
         // Check if the user is the treasury owner
-        const isTreasuryOwner = userAddress === ownerAddress; // Assuming ownerAddress is the treasury owner's address
+        const isTreasuryOwner = await vestingContract.owner() === userAddress;
 
         if (isTreasuryOwner) {
             return 'Treasury';
@@ -33,9 +33,7 @@ async function determineUserRole() {
                 return 'NFTHolder';
             } else {
                 // Check if the user is a team member
-                const isTeamMember = await vestingContract.vestingDetails(userAddress)
-                                        .then(details => details.group === 'TeamMember')
-                                        .catch(err => false);
+                const isTeamMember = await teamMemberContract.teamMembers(userAddress);
                 if (isTeamMember) {
                     return 'TeamMember';
                 } else {
