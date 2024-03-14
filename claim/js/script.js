@@ -5,13 +5,21 @@ import { showElement, hideElement, displayMessage } from './utils.js';
 
 const vestingContractAddress = "0xDebe77CeBCF3213A35425b962cdeD29de937C686";
 const nftContractAddress = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
-let vestingContract, nftContract;
+const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
+
+let vestingContract, nftContract, plrtContract;
 
 // Utility function to fetch ABI from a local JSON file
 async function fetchABI(path) {
     const response = await fetch(path);
     return await response.json();
 }
+
+
+// Fetch and initialize the PLRT token contract
+const plrtABI = await fetchABI('./abi/plrt_abi.json'); // Assuming the ABI file is located at './abi/plrt_abi.json'
+const plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
+
 
 // Initialize Ethereum contracts
 async function initContracts() {
