@@ -39,10 +39,11 @@ async function initContract() {
     }
 }
 
-// Function remains the same, just ensure it uses `window.contract` if you've stored the contract instance in a global variable
 async function fetchAndDisplayVestingDetails(walletAddress) {
+    console.log("fetchAndDisplayVestingDetails called for address:", walletAddress);
     try {
         const details = await window.contract.vestingDetails(walletAddress);
+        console.log("Vesting details fetched:", details);
         // Processing and displaying fetched details...
     } catch (error) {
         console.error('Error fetching vesting details:', error);
