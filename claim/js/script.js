@@ -104,6 +104,13 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
        // Use BigNumber methods for any arithmetic operations involving BigNumbers
         const now = Math.floor(Date.now() / 1000); // Current time in seconds, only declared once
         const timeSinceLastWithdrawal = ethers.BigNumber.from(now).sub(details.lastWithdrawal);
+        if (details.lastWithdrawal !== undefined) {
+    const timeSinceLastWithdrawal = ethers.BigNumber.from(now).sub(details.lastWithdrawal);
+    // Rest of your code that uses timeSinceLastWithdrawal
+} else {
+    console.error('Last withdrawal time is undefined');
+}
+
         const VESTING_PERIOD = await contract.VESTING_PERIOD();
         const isEligibleToWithdraw = timeSinceLastWithdrawal.gte(VESTING_PERIOD);
 
