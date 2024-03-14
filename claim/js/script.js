@@ -1,7 +1,7 @@
 // Import ethers from CDN or local installation
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 // Import utility functions for UI manipulation
-import { showElement, hideElement, displayMessage } from './js/utils.js';
+import { showElement, hideElement, displayMessage } from './utils.js';
 
 const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
 
