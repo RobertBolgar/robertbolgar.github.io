@@ -77,7 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
 
     // Assume MetaMask is already connected, so initiate contract initialization immediately
-    if (window.ethereum && window.ethereum.selectedAddress) {
+    const accounts = await ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length > 0) {
         await initContracts();
     }
 });
+
