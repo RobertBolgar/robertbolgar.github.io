@@ -16,11 +16,6 @@ async function fetchABI(path) {
 }
 
 
-// Fetch and initialize the PLRT token contract
-const plrtABI = await fetchABI('./abi/plrt_abi.json'); // Assuming the ABI file is located at './abi/plrt_abi.json'
-const plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
-
-
 // Initialize Ethereum contracts
 async function initContracts() {
     try {
@@ -36,6 +31,10 @@ async function initContracts() {
         const nftABI = await fetchABI('./abi/nft_abi.json');
         nftContract = new ethers.Contract(nftContractAddress, nftABI, signer);
 
+        // Fetch and initialize the PLRT token contract
+        const plrtABI = await fetchABI('./abi/plrt_abi.json');
+        plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
+
         const accounts = await ethereum.request({ method: 'eth_accounts' });
         const userAddress = accounts[0];
         document.getElementById('walletAddress').innerText = userAddress;
@@ -49,6 +48,7 @@ async function initContracts() {
         console.error("An error occurred during contract initialization:", error);
     }
 }
+
 
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     try {
