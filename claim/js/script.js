@@ -57,12 +57,27 @@ async function checkNFTOwnershipAndDisplayVestingDetails(address) {
 }
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
-    // Implementation remains the same as your existing function
+    try {
+        // Fetch vesting details
+        const details = await vestingContract.vestingDetails(walletAddress);
+
+        // Update UI with fetched details
+        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+        // Additional details and UI updates here...
+
+        showElement('vestingDetailsDisplay');
+    } catch (error) {
+        console.error('Error fetching and displaying vesting details:', error);
+    }
 }
 
-// Remaining event listener and withdrawButton click handler code remains the same
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Register event listener for Connect Wallet button
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
-});
 
+    // Assume MetaMask is already connected, so initiate contract initialization immediately
+    if (window.ethereum && window.ethereum.selectedAddress) {
+        await initContracts();
+    }
+});
