@@ -4,48 +4,46 @@ import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.
 import { showElement, hideElement, displayMessage } from './utils.js';
 
 const contractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
-let contract; // This will hold the contract instance
 
-// Placeholder ABI array - replace with your contract's ABI
-const contractABI = [abi/vesting_abi.json]; // <-- Your contract ABI goes here
+// Async function to fetch ABI and initialize the contract
+async function initContract() {
+    try {
+        // Fetch the ABI from a local JSON file
+        const abiResponse = await fetch('./abi/vesting_abi.json');
+        const contractABI = await abiResponse.json();
 
-async function detectAndConnectMetaMaskAutomatically() {
-    if (window.ethereum && window.ethereum.isMetaMask) {
-        console.log("MetaMask is installed!");
-        try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            document.getElementById('walletAddress').innerText = address;
-            showElement('walletAddressDisplay');
-            showElement('withdrawTokensButton');
-            hideElement('connectWalletText');
-            hideElement('connectWalletButton');
-            document.getElementById('connectWalletButton').innerText = 'Connected';
-            initContract(signer);
-            await fetchAndDisplayVestingDetails(address);
-        } catch (error) {
-            console.error('Error connecting to MetaMask:', error);
-        }
-    } else {
-        console.log("MetaMask is not installed or not accessible.");
-        document.getElementById('connectWalletButton').innerText = 'MetaMask Not Detected';
+        // Assuming MetaMask is installed and the user has connected their wallet
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+
+        // Initialize the contract with the fetched ABI and signer
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        // Optional: Store the contract in a global variable for later use
+        window.contract = contract;
+
+        // Additional steps after initializing the contract, e.g., updating the UI
+        const address = await signer.getAddress();
+        document.getElementById('walletAddress').innerText = address;
+        showElement('walletAddressDisplay');
+        showElement('withdrawTokensButton');
+        hideElement('connectWalletText');
+        hideElement('connectWalletButton');
+        document.getElementById('connectWalletButton').innerText = 'Connected';
+
+        // Fetch and display vesting details
+        await fetchAndDisplayVestingDetails(address);
+    } catch (error) {
+        console.error("An error occurred during contract initialization:", error);
     }
 }
 
-function initContract(signer) {
-    contract = new ethers.Contract(contractAddress, contractABI, signer);
-    // You can now interact with the contract
-}
-
+// Function remains the same, just ensure it uses `window.contract` if you've stored the contract instance in a global variable
 async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
-        const details = await contract.vestingDetails(walletAddress);
-        // Assuming vestingDetails function exists and returns an object with these properties
-        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation);
-        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
-        // Additional details and UI updates here...
+        const details = await window.contract.vestingDetails(walletAddress);
+        // Processing and displaying fetched details...
     } catch (error) {
         console.error('Error fetching vesting details:', error);
     }
@@ -53,6 +51,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 // Event listener for the Withdraw Tokens button
 document.addEventListener('DOMContentLoaded', () => {
+    initContract();
     const withdrawButton = document.getElementById('withdrawTokensButton');
     if (withdrawButton) {
         withdrawButton.addEventListener('click', async () => {
