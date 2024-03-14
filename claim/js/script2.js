@@ -158,13 +158,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Event listener for Connect Wallet button (for all user roles)
-    const connectWalletButton = document.getElementById('connectWalletButton');
-    connectWalletButton.addEventListener('click', async () => {
-        try {
-            await initContracts();
-        } catch (error) {
-            console.error("Failed to initialize contracts:", error);
-        }
-    });
+const connectWalletButton = document.getElementById('connectWalletButton');
+connectWalletButton.addEventListener('click', async () => {
+    try {
+        // Call the appropriate initialization function here
+        await initNFTHolderContracts(); // or initTeamMemberContracts(), initTreasuryContracts()
+    } catch (error) {
+        console.error("Failed to initialize contracts:", error);
+    }
+});
+
 });
 
