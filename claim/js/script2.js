@@ -5,9 +5,9 @@ import { showElement, hideElement, displayMessage } from './utils.js';
 
 const vestingContractAddress = "0xFb630816DFa6E71b22C7b8C37e8407700Dec40b5";
 const nftContractAddress = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
-const contractAddress = "0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB"; // Update with your contract address
+const teamMemberContractAddress = "0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB";
 
-let vestingContract, nftContract;
+let vestingContract, nftContract, teamMemberContract;
 
 // Utility function to fetch ABI from a local JSON file
 async function fetchABI(path) {
@@ -15,16 +15,12 @@ async function fetchABI(path) {
     return await response.json();
 }
 
-// Initialize Ethereum contracts
-async function initContracts() {
+// Initialize Ethereum contracts for NFT holders
+async function initNFTHolderContracts() {
     try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-
-        // Fetch and initialize the vesting contract
-        const vestingABI = await fetchABI('./abi/vesting_abi.json');
-        vestingContract = new ethers.Contract(vestingContractAddress, vestingABI, signer);
 
         // Fetch and initialize the NFT contract
         const nftABI = await fetchABI('./abi/nft_abi.json');
@@ -40,10 +36,39 @@ async function initContracts() {
         // Check NFT ownership before enabling withdrawal
         await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
     } catch (error) {
-        console.error("An error occurred during contract initialization:", error);
+        console.error("An error occurred during NFT holder contract initialization:", error);
     }
 }
 
+// Initialize Ethereum contracts for team members
+async function initTeamMemberContracts() {
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+
+        // Fetch and initialize the vesting contract for team members
+        const vestingABI = await fetchABI('./abi/vesting_abi.json');
+        vestingContract = new ethers.Contract(vestingContractAddress, vestingABI, signer);
+
+        // Fetch and display the connected wallet address for team members
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        const address = accounts[0];
+        document.getElementById('walletAddress').innerText = address;
+        showElement('walletAddressDisplay');
+        showElement('withdrawTokensButton');
+        hideElement('connectWalletText');
+        hideElement('connectWalletButton');
+        document.getElementById('connectWalletButton').innerText = 'Connected';
+
+        // Fetch and display vesting details for team members
+        await fetchAndDisplayVestingDetails(address);
+    } catch (error) {
+        console.error("An error occurred during team member contract initialization:", error);
+    }
+}
+
+// Check NFT ownership and display vesting details for NFT holders
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     try {
         const nftBalance = await nftContract.balanceOf(address);
@@ -59,9 +84,10 @@ async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     }
 }
 
+// Fetch and display vesting details for team members
 async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
-        // Fetch vesting details
+        // Fetch vesting details for team members
         const details = await vestingContract.vestingDetails(walletAddress);
 
         // Update UI with fetched details
@@ -75,39 +101,20 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     }
 }
 
-async function initContract() {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Fetch the ABI from a local JSON file
-        const abiResponse = await fetch('./abi/vesting_abi.json');
-        const contractABI = await abiResponse.json();
-
-        // Assuming MetaMask is installed and the user has connected their wallet
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-
-        // Initialize the contract with the fetched ABI and signer
-        window.contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-        // Fetch and display the connected wallet address
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        const address = accounts[0];
-        document.getElementById('walletAddress').innerText = address;
-        showElement('walletAddressDisplay');
-        showElement('withdrawTokensButton');
-        hideElement('connectWalletText');
-        hideElement('connectWalletButton');
-        document.getElementById('connectWalletButton').innerText = 'Connected';
-
-        // Fetch and display vesting details
-        await fetchAndDisplayVestingDetails(address);
+        // Check if the user is an NFT holder or a team member
+        const isNFTHolder = /* Logic to determine if the user is an NFT holder */;
+        if (isNFTHolder) {
+            await initNFTHolderContracts();
+        } else {
+            await initTeamMemberContracts();
+        }
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    initContracts();
+    // Event listener for Connect Wallet button (for both NFT holders and team members)
     const connectWalletButton = document.getElementById('connectWalletButton');
     connectWalletButton.addEventListener('click', async () => {
         try {
@@ -115,21 +122,3 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Failed to initialize contracts:", error);
         }
-    });
-
-    const withdrawButton = document.getElementById('withdrawTokensButton');
-    if (withdrawButton) {
-        withdrawButton.addEventListener('click', async () => {
-            try {
-                const tx = await window.contract.withdrawTokens();
-                await tx.wait();
-                displayMessage('Your withdrawal transaction was successful.');
-                // Optionally, refresh vesting details to show updated info
-                await fetchAndDisplayVestingDetails(ethers.utils.getAddress(document.getElementById('walletAddress').innerText));
-            } catch (error) {
-                console.error("Withdrawal transaction failed:", error);
-                displayMessage('Withdrawal transaction failed. Please try again.');
-            }
-        });
-    }
-});
