@@ -10,15 +10,11 @@ const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
 
 let vestingContract, nftContract, plrtContract;
 
-const ownerAddress = await vestingContract.owner();
-const treasuryWalletAddress = ownerAddress;
-
 // Utility function to fetch ABI from a local JSON file
 async function fetchABI(path) {
     const response = await fetch(path);
     return await response.json();
 }
-
 
 // Initialize Ethereum contracts
 async function initContracts() {
@@ -68,13 +64,11 @@ async function initContracts() {
     }
 }
 
-
 async function convertEthToPlrt(ethAmount) {
     // Replace the conversionRate with the actual rate at which 1 Ether is converted to PLRT tokens
     const conversionRate = 1000; // Example conversion rate
     return ethAmount * conversionRate;
 }
-
 
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     try {
@@ -151,8 +145,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
-
-
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
