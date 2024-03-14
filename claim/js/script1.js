@@ -15,7 +15,9 @@ async function initContract() {
         // Assuming MetaMask is installed and the user has connected their wallet
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        const address = accounts[0];
+
 
         // Initialize the contract with the fetched ABI and signer
         window.contract = new ethers.Contract(contractAddress, contractABI, signer);
