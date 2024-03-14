@@ -152,6 +152,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 }
 
 
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
