@@ -68,6 +68,7 @@ async function initContracts() {
     }
 }
 
+
 async function convertEthToPlrt(ethAmount) {
     // Replace the conversionRate with the actual rate at which 1 Ether is converted to PLRT tokens
     const conversionRate = 1000; // Example conversion rate
