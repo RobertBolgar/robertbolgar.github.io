@@ -82,21 +82,29 @@ async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     }
 }
 
+// Fetches and displays vesting details for the connected wallet
 async function fetchAndDisplayVestingDetails(walletAddress) {
-    try {
-        // Fetch vesting details
-        const details = await vestingContract.vestingDetails(walletAddress);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    
+     try {
+        const details = await contract.vestingDetails(walletAddress);
+       
+        // Convert total allocation from ETH to PLRT
+        const totalAllocationEth = ethers.utils.formatEther(details.totalAllocation);
+        const totalAllocationPlrt = await convertEthToPlrt(parseFloat(totalAllocationEth));
+        
+        // Update Total Allocation with the converted PLRT amount
+        document.getElementById('totalAllocation').innerText = totalAllocationPlrt + ' PLRT';
 
-        // Update UI with fetched details
-        document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
-        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
-        // Additional details and UI updates here...
-
-        showElement('vestingDetailsDisplay');
+        // Update other details...
     } catch (error) {
-        console.error('Error fetching and displaying vesting details:', error);
+        console.error('Error fetching vesting details:', error);
+        displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
