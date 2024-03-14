@@ -30,3 +30,13 @@ export function displayMessage(id, message, isSuccess = true) {
         }, 5000);
     }
 }
+
+// Function to show the team element only if the user is a team member
+export function showTeamElement(isTeamMember) {
+    const teamElement = document.getElementById('teamMembershipDetails');
+    if (isTeamMember) {
+        showElement('teamMembershipDetails');
+    } else {
+        hideElement('teamMembershipDetails');
+    }
+}
