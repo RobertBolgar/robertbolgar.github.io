@@ -6,11 +6,12 @@ import { showElement, hideElement, displayMessage } from './utils.js';
 const vestingContractAddress = "0xDebe77CeBCF3213A35425b962cdeD29de937C686";
 const nftContractAddress = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
 const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
-const ownerAddress = await vestingContract.owner();
-const treasuryWalletAddress = ownerAddress;
 
 
 let vestingContract, nftContract, plrtContract;
+
+const ownerAddress = await vestingContract.owner();
+const treasuryWalletAddress = ownerAddress;
 
 // Utility function to fetch ABI from a local JSON file
 async function fetchABI(path) {
