@@ -93,7 +93,13 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const details = await contract.vestingDetails(walletAddress);
        
-        document.getElementById('totalAllocation').innerText = (await convertEthToPlrt(ethers.utils.formatEther(details.totalAllocation))).toFixed(8) + ' PLRT';
+        // Convert total allocation from Ether to PLRT
+        const totalAllocationInPLRT = await convertEthToPlrt(ethers.utils.formatEther(details.totalAllocation));
+
+        // Format the total allocation value with 8 decimal places and PLRT suffix
+        const formattedTotalAllocation = totalAllocationInPLRT.toFixed(8) + ' PLRT';
+
+        document.getElementById('totalAllocation').innerText = formattedTotalAllocation;
         document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
         
         const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
@@ -150,6 +156,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         displayMessage('messageBox', 'Failed to fetch vesting details.', false);
     }
 }
+
 
 
 
