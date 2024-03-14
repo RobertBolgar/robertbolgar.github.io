@@ -28,14 +28,15 @@ async function initContracts() {
         const nftABI = await fetchABI('./abi/nft_abi.json');
         nftContract = new ethers.Contract(nftContractAddress, nftABI, signer);
 
-        const address = await signer.getAddress();
-        document.getElementById('walletAddress').innerText = address;
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        const userAddress = accounts[0];
+        document.getElementById('walletAddress').innerText = userAddress;
         showElement('walletAddressDisplay');
         hideElement('connectWalletText');
         document.getElementById('connectWalletButton').innerText = 'Connected';
 
         // Check NFT ownership before enabling withdrawal
-        await checkNFTOwnershipAndDisplayVestingDetails(address);
+        await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
@@ -74,32 +75,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
-    document.getElementById('connectWalletButton').addEventListener('click', async () => {
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            const signer = provider.getSigner();
-
-            // Fetch and initialize the vesting contract
-            const vestingABI = await fetchABI('./abi/vesting_abi.json');
-            vestingContract = new ethers.Contract(vestingContractAddress, vestingABI, signer);
-
-            // Fetch and initialize the NFT contract
-            const nftABI = await fetchABI('./abi/nft_abi.json');
-            nftContract = new ethers.Contract(nftContractAddress, nftABI, signer);
-
-            const userAddress = await signer.getAddress(); // Renamed 'address' to 'userAddress'
-            document.getElementById('walletAddress').innerText = userAddress;
-            showElement('walletAddressDisplay');
-            hideElement('connectWalletText');
-            document.getElementById('connectWalletButton').innerText = 'Connected';
-
-            // Check NFT ownership before enabling withdrawal
-            await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
-        } catch (error) {
-            console.error("An error occurred during contract initialization:", error);
-        }
-    });
+    document.getElementById('connectWalletButton').addEventListener('click', initContracts);
 
     // Assume MetaMask is already connected, so initiate contract initialization immediately
     const accounts = await ethereum.request({ method: 'eth_accounts' });
@@ -107,5 +83,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         await initContracts();
     }
 });
-
-
