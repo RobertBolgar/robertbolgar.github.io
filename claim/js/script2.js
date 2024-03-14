@@ -103,18 +103,27 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Check if the user is an NFT holder or a team member
-        const isNFTHolder = /* Logic to determine if the user is an NFT holder */;
-        if (isNFTHolder) {
-            await initNFTHolderContracts();
-        } else {
-            await initTeamMemberContracts();
+        // Check if the user is an NFT holder, team member, or treasury
+        const userRole = /* Logic to determine the user's role */;
+        switch (userRole) {
+            case 'NFTHolder':
+                await initNFTHolderContracts();
+                break;
+            case 'TeamMember':
+                await initTeamMemberContracts();
+                break;
+            case 'Treasury':
+                await initTreasuryContracts();
+                break;
+            default:
+                displayMessage('Unknown user role.');
+                break;
         }
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
 
-    // Event listener for Connect Wallet button (for both NFT holders and team members)
+    // Event listener for Connect Wallet button (for all user roles)
     const connectWalletButton = document.getElementById('connectWalletButton');
     connectWalletButton.addEventListener('click', async () => {
         try {
@@ -124,3 +133,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
