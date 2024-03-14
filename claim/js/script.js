@@ -68,6 +68,13 @@ async function initContracts() {
     }
 }
 
+async function convertEthToPlrt(ethAmount) {
+    // Replace the conversionRate with the actual rate at which 1 Ether is converted to PLRT tokens
+    const conversionRate = 1000; // Example conversion rate
+    return ethAmount * conversionRate;
+}
+
+
 async function checkNFTOwnershipAndDisplayVestingDetails(address) {
     try {
         const nftBalance = await nftContract.balanceOf(address);
@@ -117,7 +124,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
         availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
          
-       
 
           // Ensure the display includes the calculation, accounting for no available tokens
        document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
