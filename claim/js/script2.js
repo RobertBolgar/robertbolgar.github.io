@@ -93,6 +93,7 @@ async function fetchVestingDetails(walletAddress, group) {
     }
 }
 
+
 function calculateAvailableToWithdraw(details) {
     // Calculate available tokens for withdrawal based on vesting details
     const totalWithdrawableNow = details.totalAllocation
