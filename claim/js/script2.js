@@ -62,19 +62,27 @@ async function connectWallet() {
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
     clearVestingDetails(); // Function to clear previously displayed details
-
-    const nftBalance = await vestingContract.getOwnedNFTs(walletAddress);
-
-    // Assuming there's a direct relation between NFT balance and vesting
-    // If your contract automatically handles vesting based on NFTs, you might only need to display existing vesting details
-    const privateSaleDetails = await vestingContract.getVestingDetails(/* VestingGroup.PrivateSale or its identifier */, { from: walletAddress });
-
-    if (privateSaleDetails) {
-        displayVestingDetails('PrivateSale', privateSaleDetails);
-    } else {
-        console.log("No vesting details found or user is not part of the Private Sale group.");
+    
+    // Directly working with NFT balance and assuming vesting details are auto-handled by the contract
+    try {
+        const nftBalance = await nftContract.balanceOf(walletAddress);
+        console.log(`NFT Balance: ${nftBalance}`); // Debugging line to see NFT balance
+        
+        // You might not be able to directly fetch PrivateSale details without setup due to your contract's design.
+        // This example assumes you have a method to check if the user has any vested amount or similar.
+        // Adjust according to your actual contract methods and expected arguments.
+        const privateSaleDetails = await vestingContract["getVestingDetails(uint8)"](2, {from: walletAddress}); // Adjusted to reflect a potential correct call
+        
+        if (privateSaleDetails) {
+            displayVestingDetails('PrivateSale', privateSaleDetails);
+        } else {
+            console.log("No vesting details found or user is not part of the Private Sale group.");
+        }
+    } catch (error) {
+        console.error("Error fetching Private Sale vesting details:", error);
     }
 }
+
 
 
 
