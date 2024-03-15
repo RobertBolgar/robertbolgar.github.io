@@ -49,17 +49,23 @@ async function initContracts() {
 }
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
-        clearVestingDetails(); // Clear existing details before fetching new ones
-    try {
-        // Treasury details are fetched since its setup doesn't vary by user.
-        const treasuryDetails = await fetchVestingDetails(1); // Use 1 for Treasury
-        console.log("Treasury details:", treasuryDetails);
-
-        displayVestingDetails('Treasury', treasuryDetails);
-    } catch (error) {
-        console.error("An error occurred while fetching and displaying vesting details:", error);
+    console.log("Fetching vesting details for address:", walletAddress);
+    clearVestingDetails(); // Clear existing display
+    
+    const groups = [0, 1, 2]; // Assuming numeric identifiers for FoundingTeam, Treasury, PrivateSale
+    
+    for (const group of groups) {
+        try {
+            const details = await vestingContract.getVestingDetails(group).call({ from: walletAddress });
+            if (details && details.totalAllocation.gt(0)) { // Assuming non-zero allocation indicates valid data
+                displayVestingDetails(group, details);
+            }
+        } catch (error) {
+            console.error(`Error fetching details for group ${group}:`, error);
+        }
     }
 }
+
 
 async function fetchVestingDetails(group) {
     try {
