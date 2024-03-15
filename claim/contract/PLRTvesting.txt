@@ -31,6 +31,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
     // Treasury vesting schedule
     VestingSchedule public treasuryVestingSchedule;
 
+     // Treasury wallet address
+    address public treasuryWallet;
+
     // Allocation limits
     uint256 public constant MAX_TREASURY_ALLOCATION = 10_000_000 * (10 ** 18);
     uint256 public constant MAX_TEAM_ALLOCATION = 15_000_000 * (10 ** 18);
@@ -44,9 +47,14 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
         plrtToken = IERC20(_plrtToken);
     }
 
+    // Function to set the treasury wallet address, accessible only by the owner
+    function setTreasuryWallet(address _treasuryWallet) external onlyOwner {
+        treasuryWallet = _treasuryWallet;
+    }
+
     // Function to set up vesting schedule for the treasury
     function setTreasuryVestingSchedule(uint256 totalAllocation) external onlyOwner {
-        require(totalAllocation <= MAX_TREASURY_ALLOCATION, "Exceeds max treasury allocation");
+        require(totalAllocation > 0, "Total allocation must be greater than zero");
         require(treasuryVestingSchedule.totalAllocation == 0, "Treasury vesting schedule already set");
 
         // Set up vesting schedule
