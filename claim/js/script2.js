@@ -41,29 +41,84 @@ async function initContracts() {
         hideElement('connectWalletText');
         document.getElementById('connectWalletButton').innerText = 'Connected';
 
-        // Check NFT ownership before enabling withdrawal
-        await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
+        // Fetch and display vesting details for all three groups
+        await fetchAndDisplayVestingDetails(userAddress);
 
-        // Fetch team membership status
-        // Implement this part if needed
-
-        // Check if the connected wallet is the Treasury
-        // Implement this part if needed
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
 }
 
-async function convertEthToPlrt(ethAmount) {
-    // Implement this function if needed
-}
-
-async function checkNFTOwnershipAndDisplayVestingDetails(address) {
-    // Implement this function
-}
-
 async function fetchAndDisplayVestingDetails(walletAddress) {
-    // Implement this function
+    try {
+        const [foundingTeamDetails, treasuryDetails, privateSaleDetails] = await Promise.all([
+            fetchVestingDetails(walletAddress, 0), // Founding Team
+            fetchVestingDetails(walletAddress, 1), // Treasury
+            fetchVestingDetails(walletAddress, 2)  // Private Sale
+        ]);
+
+        displayVestingDetails('FoundingTeam', foundingTeamDetails);
+        displayVestingDetails('Treasury', treasuryDetails);
+        displayVestingDetails('PrivateSale', privateSaleDetails);
+    } catch (error) {
+        console.error("An error occurred while fetching and displaying vesting details:", error);
+    }
+}
+
+async function fetchVestingDetails(walletAddress, group) {
+    try {
+        const [
+            totalAllocation,
+            amountWithdrawn,
+            availableToWithdraw,
+            vestingStart,
+            lastWithdrawal,
+            tokensAvailableToWithdraw,
+            daysUntilNextWithdrawal
+        ] = await vestingContract.getVestingDetails(walletAddress, group);
+
+        return {
+            totalAllocation,
+            amountWithdrawn,
+            availableToWithdraw,
+            vestingStart: new Date(vestingStart * 1000).toLocaleString(),
+            lastWithdrawal: new Date(lastWithdrawal * 1000).toLocaleString(),
+            tokensAvailableToWithdraw,
+            daysUntilNextWithdrawal: Math.ceil(daysUntilNextWithdrawal / (60 * 60 * 24))
+        };
+    } catch (error) {
+        console.error("Error fetching vesting details for group", group, ":", error);
+        return null;
+    }
+}
+
+function calculateAvailableToWithdraw(details) {
+    // Calculate available tokens for withdrawal based on vesting details
+    const totalWithdrawableNow = details.totalAllocation
+        .mul(details.subsequentVestingRate)
+        .div(100)
+        .mul(details.periodsElapsedSinceLastWithdrawal);
+    let availableToWithdraw = totalWithdrawableNow.sub(details.amountWithdrawn);
+
+    // Ensure availableToWithdraw is not negative and does not exceed totalAllocation
+    availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
+    availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
+
+    return availableToWithdraw;
+}
+
+function displayVestingDetails(groupName, details) {
+    if (!details) {
+        console.error("No details found for group", groupName);
+        return;
+    }
+
+    document.getElementById(groupName + 'TotalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+    document.getElementById(groupName + 'AmountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+    document.getElementById(groupName + 'VestingStart').innerText = details.vestingStart;
+    document.getElementById(groupName + 'LastWithdrawal').innerText = details.lastWithdrawal;
+    document.getElementById(groupName + 'TokensAvailableToWithdraw').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
+    document.getElementById(groupName + 'DaysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
