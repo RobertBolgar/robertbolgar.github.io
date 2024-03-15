@@ -3,7 +3,7 @@ import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.
 // Import utility functions for UI manipulation
 import { showElement, hideElement, displayMessage } from './utils.js';
 
-const vestingContractAddress = "0xDebe77CeBCF3213A35425b962cdeD29de937C686";
+const vestingContractAddress = "0x54a371C80475EcfA999239ecceD25171615A1709";
 const nftContractAddress = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
 const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
 
