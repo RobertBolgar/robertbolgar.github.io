@@ -49,6 +49,7 @@ async function initContracts() {
 }
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
+        clearVestingDetails(); // Clear existing details before fetching new ones
     try {
         // Treasury details are fetched since its setup doesn't vary by user.
         const treasuryDetails = await fetchVestingDetails(1); // Use 1 for Treasury
@@ -69,6 +70,18 @@ async function fetchVestingDetails(group) {
         return null;
     }
 }
+
+// Place this function with your existing JavaScript functions
+function clearVestingDetails() {
+    document.getElementById('totalAllocation').innerText = '';
+    document.getElementById('amountWithdrawn').innerText = '';
+    document.getElementById('availableToWithdraw').innerText = '';
+    document.getElementById('vestingStart').innerText = '';
+    document.getElementById('lastWithdrawal').innerText = '';
+    document.getElementById('tokensAvailableForWithdrawal').innerText = '';
+    document.getElementById('daysUntilNextWithdrawal').innerText = '';
+}
+
 
 function displayVestingDetails(groupName, details) {
     if (!details) {
