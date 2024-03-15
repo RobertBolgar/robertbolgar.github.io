@@ -52,10 +52,10 @@ async function initContracts() {
 async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const [foundingTeamDetails, treasuryDetails, privateSaleDetails] = await Promise.all([
-            fetchVestingDetails(walletAddress, 'FoundingTeam'), // Founding Team
-            fetchVestingDetails(walletAddress, 'Treasury'), // Treasury
-            fetchVestingDetails(walletAddress, 'PrivateSale')  // Private Sale
-        ]);
+    fetchVestingDetails('FoundingTeam'),
+    fetchVestingDetails('Treasury'),
+    fetchVestingDetails('PrivateSale')
+]);
 
         displayVestingDetails('FoundingTeam', foundingTeamDetails);
         displayVestingDetails('Treasury', treasuryDetails);
