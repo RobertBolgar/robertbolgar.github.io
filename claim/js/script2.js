@@ -65,37 +65,14 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     }
 }
 
-// Define a mapping from group names to numerical IDs
-const groupMapping = {
-    "FoundingTeam": 0,
-    "Treasury": 1,
-    "PrivateSale": 2
-};
 
-async function fetchVestingDetails(walletAddress, group) {
+
+async function fetchVestingDetails(group) {
     try {
-        // Call the contract function with only the wallet address argument
-        const [
-            totalAllocation,
-            amountWithdrawn,
-            availableToWithdraw,
-            vestingStart,
-            lastWithdrawal,
-            tokensAvailableToWithdraw,
-            daysUntilNextWithdrawal
-        ] = await vestingContract.getVestingDetails(walletAddress, groupMapping[group]); // Use numerical group ID
-
-        return {
-            totalAllocation,
-            amountWithdrawn,
-            availableToWithdraw,
-            vestingStart: new Date(vestingStart * 1000).toLocaleString(),
-            lastWithdrawal: new Date(lastWithdrawal * 1000).toLocaleString(),
-            tokensAvailableToWithdraw,
-            daysUntilNextWithdrawal: Math.ceil(daysUntilNextWithdrawal / (60 * 60 * 24))
-        };
+        const vestingDetails = await vestingContract.getVestingDetails(group);
+        return vestingDetails;
     } catch (error) {
-        console.error("Error fetching vesting details for wallet address", walletAddress, ":", error);
+        console.error("Error fetching vesting details for group", group, ":", error);
         return null;
     }
 }
