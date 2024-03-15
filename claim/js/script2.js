@@ -65,8 +65,6 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     }
 }
 
-
-
 // Define a mapping from group names to numerical IDs
 const groupMapping = {
     "FoundingTeam": 0,
@@ -85,7 +83,7 @@ async function fetchVestingDetails(walletAddress, group) {
             lastWithdrawal,
             tokensAvailableToWithdraw,
             daysUntilNextWithdrawal
-        ] = await vestingContract.getVestingDetails(walletAddress);
+        ] = await vestingContract.getVestingDetails(walletAddress, groupMapping[group]); // Use numerical group ID
 
         return {
             totalAllocation,
@@ -100,23 +98,6 @@ async function fetchVestingDetails(walletAddress, group) {
         console.error("Error fetching vesting details for wallet address", walletAddress, ":", error);
         return null;
     }
-}
-
-
-
-function calculateAvailableToWithdraw(details) {
-    // Calculate available tokens for withdrawal based on vesting details
-    const totalWithdrawableNow = details.totalAllocation
-        .mul(details.subsequentVestingRate)
-        .div(100)
-        .mul(details.periodsElapsedSinceLastWithdrawal);
-    let availableToWithdraw = totalWithdrawableNow.sub(details.amountWithdrawn);
-
-    // Ensure availableToWithdraw is not negative and does not exceed totalAllocation
-    availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
-    availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
-
-    return availableToWithdraw;
 }
 
 function displayVestingDetails(groupName, details) {
