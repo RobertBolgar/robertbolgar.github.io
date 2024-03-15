@@ -124,6 +124,7 @@ function displayVestingDetails(details, groupType) {
     document.getElementById('vestingGroupType').textContent = groupType;
     document.getElementById('totalAllocation').textContent = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
     document.getElementById('amountWithdrawn').textContent = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+    document.getElementById('vestingDetailsDisplay').style.display = 'block';
     // Update other details similarly
     
     showElement('vestingDetailsDisplay');
