@@ -42,6 +42,8 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         // Treasury details are fetched since its setup doesn't vary by user.
         const treasuryDetails = await fetchVestingDetails(1); // Use 1 for Treasury
+        console.log("Treasury details:", treasuryDetails);
+
         displayVestingDetails('Treasury', treasuryDetails);
     } catch (error) {
         console.error("An error occurred while fetching and displaying vesting details:", error);
