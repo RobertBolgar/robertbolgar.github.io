@@ -1,122 +1,249 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 contract PLRTVesting is Ownable, ReentrancyGuard {
-    IERC20 public plrToken;
-    IERC721 public nftToken;
-    bool public initialDepositMade = false;
-    uint256 public constant TOKENS_PER_NFT = 20_000;
-    uint256 public constant WITHDRAWAL_RATE_PER_PERIOD = 10; // 10%
-    uint256 public PERIOD_DURATION = 7 days;
+    IERC20 public plrtToken;
+    IERC721Enumerable public nftToken;
 
-    enum VestingGroup { PrivateSale, Team, Treasury }
+    enum VestingGroup { FoundingTeam, Treasury, PrivateSale }
 
-    struct VestingDetail {
+    struct VestingSchedule {
+        uint256 start;
+        uint256 cliffDuration;
+        uint256 initialVestingRate; // Percentage (1-100)
         uint256 totalAllocation;
-        uint256 amountWithdrawn;
-        uint256 vestingStart;
-        VestingGroup group;
+        uint256 claimedAmount;
+        uint256 intervalDuration;
+        uint256 subsequentVestingRate; // Percentage (1-100)
+        uint256 lastWithdrawalTime; // Added to track the last withdrawal time
     }
 
-    mapping(address => VestingDetail) public vestingDetails;
-    mapping(address => bool) public whitelistedAddresses;
+    mapping(address => mapping(VestingGroup => VestingSchedule)) public vestingSchedules;
+    mapping(uint256 => bool) private redeemedNFTs;
+    bool private vestingStarted = false;
 
-    event Withdrawal(address indexed user, uint256 amount);
-    event VestingAdded(address indexed user, uint256 allocation, VestingGroup group);
-    event InitialDepositMade(uint256 totalAmount, uint256 timestamp);
-    event TeamMemberAdded(address indexed member, uint256 allocation);
+    // Address of the treasury wallet
+    address public treasuryAddress;
+    
+    address[] public teamMembers;
+    
+    event TokensClaimed(address indexed user, VestingGroup group, uint256 amount);
 
-    constructor(IERC20 _tokenAddress, IERC721 _nftToken) {
-        require(address(_tokenAddress) != address(0), "Token address cannot be zero.");
-        require(address(_nftToken) != address(0), "NFT token address cannot be zero.");
-        plrToken = _tokenAddress;
+    constructor(IERC20 _plrtToken, IERC721Enumerable _nftToken, address initialOwner)
+        Ownable(initialOwner)
+    {
+        plrtToken = _plrtToken;
         nftToken = _nftToken;
     }
 
-    modifier onlyWhitelisted() {
-        require(whitelistedAddresses[msg.sender] || nftToken.balanceOf(msg.sender) > 0, "Unauthorized");
-        _;
+    function addTeamMember(address _teamMember) public onlyOwner {
+        require(_teamMember != address(0), "Invalid address");
+        teamMembers.push(_teamMember);
     }
 
-    function addToWhitelist(address _address) external onlyOwner {
-        whitelistedAddresses[_address] = true;
+    function setTreasuryAddress(address _treasuryAddress) public onlyOwner {
+        require(_treasuryAddress != address(0), "Invalid address");
+        treasuryAddress = _treasuryAddress;
     }
 
-    function removeFromWhitelist(address _address) external onlyOwner {
-        whitelistedAddresses[_address] = false;
-    }
+    function setTreasuryVestingSchedule(
+        uint256 _cliffDuration,
+        uint256 _initialVestingRate,
+        uint256 _totalAllocation,
+        uint256 _intervalDuration,
+        uint256 _subsequentVestingRate
+    ) public onlyOwner {
+        require(_totalAllocation > 0, "Allocation must be > 0");
+        require(_initialVestingRate > 0 && _initialVestingRate <= 100, "Initial rate must be 1% - 100%");
+        require(_subsequentVestingRate > 0 && _subsequentVestingRate <= 100, "Subsequent rate must be 1% - 100%");
+        require(!vestingStarted, "Vesting has already started.");
 
-    function initializeTreasuryVesting(uint256 totalAllocation) external onlyOwner {
-        require(!initialDepositMade, "Initial deposit already made or treasury already initialized");
-        vestingDetails[owner()] = VestingDetail({
-            totalAllocation: totalAllocation,
-            amountWithdrawn: 0,
-            vestingStart: block.timestamp,
-            group: VestingGroup.Treasury
-        });
-        initialDepositMade = true;
-    }
-
-    function withdrawTreasuryTokens() external nonReentrant onlyOwner {
-        withdrawTokensInternal(msg.sender, VestingGroup.Treasury);
-    }
-
-    function withdrawTokens() external nonReentrant onlyWhitelisted {
-        withdrawTokensInternal(msg.sender, VestingGroup.PrivateSale);
-    }
-
-    function withdrawTokensInternal(address user, VestingGroup group) internal {
-        VestingDetail storage detail = vestingDetails[user];
-        require(detail.group == group, "Not authorized or wrong group");
-        uint256 availableAmount = availableToWithdraw(user);
-        require(availableAmount > 0, "No tokens available to withdraw.");
-        detail.amountWithdrawn += availableAmount;
-        plrToken.transfer(user, availableAmount);
-        emit Withdrawal(user, availableAmount);
-    }
-
-    function availableToWithdraw(address user) public view returns (uint256) {
-        VestingDetail memory detail = vestingDetails[user];
-        if (block.timestamp < detail.vestingStart + PERIOD_DURATION) {
-            return 0;
-        }
-        uint256 totalAllocation = detail.group == VestingGroup.PrivateSale ? nftToken.balanceOf(user) * TOKENS_PER_NFT : detail.totalAllocation;
-        uint256 timeElapsedSinceVestingStart = block.timestamp - detail.vestingStart;
-        uint256 periodsElapsed = timeElapsedSinceVestingStart / PERIOD_DURATION;
-        uint256 totalClaimable = totalAllocation * WITHDRAWAL_RATE_PER_PERIOD / 100 * periodsElapsed;
-        uint256 availableAmount = totalClaimable > totalAllocation ? totalAllocation - detail.amountWithdrawn : totalClaimable - detail.amountWithdrawn;
-        return availableAmount;
-    }
-
-    function makeInitialDeposit(uint256 _totalAmount) external onlyOwner {
-        require(!initialDepositMade, "Initial deposit already made");
-        require(_totalAmount > 0, "Amount must be greater than 0");
-        require(plrToken.transferFrom(msg.sender, address(this), _totalAmount), "Token transfer failed");
-        initialDepositMade = true;
-        emit InitialDepositMade(_totalAmount, block.timestamp);
-    }
-
-    function updateVestingPeriod(uint256 _newPeriod) external onlyOwner {
-        PERIOD_DURATION = _newPeriod;
-    }
-
-    function addTeamMember(address _teamMemberAddress, uint256 _totalAllocation) external onlyOwner {
-        require(_teamMemberAddress != address(0), "Invalid team member address");
-        require(_totalAllocation > 0, "Allocation must be greater than 0");
-        
-        vestingDetails[_teamMemberAddress] = VestingDetail({
+        vestingSchedules[treasuryAddress][VestingGroup.Treasury] = VestingSchedule({
+            start: block.timestamp,
+            cliffDuration: _cliffDuration,
+            initialVestingRate: _initialVestingRate,
             totalAllocation: _totalAllocation,
-            amountWithdrawn: 0,
-            vestingStart: block.timestamp,
-            group: VestingGroup.Team
+            claimedAmount: 0,
+            intervalDuration: _intervalDuration,
+            subsequentVestingRate: _subsequentVestingRate,
+            lastWithdrawalTime: 0 // Initialize last withdrawal time to 0
         });
-        
-        whitelistedAddresses[_teamMemberAddress] = true; // Add team member to whitelist
-        emit TeamMemberAdded(_teamMemberAddress, _totalAllocation);
     }
+
+    function setPrivateSaleVestingSchedule(
+        address _user,
+        uint256 _cliffDuration,
+        uint256 _initialVestingRate,
+        uint256 _totalAllocation,
+        uint256 _intervalDuration,
+        uint256 _subsequentVestingRate,
+        uint256 _numNFTs
+    ) public onlyOwner {
+        require(_totalAllocation > 0, "Allocation must be > 0");
+        require(_initialVestingRate > 0 && _initialVestingRate <= 100, "Initial rate must be 1% - 100%");
+        require(_subsequentVestingRate > 0 && _subsequentVestingRate <= 100, "Subsequent rate must be 1% - 100%");
+        require(!vestingStarted, "Vesting has already started.");
+
+        uint256 allocationPerNFT = _totalAllocation / _numNFTs;
+
+        vestingSchedules[_user][VestingGroup.PrivateSale] = VestingSchedule({
+            start: block.timestamp,
+            cliffDuration: _cliffDuration,
+            initialVestingRate: _initialVestingRate,
+            totalAllocation: allocationPerNFT * _numNFTs, // Ensure total allocation matches
+            claimedAmount: 0,
+            intervalDuration: _intervalDuration,
+            subsequentVestingRate: _subsequentVestingRate,
+            lastWithdrawalTime: 0 // Initialize last withdrawal time to 0
+        });
+    }
+
+    function setTeamVestingSchedule(
+        address[] memory _teamMembers,
+        uint256 _cliffDuration,
+        uint256 _initialVestingRate,
+        uint256 _totalAllocation,
+        uint256 _intervalDuration,
+        uint256 _subsequentVestingRate
+    ) public onlyOwner {
+        require(_teamMembers.length > 0, "At least one team member address must be provided");
+        require(_totalAllocation == _teamMembers.length * 5_000_000, "Total allocation must be 5 million PLRT per team member");
+        require(_initialVestingRate > 0 && _initialVestingRate <= 100, "Initial rate must be 1% - 100%");
+        require(_subsequentVestingRate > 0 && _subsequentVestingRate <= 100, "Subsequent rate must be 1% - 100%");
+        require(!vestingStarted, "Vesting has already started.");
+
+        for (uint256 i = 0; i < _teamMembers.length; i++) {
+            address teamMember = _teamMembers[i];
+            vestingSchedules[teamMember][VestingGroup.FoundingTeam] = VestingSchedule({
+                start: block.timestamp,
+                cliffDuration: _cliffDuration,
+                initialVestingRate: _initialVestingRate,
+                totalAllocation: 5_000_000,
+                claimedAmount: 0,
+                intervalDuration: _intervalDuration,
+                subsequentVestingRate: _subsequentVestingRate,
+                lastWithdrawalTime: 0 // Initialize last withdrawal time to 0
+            });
+        }
+    }
+
+    function calculateTimeToWithdrawAllTokens(VestingGroup group) public view returns (uint256) {
+    require(group != VestingGroup.PrivateSale, "Private sale group must specify individual addresses");
+
+    uint256 totalAllocation;
+    if (group == VestingGroup.FoundingTeam) {
+        totalAllocation = 15_000_000; // Total allocation for the team wallets
+    } else if (group == VestingGroup.Treasury) {
+        totalAllocation = 10_000_000; // Total allocation for the treasury wallet
+    } else {
+        revert("Invalid group");
+    }
+
+    uint256 totalClaimed;
+    if (group == VestingGroup.FoundingTeam) {
+        for (uint256 i = 0; i < teamMembers.length; i++) {
+            address member = teamMembers[i];
+            VestingSchedule storage schedule = vestingSchedules[member][group];
+            totalClaimed += calculateClaimableAmount(schedule);
+        }
+    } else if (group == VestingGroup.Treasury) {
+        VestingSchedule storage schedule = vestingSchedules[treasuryAddress][group];
+        totalClaimed = calculateClaimableAmount(schedule);
+    }
+
+    uint256 remainingTokens = totalAllocation - totalClaimed;
+    if (remainingTokens == 0) {
+        return 0; // All tokens already withdrawn
+    }
+
+    uint256 lastWithdrawalTime = block.timestamp;
+    uint256 timeToWithdrawAllTokens = 0;
+    while (remainingTokens > 0) {
+        uint256 claimableTokens = 0;
+        if (group == VestingGroup.FoundingTeam) {
+            for (uint256 i = 0; i < teamMembers.length; i++) {
+                address member = teamMembers[i];
+                VestingSchedule storage schedule = vestingSchedules[member][group];
+                claimableTokens += calculateClaimableAmount(schedule);
+            }
+        } else if (group == VestingGroup.Treasury) {
+            VestingSchedule storage schedule = vestingSchedules[treasuryAddress][group];
+            claimableTokens = calculateClaimableAmount(schedule);
+        }
+
+        uint256 interval = (claimableTokens == 0) ? 7 days : (remainingTokens * 7 days) / claimableTokens;
+        timeToWithdrawAllTokens += interval;
+        lastWithdrawalTime += interval;
+        remainingTokens -= (claimableTokens * interval) / (7 days);
+    }
+
+    return timeToWithdrawAllTokens;
+}
+
+
+    function calculateClaimableAmount(VestingSchedule storage schedule) private view returns (uint256) {
+    if (block.timestamp < schedule.start + schedule.cliffDuration) {
+        return 0;
+    }
+
+    uint256 elapsedTime = block.timestamp - (schedule.start + schedule.cliffDuration);
+    uint256 totalIntervalsPassed = elapsedTime / schedule.intervalDuration;
+    uint256 totalVestingAmount = schedule.totalAllocation * (schedule.initialVestingRate + (totalIntervalsPassed * schedule.subsequentVestingRate)) / 100;
+
+    if (totalVestingAmount > schedule.totalAllocation) {
+        totalVestingAmount = schedule.totalAllocation;
+    }
+
+    uint256 claimableAmount = totalVestingAmount > schedule.claimedAmount ? totalVestingAmount - schedule.claimedAmount : 0;
+    return claimableAmount;
+}
+
+function getVestingDetails(VestingGroup group) public view returns (
+    uint256 totalAllocation,
+    uint256 amountWithdrawn,
+    uint256 availableToWithdraw,
+    uint256 vestingStart,
+    uint256 lastWithdrawal,
+    uint256 tokensAvailableToWithdraw,
+    uint256 daysUntilNextWithdrawal
+) {
+    require(group != VestingGroup.PrivateSale, "Private sale group must specify individual addresses");
+
+    if (group == VestingGroup.FoundingTeam) {
+        totalAllocation = 15_000_000 * (10 ** 18); // Assuming PLRT has 18 decimals
+        for (uint256 i = 0; i < teamMembers.length; i++) {
+            address member = teamMembers[i];
+            VestingSchedule storage schedule = vestingSchedules[member][group];
+            amountWithdrawn += schedule.claimedAmount;
+            tokensAvailableToWithdraw += calculateClaimableAmount(schedule);
+            vestingStart = schedule.start; // Assuming similar vesting start for all team members
+            lastWithdrawal = schedule.lastWithdrawalTime; // Assuming similar last withdrawal time for simplicity
+        }
+    } else if (group == VestingGroup.Treasury) {
+        totalAllocation = 10_000_000 * (10 ** 18); // Assuming PLRT has 18 decimals
+        VestingSchedule storage schedule = vestingSchedules[treasuryAddress][group];
+        amountWithdrawn = schedule.claimedAmount;
+        tokensAvailableToWithdraw = calculateClaimableAmount(schedule);
+        vestingStart = schedule.start;
+        lastWithdrawal = schedule.lastWithdrawalTime;
+    } else {
+        revert("Invalid group");
+    }
+
+    availableToWithdraw = totalAllocation - amountWithdrawn;
+
+    if (tokensAvailableToWithdraw == 0) {
+        daysUntilNextWithdrawal = 0;
+    } else {
+        uint256 interval = (tokensAvailableToWithdraw == 0) ? 7 days : (availableToWithdraw * 7 days) / tokensAvailableToWithdraw;
+        daysUntilNextWithdrawal = (block.timestamp - lastWithdrawal) / interval;
+    }
+}
+
+
 }
