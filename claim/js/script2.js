@@ -69,6 +69,14 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 async function fetchVestingDetails(walletAddress, group) {
     try {
+        // Define the enum object for VestingGroup
+        const VestingGroup = {
+            FoundingTeam: 0,
+            Treasury: 1,
+            PrivateSale: 2
+        };
+
+        // Call the contract's getVestingDetails function with the user address and group value
         const [
             totalAllocation,
             amountWithdrawn,
@@ -77,7 +85,7 @@ async function fetchVestingDetails(walletAddress, group) {
             lastWithdrawal,
             tokensAvailableToWithdraw,
             daysUntilNextWithdrawal
-        ] = await vestingContract.getVestingDetails(walletAddress, group);
+        ] = await vestingContract.getVestingDetails(walletAddress, VestingGroup[group]);
 
         return {
             totalAllocation,
@@ -93,6 +101,7 @@ async function fetchVestingDetails(walletAddress, group) {
         return null;
     }
 }
+
 
 
 function calculateAvailableToWithdraw(details) {
