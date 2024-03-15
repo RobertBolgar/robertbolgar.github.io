@@ -51,20 +51,36 @@ async function initContracts() {
 async function fetchAndDisplayVestingDetails(walletAddress) {
     console.log("Fetching vesting details for address:", walletAddress);
     clearVestingDetails(); // Clear existing display
-    
-    const groups = [0, 1, 2]; // Assuming numeric identifiers for FoundingTeam, Treasury, PrivateSale
-    
+
+    // Example groups, assuming 0 for FoundingTeam, 1 for Treasury, 2 for PrivateSale
+    const groups = [0, 1]; // Excluding PrivateSale for direct fetch due to its unique requirement
+
     for (const group of groups) {
         try {
-            const details = await vestingContract.getVestingDetails(group).call({ from: walletAddress });
-            if (details && details.totalAllocation.gt(0)) { // Assuming non-zero allocation indicates valid data
+            // Directly calling the method without .call
+            const details = await vestingContract.getVestingDetails(group);
+            // Assuming getVestingDetails returns an object with a totalAllocation property; adjust as needed
+            if (details && details.totalAllocation.gt(ethers.BigNumber.from("0"))) {
                 displayVestingDetails(group, details);
             }
         } catch (error) {
             console.error(`Error fetching details for group ${group}:`, error);
         }
     }
+    
+    // Special handling for PrivateSale or any group requiring specific logic
+    // This part needs to be customized based on your contract's capabilities and requirements
+    try {
+        // Example: Fetching PrivateSale details might require a different method or parameters
+        // const privateSaleDetails = await fetchPrivateSaleDetails(walletAddress);
+        // if (privateSaleDetails) {
+        //     displayVestingDetails('PrivateSale', privateSaleDetails);
+        // }
+    } catch (error) {
+        console.error("Error fetching PrivateSale details:", error);
+    }
 }
+
 
 
 async function fetchVestingDetails(group) {
