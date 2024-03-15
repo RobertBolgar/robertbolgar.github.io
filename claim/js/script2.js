@@ -52,10 +52,10 @@ async function initContracts() {
 async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
         const [foundingTeamDetails, treasuryDetails, privateSaleDetails] = await Promise.all([
-    fetchVestingDetails('FoundingTeam'),
-    fetchVestingDetails('Treasury'),
-    fetchVestingDetails('PrivateSale')
-]);
+            fetchVestingDetails(0), // Use 0 for FoundingTeam
+            fetchVestingDetails(1), // Use 1 for Treasury
+            fetchVestingDetails(2)  // Use 2 for PrivateSale
+        ]);
 
         displayVestingDetails('FoundingTeam', foundingTeamDetails);
         displayVestingDetails('Treasury', treasuryDetails);
@@ -64,6 +64,7 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
         console.error("An error occurred while fetching and displaying vesting details:", error);
     }
 }
+
 
 
 
