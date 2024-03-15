@@ -48,38 +48,34 @@ async function initContracts() {
     await fetchAndDisplayVestingDetails(userAddress);
 }
 
+async function connectWallet() {
+    await ethereum.request({ method: 'eth_requestAccounts' }); // Request wallet connection
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const walletAddress = await signer.getAddress();
+
+    initContracts(signer); // Initialize your contracts with the signer
+
+    fetchAndDisplayVestingDetails(walletAddress); // Proceed to fetch and display vesting details
+}
+
+
 async function fetchAndDisplayVestingDetails(walletAddress) {
-    console.log("Fetching vesting details for address:", walletAddress);
-    clearVestingDetails(); // Clear existing display
+    clearVestingDetails(); // Function to clear previously displayed details
 
-    // Example groups, assuming 0 for FoundingTeam, 1 for Treasury, 2 for PrivateSale
-    const groups = [0, 1]; // Excluding PrivateSale for direct fetch due to its unique requirement
+    const nftBalance = await vestingContract.getOwnedNFTs(walletAddress);
 
-    for (const group of groups) {
-        try {
-            // Directly calling the method without .call
-            const details = await vestingContract.getVestingDetails(group);
-            // Assuming getVestingDetails returns an object with a totalAllocation property; adjust as needed
-            if (details && details.totalAllocation.gt(ethers.BigNumber.from("0"))) {
-                displayVestingDetails(group, details);
-            }
-        } catch (error) {
-            console.error(`Error fetching details for group ${group}:`, error);
-        }
-    }
-    
-    // Special handling for PrivateSale or any group requiring specific logic
-    // This part needs to be customized based on your contract's capabilities and requirements
-    try {
-        // Example: Fetching PrivateSale details might require a different method or parameters
-        // const privateSaleDetails = await fetchPrivateSaleDetails(walletAddress);
-        // if (privateSaleDetails) {
-        //     displayVestingDetails('PrivateSale', privateSaleDetails);
-        // }
-    } catch (error) {
-        console.error("Error fetching PrivateSale details:", error);
+    // Assuming there's a direct relation between NFT balance and vesting
+    // If your contract automatically handles vesting based on NFTs, you might only need to display existing vesting details
+    const privateSaleDetails = await vestingContract.getVestingDetails(/* VestingGroup.PrivateSale or its identifier */, { from: walletAddress });
+
+    if (privateSaleDetails) {
+        displayVestingDetails('PrivateSale', privateSaleDetails);
+    } else {
+        console.log("No vesting details found or user is not part of the Private Sale group.");
     }
 }
+
 
 
 
@@ -105,21 +101,20 @@ function clearVestingDetails() {
 }
 
 
-function displayVestingDetails(groupName, details) {
-    if (!details) {
-        console.error("No details found for group", groupName);
-        return;
-    }
-
+function displayVestingDetails(group, details) {
+    // Adjust according to your UI elements
     document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
     document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+    document.getElementById('availableToWithdraw').innerText = ethers.utils.formatEther(details.totalAllocation.sub(details.amountWithdrawn)) + ' PLRT';
     document.getElementById('vestingStart').innerText = new Date(details.vestingStart * 1000).toDateString();
     document.getElementById('lastWithdrawal').innerText = new Date(details.lastWithdrawal * 1000).toDateString();
     document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
     document.getElementById('daysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
     document.getElementById('vestingDetailsDisplay').style.display = 'block';
-
+    // Add more details as needed
 }
+
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
