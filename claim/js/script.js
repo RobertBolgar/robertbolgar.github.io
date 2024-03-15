@@ -7,7 +7,6 @@ const vestingContractAddress = "0x03e8a3ef9e2D241d64e7C38951AC6444066E897E";
 const nftContractAddress = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
 const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
 
-
 let vestingContract, nftContract, plrtContract;
 
 // Utility function to fetch ABI from a local JSON file
@@ -35,151 +34,108 @@ async function initContracts() {
         const plrtABI = await fetchABI('./abi/plrt_abi.json');
         plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
 
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        // Update UI with wallet address
+        const accounts = await provider.listAccounts();
         const userAddress = accounts[0];
         document.getElementById('walletAddress').innerText = userAddress;
         showElement('walletAddressDisplay');
         hideElement('connectWalletText');
         document.getElementById('connectWalletButton').innerText = 'Connected';
 
-        // Check NFT ownership before enabling withdrawal
-        await checkNFTOwnershipAndDisplayVestingDetails(userAddress);
-
-        // Fetch team membership status
-        const isTeamMember = await vestingContract.vestingDetails(userAddress);
-if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Team or Private Sale
-    document.getElementById('teamMembershipDetails').innerText = `You are a team member with a total allocation of ${isTeamMember.totalAllocation} PLRT`;
-    showElement('teamMembershipDetails');
-    showElement('vestingDetailsDisplay'); // Make the section visible
-}
-
+        // Determine user role and fetch vesting details accordingly
+        determineUserRoleAndFetchDetails(userAddress);
         
-        // Check if the connected wallet is the Treasury
-        const ownerAddress = await vestingContract.owner();
-        const isTreasury = (userAddress === ownerAddress);
-        if (isTreasury) {
-            // Display special features for the Treasury wallet
-        }
     } catch (error) {
         console.error("An error occurred during contract initialization:", error);
     }
 }
 
-async function convertEthToPlrt(ethAmount) {
-    // Replace the conversionRate with the actual rate at which 1 Ether is converted to PLRT tokens
-    const conversionRate = 1000; // Example conversion rate
-    return ethAmount * conversionRate;
-}
-
-async function checkNFTOwnershipAndDisplayVestingDetails(address) {
+async function determineUserRoleAndFetchDetails(userAddress) {
     try {
-        const nftBalance = await nftContract.balanceOf(address);
-        if (nftBalance.toNumber() > 0) {
-            showElement('withdrawTokensButton');
-            await fetchAndDisplayVestingDetails(address);
-        } else {
-            displayMessage('You do not own the required NFT to withdraw tokens.');
-            hideElement('withdrawTokensButton');
+        // Example of checking NFT ownership for a specific role
+        const nftBalance = await nftContract.balanceOf(userAddress);
+        if (nftBalance.gt(0)) {
+            await fetchPrivateSaleNFTVestingDetails(userAddress);
+            return; // Exit if the user is a private sale NFT holder
         }
-    } catch (error) {
-        console.error('Error checking NFT ownership:', error);
-    }
-}
-
-async function fetchAndDisplayVestingDetails(walletAddress) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = vestingContract.connect(signer);
-    
-    try {
-        const details = await contract.vestingDetails(walletAddress);
-       
-        // Convert total allocation from Ether to PLRT
-        const totalAllocationInPLRT = await convertEthToPlrt(ethers.utils.formatEther(details.totalAllocation));
-
-        // Format the total allocation value with 8 decimal places and PLRT suffix
-        const formattedTotalAllocation = totalAllocationInPLRT.toFixed(8) + ' PLRT';
-
-        document.getElementById('totalAllocation').innerText = formattedTotalAllocation;
-        document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn);
         
-        const vestingStart = new Date(details.vestingStart * 1000).toLocaleString();
-        const lastWithdrawal = details.lastWithdrawal ? new Date(details.lastWithdrawal * 1000).toLocaleString() : 'N/A';
-        document.getElementById('vestingStart').innerText = vestingStart;
-        document.getElementById('lastWithdrawal').innerText = lastWithdrawal;
-
-        // Use BigNumber methods for any arithmetic operations involving BigNumbers
-        const now = Math.floor(Date.now() / 1000); // Current time in seconds, only declared once
-        if (details.lastWithdrawal !== undefined) {
-            const timeSinceLastWithdrawal = ethers.BigNumber.from(now).sub(details.lastWithdrawal);
-            
-            const VESTING_PERIOD = await contract.VESTING_PERIOD();
-            const isEligibleToWithdraw = timeSinceLastWithdrawal.gte(VESTING_PERIOD);
-            
-            const VESTING_PERIOD_SECONDS = (await contract.VESTING_PERIOD()).toNumber();
-            const WITHDRAWAL_RATE = (await contract.WITHDRAWAL_RATE()).toNumber();
-            
-            // Calculate periods elapsed since the last withdrawal or vesting start
-            const periodsElapsedSinceLastWithdrawal = Math.floor((now - details.lastWithdrawal.toNumber()) / VESTING_PERIOD_SECONDS);
-            const totalWithdrawableNow = details.totalAllocation.mul(WITHDRAWAL_RATE).div(100).mul(periodsElapsedSinceLastWithdrawal);
-            let availableToWithdraw = totalWithdrawableNow.sub(details.amountWithdrawn);
-
-            // Ensure availableToWithdraw is not negative and does not exceed totalAllocation
-            availableToWithdraw = availableToWithdraw.lt(0) ? ethers.constants.Zero : availableToWithdraw;
-            availableToWithdraw = availableToWithdraw.add(details.amountWithdrawn).gt(details.totalAllocation) ? details.totalAllocation.sub(details.amountWithdrawn) : availableToWithdraw;
-
-            // Ensure the display includes the calculation, accounting for no available tokens
-            document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(availableToWithdraw) + ' PLRT';
-            
-            // Update button text based on withdrawal eligibility
-            const withdrawButton = document.getElementById('withdrawTokensButton');
-            if (isEligibleToWithdraw) {
-                withdrawButton.innerText = 'Withdraw Tokens';
-                withdrawButton.disabled = false; // Enable the button if withdrawal is possible
-            } else {
-                withdrawButton.innerText = 'Unable to Withdraw'; // Change text to indicate withdrawal is not possible
-                withdrawButton.disabled = true; // Optionally disable the button to prevent clicks
-            }
-
-            document.getElementById('availableToWithdraw').innerText = isEligibleToWithdraw ? 'Yes' : 'No';
-
-            const daysUntilNextWithdrawal = isEligibleToWithdraw ? 0 : (VESTING_PERIOD - timeSinceLastWithdrawal) / (60 * 60 * 24);
-            document.getElementById('daysUntilNextWithdrawal').innerText = Math.ceil(daysUntilNextWithdrawal) + ' days';
-        } else {
-            console.error('Last withdrawal time is undefined');
-            // Handle the case where last withdrawal time is undefined
-            document.getElementById('lastWithdrawal').innerText = 'Last withdrawal time not available';
-        }
-
-        showElement('vestingDetailsDisplay');
-
-        // Check if the user is a team member and display the appropriate section
-        const isTeamMember = await vestingContract.vestingDetails(walletAddress);
-        if (isTeamMember.group === 1 || isTeamMember.group === 0) { // Assuming 'Team' is 1 and 'PrivateSale' is 0
-            // Display special features for team members and private sale participants
-            document.getElementById('teamMembershipDetails').innerText = `You are a member of the PLRT team.`;
-            showElement('teamMembershipDetails');
-            showElement('vestingDetailsDisplay'); // Ensure the entire section is visible
-
+        // Using a hypothetical contract method to determine the user's group
+        const userGroup = await vestingContract.getUserGroup(userAddress);
+        
+        switch(userGroup.toNumber()) {
+            case 0:
+                // Treasury
+                fetchTreasuryVestingDetails();
+                break;
+            case 1:
+                // Team Member
+                fetchTeamMemberVestingDetails(userAddress);
+                break;
+            case 2:
+                // Private Sale NFT Holder
+                fetchPrivateSaleNFTVestingDetails(userAddress);
+                break;
+            default:
+                console.log("User does not belong to any specific group.");
+                // Handle cases where the user doesn't belong to any group
         }
     } catch (error) {
-        console.error('Error fetching vesting details:', error);
-        displayMessage('messageBox', 'Failed to fetch vesting details.', false);
+        console.error("Error determining user role:", error);
     }
 }
 
+// Assuming the treasury vesting details can be fetched directly
+async function fetchTreasuryVestingDetails() {
+    try {
+        const details = await vestingContract.treasuryVestingSchedule();
+        displayVestingDetails(details, "Treasury");
+    } catch (error) {
+        console.error("Error fetching treasury vesting details:", error);
+    }
+}
+
+
+// Fetch Team Member Vesting Details
+async function fetchTeamMemberVestingDetails(userAddress) {
+    try {
+        const details = await vestingContract.teamVestingSchedules(userAddress);
+        if (details.totalAllocation.gt(0)) {
+            displayVestingDetails(details, "Team Member");
+        }
+    } catch (error) {
+        console.error("Error fetching team member vesting details:", error);
+    }
+}
+
+// Fetch Private Sale NFT Holder Vesting Details
+async function fetchPrivateSaleNFTVestingDetails(userAddress) {
+    try {
+        const details = await vestingContract.privateSaleNFTVestingSchedules(userAddress);
+        if (details.totalAllocation.gt(0)) {
+            displayVestingDetails(details, "Private Sale NFT Holder");
+        }
+    } catch (error) {
+        console.error("Error fetching private sale NFT holder vesting details:", error);
+    }
+}
+
+// Display vesting details in the UI
+function displayVestingDetails(details, groupType) {
+    document.getElementById('vestingGroupType').textContent = groupType;
+    document.getElementById('totalAllocation').textContent = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+    document.getElementById('amountWithdrawn').textContent = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+    // Update other details similarly
+    
+    showElement('vestingDetailsDisplay');
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
 
-    // Assume MetaMask is already connected, so initiate contract initialization immediately
+    // Automatically initiate contracts if the wallet is already connected
     const accounts = await ethereum.request({ method: 'eth_accounts' });
     if (accounts.length > 0) {
         await initContracts();
     }
 });
-
-
-
-
