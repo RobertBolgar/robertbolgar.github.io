@@ -15,12 +15,6 @@ async function fetchABI(path) {
     return await response.json();
 }
 
-const groupMapping = {
-    "FoundingTeam": 0,
-    "Treasury": 1,
-    "PrivateSale": 2
-};
-
 // Initialize Ethereum contracts
 async function initContracts() {
     try {
@@ -72,6 +66,13 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 }
 
 
+
+// Define a mapping from group names to numerical IDs
+const groupMapping = {
+    "FoundingTeam": 0,
+    "Treasury": 1,
+    "PrivateSale": 2
+};
 
 async function fetchVestingDetails(walletAddress, group) {
     try {
