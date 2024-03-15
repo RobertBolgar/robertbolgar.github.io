@@ -70,6 +70,8 @@ function displayVestingDetails(groupName, details) {
     document.getElementById('lastWithdrawal').innerText = new Date(details.lastWithdrawal * 1000).toDateString();
     document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
     document.getElementById('daysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
+    document.getElementById('vestingDetailsDisplay').style.display = 'block';
+
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
