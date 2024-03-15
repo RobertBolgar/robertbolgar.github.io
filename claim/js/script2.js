@@ -15,6 +15,12 @@ async function fetchABI(path) {
     return await response.json();
 }
 
+const groupMapping = {
+    "FoundingTeam": 0,
+    "Treasury": 1,
+    "PrivateSale": 2
+};
+
 // Initialize Ethereum contracts
 async function initContracts() {
     try {
@@ -69,14 +75,34 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 async function fetchVestingDetails(walletAddress, group) {
     try {
-        const vestingDetails = await vestingContract.getVestingDetails(group); // Pass only one argument
-        return vestingDetails;
+        // Map the group name to its numerical ID
+        const groupId = groupMapping[group];
+
+        // Call the contract function with the numerical ID
+        const [
+            totalAllocation,
+            amountWithdrawn,
+            availableToWithdraw,
+            vestingStart,
+            lastWithdrawal,
+            tokensAvailableToWithdraw,
+            daysUntilNextWithdrawal
+        ] = await vestingContract.getVestingDetails(walletAddress, groupId);
+
+        return {
+            totalAllocation,
+            amountWithdrawn,
+            availableToWithdraw,
+            vestingStart: new Date(vestingStart * 1000).toLocaleString(),
+            lastWithdrawal: new Date(lastWithdrawal * 1000).toLocaleString(),
+            tokensAvailableToWithdraw,
+            daysUntilNextWithdrawal: Math.ceil(daysUntilNextWithdrawal / (60 * 60 * 24))
+        };
     } catch (error) {
         console.error("Error fetching vesting details for group", group, ":", error);
         return null;
     }
 }
-
 
 
 
