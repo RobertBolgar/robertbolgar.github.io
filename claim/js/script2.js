@@ -69,38 +69,14 @@ async function fetchAndDisplayVestingDetails(walletAddress) {
 
 async function fetchVestingDetails(walletAddress, group) {
     try {
-        // Define the enum object for VestingGroup
-        const VestingGroup = {
-            FoundingTeam: 0,
-            Treasury: 1,
-            PrivateSale: 2
-        };
-
-        // Call the contract's getVestingDetails function with the user address and group value
-        const [
-            totalAllocation,
-            amountWithdrawn,
-            availableToWithdraw,
-            vestingStart,
-            lastWithdrawal,
-            tokensAvailableToWithdraw,
-            daysUntilNextWithdrawal
-        ] = await vestingContract.getVestingDetails(walletAddress, VestingGroup[group]);
-
-        return {
-            totalAllocation,
-            amountWithdrawn,
-            availableToWithdraw,
-            vestingStart: new Date(vestingStart * 1000).toLocaleString(),
-            lastWithdrawal: new Date(lastWithdrawal * 1000).toLocaleString(),
-            tokensAvailableToWithdraw,
-            daysUntilNextWithdrawal: Math.ceil(daysUntilNextWithdrawal / (60 * 60 * 24))
-        };
+        const vestingDetails = await vestingContract.getVestingDetails(group); // Pass only one argument
+        return vestingDetails;
     } catch (error) {
         console.error("Error fetching vesting details for group", group, ":", error);
         return null;
     }
 }
+
 
 
 
