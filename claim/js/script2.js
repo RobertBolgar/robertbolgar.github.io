@@ -14,6 +14,16 @@ async function fetchABI(path) {
     return await response.json();
 }
 
+ethereum.on('accountsChanged', function (accounts) {
+    // Clear previous details
+    clearVestingDetails();
+
+    // Fetch and display for the new account
+    const newAccountAddress = accounts[0];
+    fetchAndDisplayVestingDetails(newAccountAddress);
+});
+
+
 async function initContracts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
