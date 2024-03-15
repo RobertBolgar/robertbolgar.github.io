@@ -9,64 +9,44 @@ const plrtAddress = '0xe7ABbf79eD30AaDf572478f3293e31486F7d10cB';
 
 let vestingContract, nftContract, plrtContract;
 
-// Utility function to fetch ABI from a local JSON file
 async function fetchABI(path) {
     const response = await fetch(path);
     return await response.json();
 }
 
-// Initialize Ethereum contracts
 async function initContracts() {
-    try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
 
-        // Fetch and initialize the vesting contract
-        const vestingABI = await fetchABI('./abi/vesting_abi.json');
-        vestingContract = new ethers.Contract(vestingContractAddress, vestingABI, signer);
+    const vestingABI = await fetchABI('./abi/vesting_abi.json');
+    vestingContract = new ethers.Contract(vestingContractAddress, vestingABI, signer);
 
-        // Fetch and initialize the NFT contract
-        const nftABI = await fetchABI('./abi/nft_abi.json');
-        nftContract = new ethers.Contract(nftContractAddress, nftABI, signer);
+    const nftABI = await fetchABI('./abi/nft_abi.json');
+    nftContract = new ethers.Contract(nftContractAddress, nftABI, signer);
 
-        // Fetch and initialize the PLRT token contract
-        const plrtABI = await fetchABI('./abi/plrt_abi.json');
-        plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
+    const plrtABI = await fetchABI('./abi/plrt_abi.json');
+    plrtContract = new ethers.Contract(plrtAddress, plrtABI, provider);
 
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        const userAddress = accounts[0];
-        document.getElementById('walletAddress').innerText = userAddress;
-        showElement('walletAddressDisplay');
-        hideElement('connectWalletText');
-        document.getElementById('connectWalletButton').innerText = 'Connected';
+    const accounts = await ethereum.request({ method: 'eth_accounts' });
+    const userAddress = accounts[0];
+    document.getElementById('walletAddress').innerText = userAddress;
+    showElement('walletAddressDisplay');
+    hideElement('connectWalletText');
+    document.getElementById('connectWalletButton').innerText = 'Connected';
 
-        // Fetch and display vesting details for all three groups
-        await fetchAndDisplayVestingDetails(userAddress);
-
-    } catch (error) {
-        console.error("An error occurred during contract initialization:", error);
-    }
+    await fetchAndDisplayVestingDetails(userAddress);
 }
 
 async function fetchAndDisplayVestingDetails(walletAddress) {
     try {
-        const [foundingTeamDetails, treasuryDetails, privateSaleDetails] = await Promise.all([
-            fetchVestingDetails(0), // Use 0 for FoundingTeam
-            fetchVestingDetails(1), // Use 1 for Treasury
-            fetchVestingDetails(2)  // Use 2 for PrivateSale
-        ]);
-
-        displayVestingDetails('FoundingTeam', foundingTeamDetails);
+        // Treasury details are fetched since its setup doesn't vary by user.
+        const treasuryDetails = await fetchVestingDetails(1); // Use 1 for Treasury
         displayVestingDetails('Treasury', treasuryDetails);
-        displayVestingDetails('PrivateSale', privateSaleDetails);
     } catch (error) {
         console.error("An error occurred while fetching and displaying vesting details:", error);
     }
 }
-
-
-
 
 async function fetchVestingDetails(group) {
     try {
@@ -84,21 +64,16 @@ function displayVestingDetails(groupName, details) {
         return;
     }
 
-    // Update these IDs to reflect the generic structure of your HTML
     document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
     document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
-    document.getElementById('vestingStart').innerText = details.vestingStart;
-    document.getElementById('lastWithdrawal').innerText = details.lastWithdrawal;
+    document.getElementById('vestingStart').innerText = new Date(details.vestingStart * 1000).toDateString();
+    document.getElementById('lastWithdrawal').innerText = new Date(details.lastWithdrawal * 1000).toDateString();
     document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
     document.getElementById('daysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
 }
 
-
 document.addEventListener('DOMContentLoaded', async () => {
-    // Register event listener for Connect Wallet button
     document.getElementById('connectWalletButton').addEventListener('click', initContracts);
-
-    // Assume MetaMask is already connected, so initiate contract initialization immediately
     const accounts = await ethereum.request({ method: 'eth_accounts' });
     if (accounts.length > 0) {
         await initContracts();
