@@ -84,13 +84,15 @@ function displayVestingDetails(groupName, details) {
         return;
     }
 
-    document.getElementById(groupName + 'TotalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
-    document.getElementById(groupName + 'AmountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
-    document.getElementById(groupName + 'VestingStart').innerText = details.vestingStart;
-    document.getElementById(groupName + 'LastWithdrawal').innerText = details.lastWithdrawal;
-    document.getElementById(groupName + 'TokensAvailableToWithdraw').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
-    document.getElementById(groupName + 'DaysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
+    // Update these IDs to reflect the generic structure of your HTML
+    document.getElementById('totalAllocation').innerText = ethers.utils.formatEther(details.totalAllocation) + ' PLRT';
+    document.getElementById('amountWithdrawn').innerText = ethers.utils.formatEther(details.amountWithdrawn) + ' PLRT';
+    document.getElementById('vestingStart').innerText = details.vestingStart;
+    document.getElementById('lastWithdrawal').innerText = details.lastWithdrawal;
+    document.getElementById('tokensAvailableForWithdrawal').innerText = ethers.utils.formatEther(details.tokensAvailableToWithdraw) + ' PLRT';
+    document.getElementById('daysUntilNextWithdrawal').innerText = details.daysUntilNextWithdrawal + ' days';
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Register event listener for Connect Wallet button
