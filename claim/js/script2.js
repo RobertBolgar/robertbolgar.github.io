@@ -76,10 +76,7 @@ const groupMapping = {
 
 async function fetchVestingDetails(walletAddress, group) {
     try {
-        // Map the group name to its numerical ID
-        const groupId = groupMapping[group];
-
-        // Call the contract function with the numerical ID
+        // Call the contract function with only the wallet address argument
         const [
             totalAllocation,
             amountWithdrawn,
@@ -88,7 +85,7 @@ async function fetchVestingDetails(walletAddress, group) {
             lastWithdrawal,
             tokensAvailableToWithdraw,
             daysUntilNextWithdrawal
-        ] = await vestingContract.getVestingDetails(walletAddress, groupId);
+        ] = await vestingContract.getVestingDetails(walletAddress);
 
         return {
             totalAllocation,
@@ -100,7 +97,7 @@ async function fetchVestingDetails(walletAddress, group) {
             daysUntilNextWithdrawal: Math.ceil(daysUntilNextWithdrawal / (60 * 60 * 24))
         };
     } catch (error) {
-        console.error("Error fetching vesting details for group", group, ":", error);
+        console.error("Error fetching vesting details for wallet address", walletAddress, ":", error);
         return null;
     }
 }
