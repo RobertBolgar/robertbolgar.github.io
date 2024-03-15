@@ -2,70 +2,18 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_teamMemberAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_totalAllocation",
-				"type": "uint256"
-			}
-		],
-		"name": "addTeamMember",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "addToWhitelist",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "totalAllocation",
-				"type": "uint256"
-			}
-		],
-		"name": "initializeTreasuryVesting",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_totalAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "makeInitialDeposit",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "contract IERC20",
-				"name": "_tokenAddress",
+				"name": "_plrtToken",
 				"type": "address"
 			},
 			{
-				"internalType": "contract IERC721",
+				"internalType": "contract IERC721Enumerable",
 				"name": "_nftToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "initialOwner",
 				"type": "address"
 			}
 		],
@@ -95,30 +43,6 @@
 		"type": "error"
 	},
 	{
-		"inputs": [],
-		"name": "ReentrancyGuardReentrantCall",
-		"type": "error"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "totalAmount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			}
-		],
-		"name": "InitialDepositMade",
-		"type": "event"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -138,58 +62,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "removeFromWhitelist",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "member",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "allocation",
-				"type": "uint256"
-			}
-		],
-		"name": "TeamMemberAdded",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -197,31 +69,12 @@
 				"internalType": "address",
 				"name": "user",
 				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "allocation",
-				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"internalType": "enum PLRTVesting.VestingGroup",
 				"name": "group",
 				"type": "uint8"
-			}
-		],
-		"name": "VestingAdded",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
 			},
 			{
 				"indexed": false,
@@ -230,19 +83,18 @@
 				"type": "uint256"
 			}
 		],
-		"name": "Withdrawal",
+		"name": "TokensClaimed",
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "withdrawTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "withdrawTreasuryTokens",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_teamMember",
+				"type": "address"
+			}
+		],
+		"name": "addTeamMember",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -250,12 +102,12 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
+				"internalType": "enum PLRTVesting.VestingGroup",
+				"name": "group",
+				"type": "uint8"
 			}
 		],
-		"name": "availableToWithdraw",
+		"name": "calculateTimeToWithdrawAllTokens",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -267,13 +119,49 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "initialDepositMade",
+		"inputs": [
+			{
+				"internalType": "enum PLRTVesting.VestingGroup",
+				"name": "group",
+				"type": "uint8"
+			}
+		],
+		"name": "getVestingDetails",
 		"outputs": [
 			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
+				"internalType": "uint256",
+				"name": "totalAllocation",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountWithdrawn",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "availableToWithdraw",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "vestingStart",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "lastWithdrawal",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokensAvailableToWithdraw",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "daysUntilNextWithdrawal",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -284,7 +172,7 @@
 		"name": "nftToken",
 		"outputs": [
 			{
-				"internalType": "contract IERC721",
+				"internalType": "contract IERC721Enumerable",
 				"name": "",
 				"type": "address"
 			}
@@ -307,7 +195,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "plrToken",
+		"name": "plrtToken",
 		"outputs": [
 			{
 				"internalType": "contract IERC20",
@@ -320,25 +208,178 @@
 	},
 	{
 		"inputs": [],
-		"name": "TOKENS_PER_NFT",
-		"outputs": [
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_initialVestingRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_totalAllocation",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_intervalDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_subsequentVestingRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_numNFTs",
+				"type": "uint256"
+			}
+		],
+		"name": "setPrivateSaleVestingSchedule",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "_teamMembers",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_initialVestingRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_totalAllocation",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_intervalDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_subsequentVestingRate",
+				"type": "uint256"
+			}
+		],
+		"name": "setTeamVestingSchedule",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_treasuryAddress",
+				"type": "address"
+			}
+		],
+		"name": "setTreasuryAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_initialVestingRate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_totalAllocation",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_intervalDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_subsequentVestingRate",
+				"type": "uint256"
+			}
+		],
+		"name": "setTreasuryVestingSchedule",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
 		],
+		"name": "teamMembers",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
-		"name": "VESTING_PERIOD",
+		"name": "treasuryAddress",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "address",
 				"name": "",
-				"type": "uint256"
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -350,10 +391,30 @@
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			},
+			{
+				"internalType": "enum PLRTVesting.VestingGroup",
+				"name": "",
+				"type": "uint8"
 			}
 		],
-		"name": "vestingDetails",
+		"name": "vestingSchedules",
 		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "start",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "initialVestingRate",
+				"type": "uint256"
+			},
 			{
 				"internalType": "uint256",
 				"name": "totalAllocation",
@@ -361,62 +422,22 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "amountWithdrawn",
+				"name": "claimedAmount",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "vestingStart",
+				"name": "intervalDuration",
 				"type": "uint256"
 			},
 			{
-				"internalType": "enum PLRTVesting.VestingGroup",
-				"name": "group",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "whitelistedAddresses",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "WITHDRAWAL_PERIOD",
-		"outputs": [
-			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "subsequentVestingRate",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "WITHDRAWAL_RATE_PER_PERIOD",
-		"outputs": [
+			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "lastWithdrawalTime",
 				"type": "uint256"
 			}
 		],
