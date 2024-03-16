@@ -1,0 +1,11 @@
+/* Basic styling for simplicity */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 15px;
+    margin: 10px 0;
+}
