@@ -5,8 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract PLRTVesting is Ownable, ReentrancyGuard {
+
+contract PLRTVesting is Ownable, ReentrancyGuard, Pausable{
     // Address of the PLRT token contract
     IERC20 public plrtToken;
     IERC721Enumerable public plrMintPassNFT;
@@ -41,6 +43,7 @@ contract PLRTVesting is Ownable, ReentrancyGuard {
     uint256 public constant MAX_TREASURY_ALLOCATION = 10_000_000 * (10 ** 18);
     uint256 public constant MAX_TEAM_ALLOCATION = 15_000_000 * (10 ** 18);
     uint256 public constant MAX_PRIVATE_SALE_ALLOCATION = 5_000_000 * (10 ** 18);
+    uint256 public constant REQUIRED_TOKEN_AMOUNT = 30_000_000 * (10 ** 18); // Adjust based on your token's decimals
 
     // Event emitted when tokens are claimed
     event TokensClaimed(address indexed recipient, uint256 amount);
@@ -48,9 +51,19 @@ contract PLRTVesting is Ownable, ReentrancyGuard {
     // Event emitted when vesting starts
     event VestingStarted(uint256 startTime);
 
+    event TokensClaimed(address indexed claimant, uint256 amountClaimed, uint256 timestamp);
+    event TokensReceived(address from, uint256 amount);
+
+
     // Constructor to initialize contract with PLRT token address
     constructor(address _plrtToken, address _owner) Ownable(_owner) {
         plrtToken = IERC20(_plrtToken);
+    }
+
+    // Function to set the PLR Mint Pass NFT contract address, accessible only by the owner
+    function setPlrMintPassNFT(address _plrMintPassNFT) external onlyOwner {
+        require(_plrMintPassNFT != address(0), "Invalid NFT contract address");
+        plrMintPassNFT = IERC721Enumerable(_plrMintPassNFT);
     }
 
     // Function to set the treasury wallet address, accessible only by the owner
@@ -131,25 +144,19 @@ contract PLRTVesting is Ownable, ReentrancyGuard {
     // Function to receive PLRT tokens and start vesting schedules for all recipients
     function receiveTokensAndStartVesting(uint256 totalTokens) external onlyOwner {
         require(totalTokens > 0, "Total tokens must be greater than zero");
+        require(totalTokens == REQUIRED_TOKEN_AMOUNT, "Incorrect token amount for vesting");
 
         // Transfer PLRT tokens to the contract
         require(plrtToken.transferFrom(msg.sender, address(this), totalTokens), "Failed to receive tokens");
 
-        // Start vesting for treasury
-        treasuryVestingSchedule.start = block.timestamp;
-        emit VestingStarted(treasuryVestingSchedule.start);
+        // Verify the contract's token balance
+        uint256 contractTokenBalance = plrtToken.balanceOf(address(this));
+        require(contractTokenBalance >= REQUIRED_TOKEN_AMOUNT, "Insufficient tokens for vesting");
 
-        // Start vesting for team members
-        for (uint256 i = 0; i < teamMemberKeys.length; i++) {
-            teamVestingSchedules[teamMemberKeys[i]].start = block.timestamp;
-            emit VestingStarted(teamVestingSchedules[teamMemberKeys[i]].start);
-        }
+        // Your existing logic to start vesting...
 
-        // Start vesting for private sale NFT holders
-        for (uint256 j = 0; j < privateSaleNFTKeys.length; j++) {
-            privateSaleNFTVestingSchedules[privateSaleNFTKeys[j]].start = block.timestamp;
-            emit VestingStarted(privateSaleNFTVestingSchedules[privateSaleNFTKeys[j]].start);
-        }
+        // Emit an event to indicate successful receipt and verification of the tokens
+        emit TokensReceived(msg.sender, totalTokens);
     }
 
     // Function to get total allocation, claimed amount, and remaining claimable amount for a team member
@@ -191,4 +198,81 @@ contract PLRTVesting is Ownable, ReentrancyGuard {
 
         return claimableAmount;
     }
+
+    function claimTokens() public {
+    VestingSchedule storage schedule = teamVestingSchedules[msg.sender];
+    require(schedule.totalAllocation > 0, "No vesting schedule found.");
+
+    uint256 claimableAmount = calculateRemainingClaimableAmount(schedule);
+    require(claimableAmount > 0, "No tokens available for claim.");
+
+    schedule.claimedAmount += claimableAmount;
+    require(plrtToken.transfer(msg.sender, claimableAmount), "Token transfer failed.");
+
+    emit TokensClaimed(msg.sender, claimableAmount);
+}
+
+function calculateAllocationForNFTHolder(address holder) internal view returns (uint256) {
+    uint256 nftCount = plrMintPassNFT.balanceOf(holder);
+    
+    // Fixed allocation per NFT
+    uint256 allocationPerNFT = 20_000 * (10 ** 18); // Assuming PLRT has 18 decimal places
+    
+    return nftCount * allocationPerNFT;
+}
+
+function initiateVestingForNFTHolder() public {
+    require(plrMintPassNFT.balanceOf(msg.sender) > 0, "No qualifying NFT found.");
+    VestingSchedule storage schedule = privateSaleNFTVestingSchedules[msg.sender];
+    
+    // If the vesting hasn't started yet, set it up
+    if (schedule.totalAllocation == 0) {
+        uint256 totalAllocation = calculateAllocationForNFTHolder(msg.sender);
+        require(totalAllocation <= MAX_PRIVATE_SALE_ALLOCATION, "Allocation exceeds limit");
+        
+        schedule.start = block.timestamp;
+        schedule.totalAllocation = totalAllocation;
+        schedule.claimedAmount = 0;
+        schedule.lastClaimTime = block.timestamp;
+        
+        privateSaleNFTKeys.push(msg.sender); // Track the NFT holder
+        emit VestingStarted(block.timestamp);
+    }
+}
+
+function withdrawVestedTokens() public {
+    VestingSchedule storage schedule = privateSaleNFTVestingSchedules[msg.sender];
+    require(block.timestamp > schedule.start, "Vesting hasn't started yet");
+    
+    uint256 claimableAmount = calculateClaimableAmount(schedule);
+    
+    require(claimableAmount > 0, "No tokens available for withdrawal");
+    schedule.claimedAmount += claimableAmount;
+    schedule.lastClaimTime = block.timestamp;
+    
+    require(plrtToken.transfer(msg.sender, claimableAmount), "Transfer failed");
+    emit TokensClaimed(msg.sender, claimableAmount, block.timestamp);
+}
+
+function calculateClaimableAmount(VestingSchedule memory schedule) internal view returns (uint256) {
+    if (block.timestamp < schedule.start + cliffDuration) {
+        return 0;
+    }
+    
+    uint256 weeksElapsed = (block.timestamp - schedule.start) / vestingDuration;
+    uint256 totalClaimable = (schedule.totalAllocation * weeksElapsed / 10) - schedule.claimedAmount;
+    
+    return totalClaimable;
+}
+
+function pause() public onlyOwner {
+    _pause();
+}
+
+function unpause() public onlyOwner {
+    _unpause();
+}
+
+
+
 }
