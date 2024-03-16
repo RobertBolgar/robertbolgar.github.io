@@ -22,6 +22,12 @@ export function hideElement(id) {
     }
 }
 
+// Assuming this function calculates the PLRT amount based on the NFT count
+export function calculatePLRTAmount(nftCount) {
+    return nftCount * 20000; // Each NFT is worth 20000 PLRT
+}
+
+
 // Function to display a message with a specific color and auto-hide it
 export function displayMessage(id, message, isSuccess = true) {
     const element = document.getElementById(id);
