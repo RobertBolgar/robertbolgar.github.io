@@ -17,6 +17,19 @@ export async function claimTokens() {
     await contractWithSigner.claimTokens();
 }
 
+export async function sendPLRTToContract(signer, plrtAmount) {
+    try {
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const tx = await contract.receiveTokensAndStartVesting(plrtAmount);
+        await tx.wait();
+        console.log('PLRT tokens sent to contract successfully.');
+        return true;
+    } catch (error) {
+        console.error('Error sending PLRT tokens to contract:', error);
+        return false;
+    }
+}
+
 export const vestingFunctions = {
     team: async (contract, address) => await contract.getTeamMemberVestingDetails(address),
     privateSale: async (contract, address) => await contract.getPrivateSaleNFTVestingDetails(address),
