@@ -9,11 +9,6 @@ export const contractABI = [
 				"internalType": "address",
 				"name": "_plrtToken",
 				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_owner",
-				"type": "address"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -79,25 +74,6 @@ export const contractABI = [
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "TokensClaimed",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
 				"name": "claimant",
 				"type": "address"
 			},
@@ -147,6 +123,31 @@ export const contractABI = [
 			}
 		],
 		"name": "Unpaused",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "beneficiary",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalAllocation",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "startTime",
+				"type": "uint256"
+			}
+		],
+		"name": "VestingInitialized",
 		"type": "event"
 	},
 	{
@@ -216,7 +217,21 @@ export const contractABI = [
 	},
 	{
 		"inputs": [],
+		"name": "claimPrivateSaleNFTTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "claimTokens",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "claimTreasuryTokens",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -316,13 +331,6 @@ export const contractABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "initiateVestingForNFTHolder",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -395,19 +403,6 @@ export const contractABI = [
 	},
 	{
 		"inputs": [],
-		"name": "plrMintPassNFT",
-		"outputs": [
-			{
-				"internalType": "contract IERC721Enumerable",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "plrtToken",
 		"outputs": [
 			{
@@ -473,19 +468,6 @@ export const contractABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "totalTokens",
-				"type": "uint256"
-			}
-		],
-		"name": "receiveTokensAndStartVesting",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "renounceOwnership",
 		"outputs": [],
@@ -496,26 +478,8 @@ export const contractABI = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_plrMintPassNFT",
-				"type": "address"
-			}
-		],
-		"name": "setPlrMintPassNFT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "nftHolder",
 				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalAllocation",
-				"type": "uint256"
 			}
 		],
 		"name": "setPrivateSaleNFTVestingSchedule",
@@ -696,11 +660,11 @@ export const contractABI = [
 	},
 	{
 		"inputs": [],
-		"name": "withdrawVestedTokens",
+		"name": "withdrawUnclaimedTokens",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ];
 
-export const contractAddress = "0xd492358F72F46AD715710D5f89821489638300ec";
+export const contractAddress = "0x91b1eD125F5d4DAEa839e3F706b0D17eEE40C826";
