@@ -37,8 +37,31 @@ export async function sendPLRTToContract(signer, plrtAmount) {
 }
 
 export const vestingFunctions = {
-    team: async (contract, address) => await contract.getTeamMemberVestingDetails(address),
-    privateSale: async (contract, address) => await contract.getPrivateSaleNFTVestingDetails(address),
-    treasury: async (contract) => await contract.getTreasuryVestingDetails(),
-    // Add more functions as necessary
+    getTeamMemberVestingDetails: async (address) => {
+        try {
+            // Call the contract function to get team member vesting details
+            return await contract.getTeamMemberVestingDetails(address);
+        } catch (error) {
+            console.error('Error fetching team member vesting details:', error);
+            throw error; // Propagate the error
+        }
+    },
+    getPrivateSaleNFTVestingDetails: async (address) => {
+        try {
+            // Call the contract function to get private sale NFT vesting details
+            return await contract.getPrivateSaleNFTVestingDetails(address);
+        } catch (error) {
+            console.error('Error fetching private sale NFT vesting details:', error);
+            throw error; // Propagate the error
+        }
+    },
+    getTreasuryVestingDetails: async () => {
+        try {
+            // Call the contract function to get treasury vesting details
+            return await contract.getTreasuryVestingDetails();
+        } catch (error) {
+            console.error('Error fetching treasury vesting details:', error);
+            throw error; // Propagate the error
+        }
+    }
 };
