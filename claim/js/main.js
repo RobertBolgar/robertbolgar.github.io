@@ -2,6 +2,8 @@ import { connectWallet } from './ethereumConnection.js';
 import { initContract } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
+import { sendPLRTToContract } from './contractInteractions.js';
+import { calculatePLRTAmount } from './uiHelpers.js';
 
 async function main() {
     const signer = await connectWallet();
@@ -13,9 +15,6 @@ async function main() {
 
 document.getElementById('connectWalletButton').addEventListener('click', main);
 
-import { connectWallet } from './ethereumConnection.js';
-import { sendPLRTToContract } from './contractInteractions.js';
-import { calculatePLRTAmount } from './uiHelpers.js';
 
 // Example function to handle user interaction
 async function handleWithdrawal() {
