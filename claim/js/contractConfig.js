@@ -2,7 +2,7 @@
 // Replace `yourContractABI` with the actual ABI array of your PLRTVesting contract.
 // Replace `yourContractAddress` with the deployed address of your PLRTVesting contract.
 
-export const contractABI = [[
+export const contractABI = [
 	{
 		"inputs": [
 			{
