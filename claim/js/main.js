@@ -2,6 +2,7 @@ import { connectWallet } from './ethereumConnection.js';
 import { initContract } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
+import { getNFTDetails } from './nftInteractions.js'; // Import the NFT-related function
 import { sendPLRTToContract } from './contractInteractions.js';
 import { calculatePLRTAmount } from './uiHelpers.js';
 
@@ -26,6 +27,10 @@ async function main() {
         // Show user details and vesting details sections
         document.getElementById('userDetails').style.display = 'block';
         document.getElementById('vestingDetails').style.display = 'block';
+
+        // Get NFT details
+        const nftDetails = await getNFTDetails(userAddress); // Call the NFT-related function
+        // Process and display NFT details as needed
 
         // Show claim tokens button
         document.getElementById('claimTokensButton').style.display = 'block';
