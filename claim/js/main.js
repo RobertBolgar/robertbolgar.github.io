@@ -26,6 +26,9 @@ async function main() {
         // Show user details and vesting details sections
         document.getElementById('userDetails').style.display = 'block';
         document.getElementById('vestingDetails').style.display = 'block';
+
+        // Show claim tokens button
+        document.getElementById('claimTokensButton').style.display = 'block';
     } catch (error) {
         // Handle errors
         console.error('Error:', error);
@@ -36,6 +39,23 @@ async function main() {
 
 // Add event listener to connect wallet button
 document.getElementById('connectWalletButton').addEventListener('click', main);
+
+// Event listener for claiming tokens
+document.getElementById('claimTokensButton').addEventListener('click', async () => {
+    try {
+        // Connect wallet
+        const signer = await connectWallet();
+        
+        // Claim tokens
+        await claimTokens(signer);
+        
+        // Handle success
+        console.log('Tokens claimed successfully.');
+    } catch (error) {
+        // Handle error
+        console.error('Error claiming tokens:', error);
+    }
+});
 
 // Example function to handle user withdrawal
 async function handleWithdrawal() {
@@ -53,6 +73,4 @@ async function handleWithdrawal() {
         // Handle connection failure
     }
 }
-
-// Add event listeners or UI triggers to call handleWithdrawal
 
