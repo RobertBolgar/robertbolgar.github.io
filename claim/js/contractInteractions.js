@@ -1,5 +1,11 @@
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
-import { contractABI, contractAddress } from './contractConfig.js'; // Assume these are defined in your config
+import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js'; // Import NFT contract details
+
+// Create a new ethers contract instance for the main contract
+const contract = new ethers.Contract(contractAddress, contractABI);
+
+// Create a new ethers contract instance for the NFT contract
+const nftContract = new ethers.Contract(nftContractAddress, nftContractABI);
 
 export async function initContract(signer) {
     return new ethers.Contract(contractAddress, contractABI, signer);
