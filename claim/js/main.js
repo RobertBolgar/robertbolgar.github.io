@@ -6,17 +6,38 @@ import { sendPLRTToContract } from './contractInteractions.js';
 import { calculatePLRTAmount } from './uiHelpers.js';
 
 async function main() {
-    const signer = await connectWallet();
-    const contract = await initContract(signer);
-    const userAddress = await signer.getAddress();
-    const roleDetails = await determineRoleAndFetchDetails(contract, userAddress);
-    displayVestingDetailsForRole(roleDetails);
+    try {
+        // Connect wallet
+        const signer = await connectWallet();
+        
+        // Initialize contract
+        const contract = await initContract(signer);
+        
+        // Get user's wallet address
+        const userAddress = await signer.getAddress();
+        document.getElementById('userAddress').textContent = `Your Connected Wallet Address: ${userAddress}`;
+        
+        // Determine user's role and fetch vesting details
+        const roleDetails = await determineRoleAndFetchDetails(contract, userAddress);
+        
+        // Display vesting details
+        displayVestingDetailsForRole(roleDetails);
+        
+        // Show user details and vesting details sections
+        document.getElementById('userDetails').style.display = 'block';
+        document.getElementById('vestingDetails').style.display = 'block';
+    } catch (error) {
+        // Handle errors
+        console.error('Error:', error);
+        document.getElementById('errorDisplay').textContent = 'Error: ' + error.message;
+        document.getElementById('errorDisplay').style.display = 'block';
+    }
 }
 
+// Add event listener to connect wallet button
 document.getElementById('connectWalletButton').addEventListener('click', main);
 
-
-// Example function to handle user interaction
+// Example function to handle user withdrawal
 async function handleWithdrawal() {
     const signer = await connectWallet();
     if (signer) {
