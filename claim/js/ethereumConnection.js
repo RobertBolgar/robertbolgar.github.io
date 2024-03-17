@@ -1,4 +1,4 @@
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js';
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 
 export async function connectWallet() {
     if (window.ethereum) {
