@@ -22,29 +22,34 @@ export async function fetchUserNFTs() {
     }
 }
 
+// Assuming you have already established `nftContract` with the ethers.Contract instance in nftInteractions.js
 export async function getNFTDetails(userAddress) {
     try {
-        const nftCount = await nftContract.balanceOf(userAddress);
-        const nftDetails = [];
+        const nftBalance = await nftContract.balanceOf(userAddress);
+        const nftDetailsList = [];
 
-        for (let i = 0; i < nftCount; i++) {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i);
+        for (let i = 0; i < nftBalance; i++) {
+            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i); // Assuming ERC-721 Enumerable extension
             const tokenURI = await nftContract.tokenURI(tokenId);
-            // Fetch metadata from the tokenURI if it's a URL
-            const metadata = await fetch(tokenURI).then((response) => response.json());
-            nftDetails.push({
+            // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
+            const metadataResponse = await fetch(tokenURI);
+            const metadata = await metadataResponse.json();
+
+            nftDetailsList.push({
                 tokenId: tokenId.toString(),
                 tokenURI,
-                metadata, // This contains the NFT metadata such as name, description, image, etc.
+                metadata // Contains metadata like name, image, etc.
             });
         }
 
-        return nftDetails;
+        console.log(nftDetailsList);
+        return nftDetailsList;
     } catch (error) {
         console.error('Error fetching NFT details:', error);
-        throw error; // Propagate the error to be handled by the caller
+        throw error; // Allows the calling function to handle the error
     }
 }
+
 
 // Add more functions for interacting with the NFT contract as needed
 // For example, functions to transfer NFTs, fetch NFT metadata, etc.
