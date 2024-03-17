@@ -1,31 +1,26 @@
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
-import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js'; // Import NFT contract details
+import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js';
 
-// Create a new ethers contract instance for the main contract
-const contract = new ethers.Contract(contractAddress, contractABI);
+let contract;
+let nftContract;
 
-// Create a new ethers contract instance for the NFT contract
-const nftContract = new ethers.Contract(nftContractAddress, nftContractABI);
-
-export async function initContract(signer) {
-    return new ethers.Contract(contractAddress, contractABI, signer);
+export async function initContracts() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    contract = new ethers.Contract(contractAddress, contractABI, signer);
+    nftContract = new ethers.Contract(nftContractAddress, nftContractABI, signer);
 }
 
 export async function initiateVestingForNFTHolder() {
-    const signer = await connectWallet();
-    const contractWithSigner = contract.connect(signer);
-    await contractWithSigner.initiateVestingForNFTHolder();
+    await contract.initiateVestingForNFTHolder();
 }
 
 export async function claimTokens() {
-    const signer = await connectWallet();
-    const contractWithSigner = contract.connect(signer);
-    await contractWithSigner.claimTokens();
+    await contract.claimTokens();
 }
 
-export async function sendPLRTToContract(signer, plrtAmount) {
+export async function sendPLRTToContract(plrtAmount) {
     try {
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
         const tx = await contract.receiveTokensAndStartVesting(plrtAmount);
         await tx.wait();
         console.log('PLRT tokens sent to contract successfully.');
@@ -39,29 +34,29 @@ export async function sendPLRTToContract(signer, plrtAmount) {
 export const vestingFunctions = {
     getTeamMemberVestingDetails: async (address) => {
         try {
-            // Call the contract function to get team member vesting details
             return await contract.getTeamMemberVestingDetails(address);
         } catch (error) {
             console.error('Error fetching team member vesting details:', error);
-            throw error; // Propagate the error
+            throw error;
         }
     },
     getPrivateSaleNFTVestingDetails: async (address) => {
         try {
-            // Call the contract function to get private sale NFT vesting details
             return await contract.getPrivateSaleNFTVestingDetails(address);
         } catch (error) {
             console.error('Error fetching private sale NFT vesting details:', error);
-            throw error; // Propagate the error
+            throw error;
         }
     },
     getTreasuryVestingDetails: async () => {
         try {
-            // Call the contract function to get treasury vesting details
             return await contract.getTreasuryVestingDetails();
         } catch (error) {
             console.error('Error fetching treasury vesting details:', error);
-            throw error; // Propagate the error
+            throw error;
         }
     }
 };
+
+// Initialize contracts upon application start or user wallet connection.
+initContracts().catch(console.error);
