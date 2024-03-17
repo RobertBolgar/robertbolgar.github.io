@@ -19,17 +19,18 @@ export async function fetchUserNFTs() {
         return userNFTs;
     } catch (error) {
         console.error('Error fetching user NFTs:', error);
+        throw error; // Rethrow the error to propagate it to the caller if needed
     }
 }
 
-// Assuming you have already established `nftContract` with the ethers.Contract instance in nftInteractions.js
+// Get NFT details for a given user address
 export async function getNFTDetails(userAddress) {
     try {
         const nftBalance = await nftContract.balanceOf(userAddress);
         const nftDetailsList = [];
 
         for (let i = 0; i < nftBalance; i++) {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i); // Assuming ERC-721 Enumerable extension
+            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i).toNumber(); // Convert to number
             const tokenURI = await nftContract.tokenURI(tokenId);
             // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
             const metadataResponse = await fetch(tokenURI);
@@ -49,7 +50,6 @@ export async function getNFTDetails(userAddress) {
         throw error; // Allows the calling function to handle the error
     }
 }
-
 
 // Add more functions for interacting with the NFT contract as needed
 // For example, functions to transfer NFTs, fetch NFT metadata, etc.
