@@ -1,4 +1,4 @@
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js';
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js'; // Import NFT contract details
 
 // Create a new ethers contract instance for the main contract
