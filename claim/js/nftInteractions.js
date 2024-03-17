@@ -22,5 +22,12 @@ export async function fetchUserNFTs() {
     }
 }
 
+// Example implementation within nftInteractions.js
+export async function getNFTDetails(userAddress) {
+    // Implementation logic here
+    return {}; // Return NFT details based on the provided address
+}
+
+
 // Add more functions for interacting with the NFT contract as needed
 // For example, functions to transfer NFTs, fetch NFT metadata, etc.
