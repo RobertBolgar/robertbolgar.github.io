@@ -1,5 +1,5 @@
 import { connectWallet } from './ethereumConnection.js';
-import { initContract } from './contractInteractions.js';
+import { initContracts } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
 import { getNFTDetails } from './nftInteractions.js'; // Import the NFT-related function
@@ -12,7 +12,7 @@ async function main() {
         const signer = await connectWallet();
         
         // Initialize contract
-        const contract = await initContract(signer);
+        const contract = await initContracts(signer);
         
         // Get user's wallet address
         const userAddress = await signer.getAddress();
