@@ -9,3 +9,11 @@ button {
     padding: 10px 15px;
     margin: 10px 0;
 }
+
+#content {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
