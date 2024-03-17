@@ -58,5 +58,17 @@ export const vestingFunctions = {
     }
 };
 
+export const treasuryFunctions = {
+    getTreasuryWallet: async () => {
+        try {
+            return await contract.treasuryWallet();
+        } catch (error) {
+            console.error('Error fetching treasury wallet address:', error);
+            throw error;
+        }
+    },
+    // Add more functions to interact with the treasury contract as needed
+};
+
 // Initialize contracts upon application start or user wallet connection.
 initContracts().catch(console.error);
