@@ -1,6 +1,6 @@
 // nftInteractions.js
 
-import { ethers } from 'ethers';
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.2/dist/ethers.umd.min.js';
 import { nftContractAddress, nftContractABI } from './nftContractConfig.js'; // Import NFT contract details
 
 // Connect to Ethereum provider (e.g., MetaMask)
