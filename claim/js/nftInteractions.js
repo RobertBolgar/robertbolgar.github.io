@@ -22,12 +22,29 @@ export async function fetchUserNFTs() {
     }
 }
 
-// Example implementation within nftInteractions.js
 export async function getNFTDetails(userAddress) {
-    // Implementation logic here
-    return {}; // Return NFT details based on the provided address
-}
+    try {
+        const nftCount = await nftContract.balanceOf(userAddress);
+        const nftDetails = [];
 
+        for (let i = 0; i < nftCount; i++) {
+            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i);
+            const tokenURI = await nftContract.tokenURI(tokenId);
+            // Fetch metadata from the tokenURI if it's a URL
+            const metadata = await fetch(tokenURI).then((response) => response.json());
+            nftDetails.push({
+                tokenId: tokenId.toString(),
+                tokenURI,
+                metadata, // This contains the NFT metadata such as name, description, image, etc.
+            });
+        }
+
+        return nftDetails;
+    } catch (error) {
+        console.error('Error fetching NFT details:', error);
+        throw error; // Propagate the error to be handled by the caller
+    }
+}
 
 // Add more functions for interacting with the NFT contract as needed
 // For example, functions to transfer NFTs, fetch NFT metadata, etc.
