@@ -17,20 +17,21 @@ export function displayVestingDetailsForRole(roleDetails) {
     showDetails(details);
 
     // Additional logic to customize the display based on the role
-    switch (role.toLowerCase()) {
-    case 'teammember': 
+    switch(role.toLowerCase()) {
+    case 'team member':
         // Customize display for team members
         break;
-    case 'privatesalenftholder': 
+    case 'private sale nft holder':
         // Customize display for private sale NFT holders
         break;
-    case 'treasury': 
+    case 'treasury':
         // Customize display for treasury
         break;
     default:
         console.log("Role does not have a specific details section to display.");
         break;
 }
+
 }
 
 
