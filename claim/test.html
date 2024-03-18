@@ -9,16 +9,31 @@
     <h1>User Role</h1>
     <div id="userRole">Role: Loading...</div>
 
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.min.js"></script>
     <script>
-        // Function to update the displayed role based on the connected wallet
-        function updateUserRole(role) {
+        async function updateUserRole() {
             const userRoleElement = document.getElementById('userRole');
-            userRoleElement.textContent = `Role: ${role}`;
+            try {
+                // Connect to provider
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                // Get signer
+                const signer = provider.getSigner();
+                // Get connected wallet address
+                const address = await signer.getAddress();
+                // Call your contract function to determine the role
+                const contractAddress = ""; // Enter your contract address
+                const contractABI = []; // Enter your contract ABI
+                const contract = new ethers.Contract(contractAddress, contractABI, signer);
+                const role = await contract.determineRole(address); // Example function to determine role
+                userRoleElement.textContent = `Role: ${role}`;
+            } catch (error) {
+                console.error('Error determining user role:', error);
+                userRoleElement.textContent = 'Error determining user role';
+            }
         }
 
-        // Example: Assume 'userRole' variable holds the role (e.g., "Team Member")
-        const userRole = "Team Member";
-        updateUserRole(userRole); // Update the displayed role
+        // Call the function to update the displayed role
+        updateUserRole();
     </script>
 </body>
 </html>
