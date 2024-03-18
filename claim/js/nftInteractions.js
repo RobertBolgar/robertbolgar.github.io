@@ -537,32 +537,41 @@ async function countNFTs(userAddress) {
 // Get NFT details for a given user address
 export async function getNFTDetails(userAddress) {
   try {
-    const nftBalance = await nftContract.balanceOf(userAddress);
     const nftDetailsList = [];
 
-    for (let i = 0; i < nftBalance; i++) {
-      // Assuming you have a function like tokenOfOwnerByIndex (depends on your contract)
-      const tokenId = (await nftContract.tokenOfOwnerByIndex(userAddress, i)).toString(); // Convert BigNumber to string
-      const tokenURI = await nftContract.tokenURI(tokenId);
+    // Get the total number of NFTs owned by the user
+    const nftBalance = await nftContract.balanceOf(userAddress);
 
-      // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
-      const metadataResponse = await fetch(tokenURI);
-      const metadata = await metadataResponse.json();
+    // Iterate through each NFT owned by the user
+    for (let i = 0; i < nftBalance.toNumber(); i++) {
+      // Assuming you have a function to get the token ID by index (specific to your contract)
+      const tokenId = await getNFTByOwnerIndex(userAddress, i); // Replace with your function
 
-      nftDetailsList.push({
-        tokenId,
-        tokenURI,
-        metadata // Contains metadata like name, image, etc.
-      });
+      // If a valid token ID is retrieved, proceed
+      if (tokenId) {
+        const tokenURI = await nftContract.tokenURI(tokenId);
+
+        // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
+        const metadataResponse = await fetch(tokenURI);
+        const metadata = await metadataResponse.json();
+
+        nftDetailsList.push({
+          tokenId,
+          tokenURI,
+          metadata,
+        });
+      } else {
+        console.warn(`Failed to retrieve token ID for index ${i}.`);
+      }
     }
 
-    console.log(nftDetailsList);
     return nftDetailsList;
   } catch (error) {
     console.error('Error fetching NFT details:', error);
     throw error; // Allows the calling function to handle the error
   }
 }
+
 
 // Example of fetching user address and counting NFTs
 (async () => {
