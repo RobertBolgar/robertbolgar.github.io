@@ -31,9 +31,8 @@ export function displayVestingDetailsForRole(roleDetails) {
     displayPrivateSaleNFTDetails(privateSaleNFTDetails);
     break;
   case 'Treasury':
-    const treasuryDetails = await treasuryFunctions.getTreasuryWallet();  // Assuming treasury details require a call
-    // Call a function to display treasury details (e.g., total allocation, claimed amount)
-    displayTreasuryDetails(treasuryDetails);
+    const treasuryDetails = await treasuryFunctions.getTreasuryWallet(); // Assuming treasury details require a call
+    displayTreasuryDetails(treasuryDetails); // Call the function to display treasury details
     break;
   default:
     console.log("Role does not have a specific details section to display.");
