@@ -1,12 +1,24 @@
-// Import necessary modules
-import { vestingFunctions } from './contractInteractions.js';
-
-// Determine user role and fetch details function
 export async function determineRoleAndFetchDetails(userAddress) {
     try {
-        const teamDetails = await vestingFunctions.getTeamMemberVestingDetails(userAddress).catch(() => null);
-        const privateSaleNFTDetails = await vestingFunctions.getPrivateSaleNFTVestingDetails(userAddress).catch(() => null);
-        const treasuryDetails = await vestingFunctions.getTreasuryVestingDetails().catch(() => null);
+        console.log("Fetching role details for address:", userAddress);
+
+        const teamDetails = await vestingFunctions.getTeamMemberVestingDetails(userAddress).catch((error) => {
+            console.error("Error fetching team member details:", error);
+            return null;
+        });
+        console.log("Team Member Details:", teamDetails);
+
+        const privateSaleNFTDetails = await vestingFunctions.getPrivateSaleNFTVestingDetails(userAddress).catch((error) => {
+            console.error("Error fetching private sale NFT details:", error);
+            return null;
+        });
+        console.log("Private Sale NFT Details:", privateSaleNFTDetails);
+
+        const treasuryDetails = await vestingFunctions.getTreasuryVestingDetails().catch((error) => {
+            console.error("Error fetching treasury details:", error);
+            return null;
+        });
+        console.log("Treasury Details:", treasuryDetails);
 
         if (teamDetails) return { role: "Team Member", details: teamDetails };
         if (privateSaleNFTDetails) return { role: "Private Sale NFT Holder", details: privateSaleNFTDetails };
@@ -18,4 +30,3 @@ export async function determineRoleAndFetchDetails(userAddress) {
         throw error;
     }
 }
-
