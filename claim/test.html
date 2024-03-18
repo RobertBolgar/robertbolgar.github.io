@@ -18,37 +18,6 @@
             <p id="userAddress">Your Connected Wallet Address: </p>
         </div>
 
-        <!-- Vesting Details Section -->
-        <div id="vestingDetails" style="display: none;">
-            <h2>Vesting Details</h2>
-            <!-- Updated to show total PLRT claimable -->
-            <p id="totalPLRTAclaimable">Total PLRT Claimable: </p>
-            <p id="claimedAmount">Claimed Amount: </p>
-            <p id="claimableAmount">Claimable Amount: </p>
-            <button id="claimTokensButton" style="display: none;">Claim Tokens</button>
-        </div>
-
-        <!-- Team Member Details Section -->
-        <div id="teamMemberDetails" style="display: none;">
-            <h2>Team Member Details</h2>
-            <!-- Team member specific details here -->
-        </div>
-
-        <!-- Private Sale NFT Holder Details Section -->
-        <div id="privateSaleDetails" style="display: none;">
-            <h2>Private Sale NFT Holder Details</h2>
-            <!-- Private sale NFT holder specific details here -->
-        </div>
-
-        <!-- Treasury Details Section -->
-        <div id="treasuryDetails" style="display: none;">
-            <h2>Treasury Details</h2>
-            <p id="treasuryWallet">Treasury Wallet Address: </p>
-            <p id="treasuryTotalAllocation">Total Allocation: </p>
-            <p id="treasuryClaimedAmount">Claimed Amount: </p>
-            <p id="treasuryLastClaimTime">Last Claim Time: </p>
-        </div>
-
         <!-- Error Display Section -->
         <div id="errorDisplay" style="color: red; display: none;"></div>
     </div>
@@ -65,11 +34,14 @@
                 const signer = provider.getSigner();
                 const address = await signer.getAddress();
 
-                // Call your contract function to determine the role
-                const contractAddress = ""; // Enter your contract address
-                const contractABI = []; // Enter your contract ABI
+                // Get contract address and ABI from contractConfig
+                const { contractAddress, contractABI } = contractConfig;
+
+                // Instantiate the contract
                 const contract = new ethers.Contract(contractAddress, contractABI, signer);
-                const role = await contract.determineRole(address); // Example function to determine role
+
+                // Call the contract function to determine the role
+                const role = await contract.determineRole(address);
 
                 // Update the user role in the UI
                 userRoleSpan.textContent = role;
