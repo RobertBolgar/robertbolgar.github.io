@@ -1,13 +1,18 @@
+
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 
 // Connect to Ethereum provider (e.g., MetaMask)
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
+// Prompt user to connect their wallet
+await provider.send("eth_requestAccounts", []);
+
+const signer = provider.getSigner();
+
 // Replace "NFT_CONTRACT_ADDRESS" with the actual contract address
 const NFT_CONTRACT_ADDRESS = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9"; 
 
-// ** Here's the ABI for the PLRTMintPass20K contract placed within square brackets **
-
+// ABI for the PLRTMintPass20K contract
 const abi = [
   {
     "anonymous": false,
@@ -515,53 +520,54 @@ const abi = [
 ];
 
 
-
-// Instantiate NFT contract
-const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi);
-
+// Instantiate NFT contract with signer for write transactions
+const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi, signer);
 
 async function countNFTs(userAddress) {
   try {
     // Call the balanceOf function on the NFT contract
-    const ownedTokenIds = await nftContract.methods.balanceOf(userAddress).call();
-    return ownedTokenIds;
+    const ownedTokenIds = await nftContract.balanceOf(userAddress);
+    return ownedTokenIds.toString(); // Convert BigNumber to string
   } catch (error) {
     console.error("Error fetching NFT count:", error);
-    return 0; // Handle errors gracefully
+    return '0'; // Handle errors gracefully
   }
 }
 
 // Get NFT details for a given user address
 export async function getNFTDetails(userAddress) {
-    try {
-        const nftBalance = await nftContract.balanceOf(userAddress);
-        const nftDetailsList = [];
+  try {
+    const nftBalance = await nftContract.balanceOf(userAddress);
+    const nftDetailsList = [];
 
-        for (let i = 0; i < nftBalance; i++) {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i).toNumber(); // Convert to number
-            const tokenURI = await nftContract.tokenURI(tokenId);
-            // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
-            const metadataResponse = await fetch(tokenURI);
-            const metadata = await metadataResponse.json();
+    for (let i = 0; i < nftBalance; i++) {
+      // Assuming you have a function like tokenOfOwnerByIndex (depends on your contract)
+      const tokenId = (await nftContract.tokenOfOwnerByIndex(userAddress, i)).toString(); // Convert BigNumber to string
+      const tokenURI = await nftContract.tokenURI(tokenId);
 
-            nftDetailsList.push({
-                tokenId: tokenId.toString(),
-                tokenURI,
-                metadata // Contains metadata like name, image, etc.
-            });
-        }
+      // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
+      const metadataResponse = await fetch(tokenURI);
+      const metadata = await metadataResponse.json();
 
-        console.log(nftDetailsList);
-        return nftDetailsList;
-    } catch (error) {
-        console.error('Error fetching NFT details:', error);
-        throw error; // Allows the calling function to handle the error
+      nftDetailsList.push({
+        tokenId,
+        tokenURI,
+        metadata // Contains metadata like name, image, etc.
+      });
     }
+
+    console.log(nftDetailsList);
+    return nftDetailsList;
+  } catch (error) {
+    console.error('Error fetching NFT details:', error);
+    throw error; // Allows the calling function to handle the error
+  }
 }
 
-// Call the function when the user connects their wallet
-const userAddress = web3.eth.accounts.currentProvider.selectedAddress;
-countNFTs(userAddress).then(nftCount => {
+// Example of fetching user address and counting NFTs
+(async () => {
+  const userAddress = await signer.getAddress();
+  const nftCount = await countNFTs(userAddress);
   console.log("User has", nftCount, "NFTs");
-  // Update your UI or display the count
-});
+  // Update your UI or display the count here
+})();
