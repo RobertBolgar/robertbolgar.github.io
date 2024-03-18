@@ -1,13 +1,13 @@
 import { connectWallet } from './ethereumConnection.js';
-import { initContracts, claimTokens, treasuryFunctions, vestingFunctions } from './contractInteractions.js'; // Remove 'contract' from the import
+import { initContracts, claimTokens, treasuryFunctions, vestingFunctions } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
-import { countNFTs } from './nftInteractions.js'; // Assuming these imports 
+import { countNFTs } from './nftInteractions.js';
 
 async function main() {
   try {
     const signer = await connectWallet();
-    await initContracts(); // Make sure contracts are initialized first
+    await initContracts();
     const userAddress = await signer.getAddress();
     document.getElementById('userAddress').textContent = `Your Connected Wallet Address: ${userAddress}`;
 
@@ -21,9 +21,12 @@ async function main() {
       switch(roleDetails.role) {
         case "Treasury":
           const treasuryDetails = await treasuryFunctions.getTreasuryWallet();
-          // Display treasury details
+          document.getElementById('treasuryWallet').textContent = `Treasury Wallet Address: ${treasuryDetails.walletAddress}`;
+          document.getElementById('treasuryTotalAllocation').textContent = `Total Allocation: ${treasuryDetails.totalAllocation}`;
+          document.getElementById('treasuryClaimedAmount').textContent = `Claimed Amount: ${treasuryDetails.claimedAmount}`;
+          document.getElementById('treasuryLastClaimTime').textContent = `Last Claim Time: ${treasuryDetails.lastClaimTime}`;
+          document.getElementById('treasuryDetails').style.display = 'block';
           break;
-        // Add cases for other roles if needed
         default:
           console.log("Role does not have a specific details section to display.");
           break;
