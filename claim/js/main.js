@@ -4,7 +4,7 @@ import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
 import { countNFTs } from './nftInteractions.js'; // Assuming these imports 
 
-async function main() {
+async function main() { 
   try {
     // Connect wallet
     const signer = await connectWallet();
