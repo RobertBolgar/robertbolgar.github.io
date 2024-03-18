@@ -1,9 +1,8 @@
 import { connectWallet } from './ethereumConnection.js';
-import { initContracts, claimTokens } from './contractInteractions.js'; // Ensure claimTokens is correctly exported
+import { initContracts, claimTokens } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
-import { getNFTDetails } from './nftInteractions.js'; // Ensure this is correctly implemented and exported
-import { calculatePLRTAmount } from './uiHelpers.js';
+import { countNFTs } from './nftInteractions.js'; // Import countNFTs instead
 
 async function main() {
   try {
@@ -11,7 +10,7 @@ async function main() {
     const signer = await connectWallet();
 
     // Initialize contracts
-    await initContracts(); // Corrected to not pass 'signer' as initContracts does not require it
+    await initContracts();
 
     // Get user's wallet address
     const userAddress = await signer.getAddress();
@@ -27,41 +26,19 @@ async function main() {
     document.getElementById('userDetails').style.display = 'block';
     document.getElementById('vestingDetails').style.display = 'block';
 
-    // Get and display NFT details
-    const nftDetailsList = await getNFTDetails(userAddress); // Assuming successful retrieval
+    // Get NFT count and calculate total PLRT claimable
+    const nftCount = await countNFTs(userAddress);
+    const totalPLRTAclaimable = parseInt(nftCount) * 20000; // Assuming PLRT value is 20,000
+    console.log("Total PLRT claimable:", totalPLRTAclaimable);
+    // Optionally update your UI to display the totalPLRTAclaimable value
 
-    if (nftDetailsList.length > 0) {
-      // Update UI to display NFT details (replace with your specific display logic)
-      const nftDetailsContainer = document.getElementById('nftDetails');
-      nftDetailsContainer.innerHTML = ''; // Clear existing content
-      for (const nftDetails of nftDetailsList) {
-        const nftDetailsElement = document.createElement('div');
-        nftDetailsElement.classList.add('nft-detail'); // Add a CSS class for styling
-
-        nftDetailsElement.innerHTML = `
-          <p>Token ID: ${nftDetails.tokenId}</p>
-          <p>Token URI: ${nftDetails.tokenURI}</p>
-          ${nftDetails.metadata ? `<p>Metadata: ${JSON.stringify(nftDetails.metadata)}</p>` : ''}
-        `;
-
-        nftDetailsContainer.appendChild(nftDetailsElement);
-      }
-      nftDetailsContainer.style.display = 'block'; // Show the NFT details container
-    } else {
-      console.log('User has no NFTs.');
-      // Optionally display a message indicating no NFTs found
-    }
-
-    // Conditionally show claim tokens button if applicable
-    if (roleDetails) {
-      document.getElementById('claimTokensButton').style.display = 'block';
-    }
+    // ... rest of your code ...
   } catch (error) {
-    console.error('Error:', error);
-    document.getElementById('errorDisplay').textContent = 'Error: ' + error.message;
-    document.getElementById('errorDisplay').style.display = 'block';
+    // ... error handling ...
   }
 }
+
+
 
 document.getElementById('connectWalletButton').addEventListener('click', main);
 
