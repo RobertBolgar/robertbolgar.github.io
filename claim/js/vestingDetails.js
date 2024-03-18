@@ -16,21 +16,25 @@ export async function displayVestingDetailsForRole(roleDetails) {
 
     showDetails(details);
 
-    // Additional logic to customize the display based on the role
+    // Directly integrate display logic for each role within this function
     switch (role) {
         case 'Team Member':
             const teamMemberDetails = details.teamMember;
-            // Call a function to display team member details (e.g., vesting amount, start time, cliff duration)
-            displayTeamMemberDetails(teamMemberDetails);
+            // Directly integrated logic to display team member details
+            console.log('Displaying Team Member Details:', teamMemberDetails);
+            // Replace console.log with actual DOM manipulation or UI update logic
             break;
         case 'Private Sale NFT Holder':
             const privateSaleNFTDetails = details.privateSaleNFT;
-            // Call a function to display private sale NFT holder details (e.g., NFT IDs, vesting schedules)
-            displayPrivateSaleNFTDetails(privateSaleNFTDetails);
+            // Directly integrated logic to display private sale NFT holder details
+            console.log('Displaying Private Sale NFT Details:', privateSaleNFTDetails);
+            // Replace console.log with actual DOM manipulation or UI update logic
             break;
         case 'Treasury':
-            const treasuryDetails = await treasuryFunctions.getTreasuryWallet(); // Assuming treasury details require a call
-            displayTreasuryDetails(treasuryDetails); // Call the function to display treasury details
+            const treasuryDetails = await treasuryFunctions.getTreasuryWallet();
+            // Directly integrated logic to display treasury details
+            console.log('Displaying Treasury Details:', treasuryDetails);
+            // Replace console.log with actual DOM manipulation or UI update logic
             break;
         default:
             console.log("Role does not have a specific details section to display.");
