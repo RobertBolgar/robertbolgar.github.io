@@ -13,20 +13,17 @@ export function displayVestingDetailsForRole(roleDetails) {
         return;
     }
 
-    // Update user role element with the user's role
-    document.getElementById('userRole').textContent = role;
-
     showDetails(details);
 
-    // Additional logic to customize the display based on the role
+    // Customize display based on the role
     switch (role) {
-        case 'teamMember':
+        case 'Team Member':
             // Customize display for team members
             break;
-        case 'privateSaleNFTHolder':
+        case 'Private Sale NFT Holder':
             // Customize display for private sale NFT holders
             break;
-        case 'treasury':
+        case 'Treasury':
             // Customize display for treasury
             break;
         default:
@@ -34,4 +31,5 @@ export function displayVestingDetailsForRole(roleDetails) {
             break;
     }
 }
+
 
