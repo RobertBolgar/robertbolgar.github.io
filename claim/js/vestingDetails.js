@@ -17,14 +17,14 @@ export function displayVestingDetailsForRole(roleDetails) {
     showDetails(details);
 
     // Additional logic to customize the display based on the role
-    switch(role.toLowerCase()) {
-    case 'team member':
+    switch(role) {
+    case 'Team Member':
         // Customize display for team members
         break;
-    case 'private sale nft holder':
+    case 'Private Sale NFT Holder':
         // Customize display for private sale NFT holders
         break;
-    case 'treasury':
+    case 'Treasury':
         // Customize display for treasury
         break;
     default:
