@@ -1,5 +1,5 @@
 import { connectWallet } from './ethereumConnection.js';
-import { initContracts, claimTokens, treasuryFunctions, vestingFunctions, contract } from './contractInteractions.js'; // Import the contract variable here
+import { initContracts, claimTokens, treasuryFunctions, vestingFunctions } from './contractInteractions.js'; // Remove 'contract' from the import
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
 import { countNFTs } from './nftInteractions.js'; // Assuming these imports 
@@ -20,7 +20,8 @@ async function main() {
 
       switch(roleDetails.role) {
         case "Treasury":
-          await fetchAndDisplayTreasuryDetails();
+          const treasuryDetails = await treasuryFunctions.getTreasuryWallet();
+          // Display treasury details
           break;
         // Add cases for other roles if needed
         default:
