@@ -1,6 +1,5 @@
 import { showDetails, showError } from './uiHelpers.js';
 
-import { showDetails, showError } from './uiHelpers.js';
 
 export function displayVestingDetailsForRole(roleDetails) {
     if (!roleDetails) {
