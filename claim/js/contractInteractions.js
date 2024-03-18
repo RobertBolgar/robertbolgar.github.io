@@ -35,6 +35,8 @@ export async function sendPLRTToContract(plrtAmount) {
 
 export const vestingFunctions = {
   getTeamMemberVestingDetails: async (address) => {
+    export async function getTeamMemberVestingDetails(address) {
+  console.log("contract instance:", contract);
     try {
       return await contract.getTeamMemberVestingDetails(address);
     } catch (error) {
