@@ -28,17 +28,25 @@ async function main() {
 
     // Get NFT count and calculate total PLRT claimable
     const nftCount = await countNFTs(userAddress);
-    const totalPLRTAclaimable = parseInt(nftCount) * 20000; // Assuming PLRT value is 20,000
-    console.log("Total PLRT claimable:", totalPLRTAclaimable);
-    // Optionally update your UI to display the totalPLRTAclaimable value
+    const totalPLRTClaimable = parseInt(nftCount) * 20000; // Assuming PLRT value is 20,000
+    console.log("Total PLRT claimable:", totalPLRTClaimable);
+    
+    // Update UI to display the total PLRT claimable
+    const totalPLRTAclaimableElement = document.getElementById('totalPLRTAclaimable');
+    if (totalPLRTAclaimableElement) {
+        totalPLRTAclaimableElement.textContent = `Total PLRT Claimable: ${totalPLRTClaimable}`;
+    }
 
-    // ... rest of your code ...
+    // Optionally, reveal claim tokens button based on conditions (e.g., if claimable amount > 0)
+    if (totalPLRTClaimable > 0) {
+        document.getElementById('claimTokensButton').style.display = 'block';
+    }
   } catch (error) {
-    // ... error handling ...
+    console.error('Error in main function:', error);
+    document.getElementById('errorDisplay').textContent = `Error: ${error.message}`;
+    document.getElementById('errorDisplay').style.display = 'block';
   }
 }
-
-
 
 document.getElementById('connectWalletButton').addEventListener('click', main);
 
@@ -46,11 +54,15 @@ document.getElementById('claimTokensButton').addEventListener('click', async () 
   try {
     await claimTokens(); // Assuming claimTokens correctly uses the signer from connectWallet or initContracts
     console.log('Tokens claimed successfully.');
+    // After claiming, you may want to update the UI to reflect changes
+    // This might involve re-fetching role details, NFT count, or updating claimable amounts
   } catch (error) {
     console.error('Error claiming tokens:', error);
+    document.getElementById('errorDisplay').textContent = `Error claiming tokens: ${error.message}`;
+    document.getElementById('errorDisplay').style.display = 'block';
   }
 });
 
 async function handleWithdrawal() {
-  // Example function - adjust as needed based on actual app functionality
+  // Implementation for handling withdrawal action
 }
