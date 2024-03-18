@@ -1,5 +1,5 @@
 import { showDetails, showError } from './uiHelpers.js';
-import { vestingFunctions } from './contractInteractions.js';
+import { vestingFunctions, treasuryFunctions } from './contractInteractions.js';
 
 
 
