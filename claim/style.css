@@ -2,12 +2,22 @@
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
+    background-color: #f4f4f4; /* Light background for better readability */
 }
 
 button {
     cursor: pointer;
     padding: 10px 15px;
     margin: 10px 0;
+    background-color: #007bff; /* Bootstrap-like button color */
+    color: white; /* Text color for buttons */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners for a modern look */
+    transition: background-color 0.3s; /* Smooth background color transition on hover */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
 }
 
 #content {
@@ -15,5 +25,36 @@ button {
     max-width: 800px;
     padding: 20px;
     box-sizing: border-box;
+    background-color: white; /* Background color for content area */
+    border-radius: 10px; /* Rounded corners for the content box */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
 }
 
+/* Additional styles for visibility and UX */
+#errorDisplay {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #ffdddd; /* Light red for errors */
+    border-left: 6px solid #f44336; /* Red accent border */
+}
+
+/* Styling for the wallet connection and vesting details sections */
+#walletConnection, #userDetails, #vestingDetails {
+    margin-bottom: 20px; /* Space between sections */
+}
+
+/* Hide elements by default, shown via JavaScript */
+#userDetails, #vestingDetails, #claimTokensButton, #errorDisplay {
+    display: none;
+}
+
+/* Typography enhancements for readability */
+h2 {
+    color: #333; /* Darker text for headings */
+    margin-bottom: 10px; /* Space below headings */
+}
+
+p {
+    color: #666; /* Lighter text for paragraph content */
+    line-height: 1.6; /* Improved line spacing for readability */
+}
