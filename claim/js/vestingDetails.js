@@ -18,19 +18,19 @@ export function displayVestingDetailsForRole(roleDetails) {
 
     // Additional logic to customize the display based on the role
     switch (role.toLowerCase()) {
-        case 'teammember': // Ensure this matches the role name fetched from the smart contract
-            // Customize display for team members
-            break;
-        case 'privatesalenftholder': // Ensure this matches the role name fetched from the smart contract
-            // Customize display for private sale NFT holders
-            break;
-        case 'treasury': // Ensure this matches the role name fetched from the smart contract
-            // Customize display for treasury
-            break;
-        default:
-            console.log("Role does not have a specific details section to display.");
-            break;
-    }
+    case 'teammember': 
+        // Customize display for team members
+        break;
+    case 'privatesalenftholder': 
+        // Customize display for private sale NFT holders
+        break;
+    case 'treasury': 
+        // Customize display for treasury
+        break;
+    default:
+        console.log("Role does not have a specific details section to display.");
+        break;
+}
 }
 
 
