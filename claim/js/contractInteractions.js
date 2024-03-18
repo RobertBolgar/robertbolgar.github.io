@@ -71,4 +71,4 @@ export const treasuryFunctions = {
 };
 
 // Export the contract variable along with other functions and variables
-export { contract, initContracts, initiateVestingForNFTHolder, claimTokens, sendPLRTToContract, vestingFunctions, treasuryFunctions };
+export { contract, initContracts, initiateVestingForNFTHolder, claimTokens, sendPLRTToContract, vestingFunctions };
