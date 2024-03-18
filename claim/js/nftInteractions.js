@@ -534,7 +534,9 @@ async function countNFTs(userAddress) {
   }
 }
 
-// Get NFT details for a given user address
+export default countNFTs;
+
+/* // Get NFT details for a given user address
 export async function getNFTDetails(userAddress) {
   try {
     const nftDetailsList = [];
@@ -570,7 +572,7 @@ export async function getNFTDetails(userAddress) {
     console.error('Error fetching NFT details:', error);
     throw error; // Allows the calling function to handle the error
   }
-}
+} */
 
 
 // Example of fetching user address and counting NFTs
