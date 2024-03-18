@@ -1,3 +1,6 @@
+// Import necessary modules
+import { vestingFunctions } from './contractInteractions.js';
+
 export async function determineRoleAndFetchDetails(userAddress) {
     try {
         console.log("Fetching role details for address:", userAddress);
