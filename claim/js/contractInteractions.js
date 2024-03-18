@@ -57,7 +57,7 @@ export const vestingFunctions = {
     }
 };
 
-export const treasuryFunctions = {
+const treasuryFunctions = {
     getTreasuryWallet: async () => {
         try {
             return await contract.treasuryWallet();
