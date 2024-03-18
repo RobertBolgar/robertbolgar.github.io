@@ -67,7 +67,7 @@ export const treasuryFunctions = {
             throw error;
         }
     },
-    // Add more functions to interact with the treasury contract as needed
+    // Additional treasury-related functions can be added here as needed.
 };
 
 // Initialize contracts upon application start or user wallet connection.
