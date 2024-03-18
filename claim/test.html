@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Role</title>
+</head>
+<body>
+    <h1>User Role</h1>
+    <div id="userRole">Role: Loading...</div>
+
+    <script>
+        // Function to update the displayed role based on the connected wallet
+        function updateUserRole(role) {
+            const userRoleElement = document.getElementById('userRole');
+            userRoleElement.textContent = `Role: ${role}`;
+        }
+
+        // Example: Assume 'userRole' variable holds the role (e.g., "Team Member")
+        const userRole = "Team Member";
+        updateUserRole(userRole); // Update the displayed role
+    </script>
+</body>
+</html>
