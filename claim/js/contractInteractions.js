@@ -12,6 +12,7 @@ export async function initContracts() {
   nftContract = new ethers.Contract(nftContractAddress, nftContractABI, signer);
 }
 
+
 export async function initiateVestingForNFTHolder() {
   await contract.initiateVestingForNFTHolder();
 }
@@ -64,6 +65,7 @@ export const vestingFunctions = {
 export const treasuryFunctions = {
   getTreasuryWallet: async () => {
     try {
+      // Call the public getter function to retrieve the treasury wallet address
       return await contract.treasuryWallet();
     } catch (error) {
       console.error('Error fetching treasury wallet address:', error);
