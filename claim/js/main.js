@@ -32,9 +32,9 @@ async function main() {
           break;
       }
     } else {
-      // Update userRole to indicate role not found
-      document.getElementById('userRole').textContent = 'Role not found';
-    }
+  // Update userRole to indicate role not found
+  document.getElementById('userRole').textContent = 'Role not found';
+}
 
     const nftCount = await countNFTs(userAddress);
     const totalPLRTClaimable = parseInt(nftCount) * 20000;
