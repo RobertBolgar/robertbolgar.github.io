@@ -1,4 +1,6 @@
 import { showDetails, showError } from './uiHelpers.js';
+import { vestingFunctions } from './contractInteractions.js';
+
 
 
 export function displayVestingDetailsForRole(roleDetails) {
