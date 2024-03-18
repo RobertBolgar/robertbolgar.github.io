@@ -74,4 +74,4 @@ export const treasuryFunctions = {
 };
 
 // Export the contract variable along with other functions and variables
-export { contract, initContracts };
+export { contract };
