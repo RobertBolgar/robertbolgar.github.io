@@ -1,58 +1,573 @@
-// Assuming connectWallet, claimTokens, and other imports are correctly defined and exported in their respective modules.
-import { connectWallet } from './ethereumConnection.js';
-import { initContracts, claimTokens } from './contractInteractions.js'; // Ensure claimTokens is correctly exported
-import { determineRoleAndFetchDetails } from './roleDetermination.js';
-import { displayVestingDetailsForRole } from './vestingDetails.js';
-import { getNFTDetails } from './nftInteractions.js'; // Ensure this is correctly implemented and exported
-import { calculatePLRTAmount } from './uiHelpers.js';
 
-async function main() {
-    try {
-        // Connect wallet
-        const signer = await connectWallet(); // Ensure this returns the signer
-        
-        // Initialize contracts
-        await initContracts(); // Corrected to not pass 'signer' as initContracts does not require it
-        
-        // Get user's wallet address
-        const userAddress = await signer.getAddress();
-        document.getElementById('userAddress').textContent = `Your Connected Wallet Address: ${userAddress}`;
-        
-        // Determine user's role and fetch vesting details
-        const roleDetails = await determineRoleAndFetchDetails(userAddress); // Passing userAddress directly
-        
-        // Display vesting details
-        displayVestingDetailsForRole(roleDetails);
-        
-        // Show user details and vesting details sections
-        document.getElementById('userDetails').style.display = 'block';
-        document.getElementById('vestingDetails').style.display = 'block';
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 
-        // Get and display NFT details
-        const nftDetails = await getNFTDetails(userAddress); // Assuming this function handles displaying or processing the details
-        
-        // Conditionally show claim tokens button if applicable
-        if (roleDetails) {
-            document.getElementById('claimTokensButton').style.display = 'block';
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('errorDisplay').textContent = 'Error: ' + error.message;
-        document.getElementById('errorDisplay').style.display = 'block';
-    }
+// Connect to Ethereum provider (e.g., MetaMask)
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+// Prompt user to connect their wallet
+await provider.send("eth_requestAccounts", []);
+
+const signer = provider.getSigner();
+
+// Replace "NFT_CONTRACT_ADDRESS" with the actual contract address
+const NFT_CONTRACT_ADDRESS = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9"; 
+
+// ABI for the PLRTMintPass20K contract
+const abi = [
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "approved",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_mintAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_mintAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      }
+    ],
+    "name": "mintForAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_cost",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "setPaused",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_MetadataUri",
+        "type": "string"
+      }
+    ],
+    "name": "setUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cost",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApproved",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "walletOfOwner",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
+
+
+// Instantiate NFT contract with signer for write transactions
+const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi, signer);
+
+async function countNFTs(userAddress) {
+  try {
+    // Call the balanceOf function on the NFT contract
+    const ownedTokenIds = await nftContract.balanceOf(userAddress);
+    return ownedTokenIds.toString(); // Convert BigNumber to string
+  } catch (error) {
+    console.error("Error fetching NFT count:", error);
+    return '0'; // Handle errors gracefully
+  }
 }
 
-document.getElementById('connectWalletButton').addEventListener('click', main);
+// Get NFT details for a given user address
+export async function getNFTDetails(userAddress) {
+  try {
+    const nftBalance = await nftContract.balanceOf(userAddress);
+    const nftDetailsList = [];
 
-document.getElementById('claimTokensButton').addEventListener('click', async () => {
-    try {
-        await claimTokens(); // Assuming claimTokens correctly uses the signer from connectWallet or initContracts
-        console.log('Tokens claimed successfully.');
-    } catch (error) {
-        console.error('Error claiming tokens:', error);
+    for (let i = 0; i < nftBalance; i++) {
+      // Assuming you have a function like tokenOfOwnerByIndex (depends on your contract)
+      const tokenId = (await nftContract.tokenOfOwnerByIndex(userAddress, i)).toString(); // Convert BigNumber to string
+      const tokenURI = await nftContract.tokenURI(tokenId);
+
+      // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
+      const metadataResponse = await fetch(tokenURI);
+      const metadata = await metadataResponse.json();
+
+      nftDetailsList.push({
+        tokenId,
+        tokenURI,
+        metadata // Contains metadata like name, image, etc.
+      });
     }
-});
 
-async function handleWithdrawal() {
-    // Example function - adjust as needed based on actual app functionality
+    console.log(nftDetailsList);
+    return nftDetailsList;
+  } catch (error) {
+    console.error('Error fetching NFT details:', error);
+    throw error; // Allows the calling function to handle the error
+  }
 }
+
+// Example of fetching user address and counting NFTs
+(async () => {
+  const userAddress = await signer.getAddress();
+  const nftCount = await countNFTs(userAddress);
+  console.log("User has", nftCount, "NFTs");
+  // Update your UI or display the count here
+})();
