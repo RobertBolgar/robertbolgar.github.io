@@ -523,19 +523,14 @@ const abi = [
 // Instantiate NFT contract with signer for write transactions
 const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi, signer);
 
-async function countNFTs(userAddress) {
+export async function countNFTs(userAddress) {
   try {
-    // Call the balanceOf function on the NFT contract
     const ownedTokenIds = await nftContract.balanceOf(userAddress);
     return ownedTokenIds.toString(); // Convert BigNumber to string
   } catch (error) {
     console.error("Error fetching NFT count:", error);
     return '0'; // Handle errors gracefully
   }
-}
-
-export async function countNFTs(userAddress) {
-  // ... function implementation ...
 }
 
 
