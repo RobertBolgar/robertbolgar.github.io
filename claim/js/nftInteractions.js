@@ -525,6 +525,34 @@ async function countNFTs(userAddress) {
   }
 }
 
+// Get NFT details for a given user address
+export async function getNFTDetails(userAddress) {
+    try {
+        const nftBalance = await nftContract.balanceOf(userAddress);
+        const nftDetailsList = [];
+
+        for (let i = 0; i < nftBalance; i++) {
+            const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i).toNumber(); // Convert to number
+            const tokenURI = await nftContract.tokenURI(tokenId);
+            // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
+            const metadataResponse = await fetch(tokenURI);
+            const metadata = await metadataResponse.json();
+
+            nftDetailsList.push({
+                tokenId: tokenId.toString(),
+                tokenURI,
+                metadata // Contains metadata like name, image, etc.
+            });
+        }
+
+        console.log(nftDetailsList);
+        return nftDetailsList;
+    } catch (error) {
+        console.error('Error fetching NFT details:', error);
+        throw error; // Allows the calling function to handle the error
+    }
+}
+
 // Call the function when the user connects their wallet
 const userAddress = web3.eth.accounts.currentProvider.selectedAddress;
 countNFTs(userAddress).then(nftCount => {
