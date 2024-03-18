@@ -14,18 +14,18 @@ async function main() {
     const roleDetails = await determineRoleAndFetchDetails(userAddress);
 
     if (roleDetails) {
-    displayVestingDetailsForRole(roleDetails); // This call now handles all the UI updates
-    // No need for further role-specific UI logic here
-} else {
-    // Update userRole to indicate role not found
-    document.getElementById('userRole').textContent = 'Role not found';
-}
+      displayVestingDetailsForRole(roleDetails); // Handles all display logic based on the role
+      document.getElementById('userDetails').style.display = 'block';
+      document.getElementById('vestingDetails').style.display = 'block';
+    } else {
+      document.getElementById('userRole').textContent = 'Role not found';
+    }
 
     const nftCount = await countNFTs(userAddress);
     const totalPLRTClaimable = parseInt(nftCount) * 20000;
     console.log("Total PLRT claimable:", totalPLRTClaimable);
 
-    const totalPLRTClaimableElement = document.getElementById('totalPLRTAclaimable');
+    const totalPLRTClaimableElement = document.getElementById('totalPLRTClaimable');
     if (totalPLRTClaimableElement) {
       totalPLRTClaimableElement.textContent = `Total PLRT Claimable: ${totalPLRTClaimable}`;
     }
@@ -45,10 +45,10 @@ document.getElementById('claimTokensButton').addEventListener('click', async () 
   try {
     await claimTokens();
     console.log('Tokens claimed successfully.');
-    // Consider re-invoking role determination and display logic to update the UI post-claim
   } catch (error) {
     console.error('Error claiming tokens:', error);
     document.getElementById('errorDisplay').textContent = `Error claiming tokens: ${error.message}`;
     document.getElementById('errorDisplay').style.display = 'block';
   }
 });
+
