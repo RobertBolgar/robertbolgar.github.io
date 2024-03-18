@@ -2,38 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Role</title>
+    <title>PLRT Vesting Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>User Role</h1>
-    <div id="userRole">Role: Loading...</div>
+    <div id="content" style="max-width: 800px; margin: auto;">
+        <!-- Wallet Connection Section -->
+        <div id="walletConnection">
+            <button id="connectWalletButton">Connect Wallet</button>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.min.js"></script>
+        <!-- User Details Section -->
+        <div id="userDetails" style="display: none;">
+            <h2>User Role: <span id="userRole">Loading...</span></h2>
+            <p id="userAddress">Your Connected Wallet Address: </p>
+        </div>
+
+        <!-- Vesting Details Section -->
+        <div id="vestingDetails" style="display: none;">
+            <h2>Vesting Details</h2>
+            <!-- Updated to show total PLRT claimable -->
+            <p id="totalPLRTAclaimable">Total PLRT Claimable: </p>
+            <p id="claimedAmount">Claimed Amount: </p>
+            <p id="claimableAmount">Claimable Amount: </p>
+            <button id="claimTokensButton" style="display: none;">Claim Tokens</button>
+        </div>
+
+        <!-- Team Member Details Section -->
+        <div id="teamMemberDetails" style="display: none;">
+            <h2>Team Member Details</h2>
+            <!-- Team member specific details here -->
+        </div>
+
+        <!-- Private Sale NFT Holder Details Section -->
+        <div id="privateSaleDetails" style="display: none;">
+            <h2>Private Sale NFT Holder Details</h2>
+            <!-- Private sale NFT holder specific details here -->
+        </div>
+
+        <!-- Treasury Details Section -->
+        <div id="treasuryDetails" style="display: none;">
+            <h2>Treasury Details</h2>
+            <p id="treasuryWallet">Treasury Wallet Address: </p>
+            <p id="treasuryTotalAllocation">Total Allocation: </p>
+            <p id="treasuryClaimedAmount">Claimed Amount: </p>
+            <p id="treasuryLastClaimTime">Last Claim Time: </p>
+        </div>
+
+        <!-- Error Display Section -->
+        <div id="errorDisplay" style="color: red; display: none;"></div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
     <script>
         async function updateUserRole() {
-            const userRoleElement = document.getElementById('userRole');
+            const userDetailsDiv = document.getElementById('userDetails');
+            const userRoleSpan = document.getElementById('userRole');
+            const userAddressP = document.getElementById('userAddress');
+
             try {
-                // Connect to provider
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                // Get signer
                 const signer = provider.getSigner();
-                // Get connected wallet address
                 const address = await signer.getAddress();
+
                 // Call your contract function to determine the role
                 const contractAddress = ""; // Enter your contract address
                 const contractABI = []; // Enter your contract ABI
                 const contract = new ethers.Contract(contractAddress, contractABI, signer);
                 const role = await contract.determineRole(address); // Example function to determine role
-                userRoleElement.textContent = `Role: ${role}`;
+
+                // Update the user role in the UI
+                userRoleSpan.textContent = role;
+                userDetailsDiv.style.display = 'block';
+                userAddressP.textContent = `Your Connected Wallet Address: ${address}`;
             } catch (error) {
                 console.error('Error determining user role:', error);
-                userRoleElement.textContent = 'Error determining user role';
+                userRoleSpan.textContent = 'Error determining user role';
             }
         }
 
-        // Call the function to update the displayed role
-        updateUserRole();
+        document.getElementById('connectWalletButton').addEventListener('click', async () => {
+            try {
+                // Connect to MetaMask wallet
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                // Once connected, update the user role
+                await updateUserRole();
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                const errorDisplayDiv = document.getElementById('errorDisplay');
+                errorDisplayDiv.textContent = 'Error connecting wallet';
+                errorDisplayDiv.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
