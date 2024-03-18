@@ -30,7 +30,7 @@ export async function sendPLRTToContract(plrtAmount) {
     }
 }
 
-export const vestingFunctions = {
+const vestingFunctions = {
     getTeamMemberVestingDetails: async (address) => {
         try {
             return await contract.getTeamMemberVestingDetails(address);
