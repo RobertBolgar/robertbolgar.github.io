@@ -66,3 +66,27 @@ document.getElementById('claimTokensButton').addEventListener('click', async () 
 async function handleWithdrawal() {
   // Implementation for handling withdrawal action
 }
+
+async function fetchAndDisplayTreasuryDetails() {
+    try {
+        const treasuryWalletAddress = await treasuryFunctions.getTreasuryWallet();
+        document.getElementById('treasuryWallet').textContent = `Treasury Wallet Address: ${treasuryWalletAddress}`;
+
+        const { totalAllocation, claimedAmount, lastClaimTime } = await vestingFunctions.getTreasuryVestingDetails();
+        document.getElementById('treasuryTotalAllocation').textContent = `Total Allocation: ${totalAllocation}`;
+        document.getElementById('treasuryClaimedAmount').textContent = `Claimed Amount: ${claimedAmount}`;
+        document.getElementById('treasuryLastClaimTime').textContent = `Last Claim Time: ${new Date(lastClaimTime * 1000).toLocaleString()}`;
+
+        // Display the treasury details section if hidden
+        document.getElementById('treasuryDetails').style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching treasury details:', error);
+        document.getElementById('errorDisplay').textContent = `Error: ${error.message}`;
+        document.getElementById('errorDisplay').style.display = 'block';
+    }
+}
+
+// You might want to call this function after initializing contracts or upon user action
+// For demonstration, it's called here directly, consider adjusting based on your app flow
+fetchAndDisplayTreasuryDetails().catch(console.error);
+
