@@ -668,7 +668,7 @@ export const contractABI = [
 	}
 ];
 
-export const contractAddress = "0xA00A3Fc25D18cf42D2dF95AEa7A3b1B036405906";
+export const contractAddress = "0xB4308847b8060CB63463aa96bBbbbB23e958aeFa";
 
 export const nftContractABI = [
   {
