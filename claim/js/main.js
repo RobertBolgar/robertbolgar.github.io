@@ -1,8 +1,8 @@
 import { connectWallet } from './ethereumConnection.js';
-import { initContracts, claimTokens } from './contractInteractions.js';
+import { initContracts, claimTokens, treasuryFunctions, vestingFunctions } from './contractInteractions.js';
 import { determineRoleAndFetchDetails } from './roleDetermination.js';
 import { displayVestingDetailsForRole } from './vestingDetails.js';
-import { countNFTs, treasuryFunctions, vestingFunctions } from './nftInteractions.js'; // Assuming these imports
+import { countNFTs } from './nftInteractions.js'; // Assuming these imports 
 
 async function main() {
   try {
