@@ -13,6 +13,9 @@ export function displayVestingDetailsForRole(roleDetails) {
         return;
     }
 
+    // Update user role element with the user's role
+    document.getElementById('userRole').textContent = role;
+
     showDetails(details);
 
     // Additional logic to customize the display based on the role
@@ -31,3 +34,4 @@ export function displayVestingDetailsForRole(roleDetails) {
             break;
     }
 }
+
