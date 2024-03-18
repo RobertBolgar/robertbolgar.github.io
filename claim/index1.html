@@ -704,34 +704,56 @@
             const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
             const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
 
-		// Example: Call getTeamMemberVestingDetails
-const teamMemberAddress = '0x91Dd086921290201AF8a2B5732c85c7b707EeBBe';
-contract.methods.getTeamMemberVestingDetails(teamMemberAddress).call((error, result) => {
-    if (error) {
-        console.error('Error:', error);
-    } else {
-        console.log('Team Member Vesting Details:', result);
-    }
-});
+// Function to show team-related elements
+function showTeamElements() {
+    showElement("teamSection");
+    hideElement("privateSaleNFTSection");
+    hideElement("treasurySection");
+}
+
+// Function to show private sale NFT-related elements
+function showPrivateSaleNFTElements() {
+    showElement("privateSaleNFTSection");
+    hideElement("teamSection");
+    hideElement("treasurySection");
+}
+
+// Function to show treasury-related elements
+function showTreasuryElements() {
+    showElement("treasurySection");
+    hideElement("teamSection");
+    hideElement("privateSaleNFTSection");
+}
+
+
+		
 
             // Display vesting data
             document.getElementById('walletInfo').innerHTML = `
                 <h2>Wallet Address: ${userAddress}</h2>
-		
-                <h3>Team Member Vesting Details:</h3>
+
+		<div id="teamSection">
+   		<h3>Team Member Vesting Details:</h3>
                 <p>Total Allocation: ${teamMemberDetails[0]}</p>
                 <p>Claimed Amount: ${teamMemberDetails[1]}</p>
                 <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-		
-                <h3>Private Sale NFT Vesting Details:</h3>
+</div>
+
+		<div id="privateSaleNFTSection">
+    		<h3>Private Sale NFT Vesting Details:</h3>
                 <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
                 <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
                 <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-		
-                <h3>Treasury Vesting Details:</h3>
+</div>
+
+		<div id="treasurySection">
+     		<h3>Treasury Vesting Details:</h3>
                 <p>Total Allocation: ${treasuryDetails[0]}</p>
                 <p>Claimed Amount: ${treasuryDetails[1]}</p>
                 <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+</div>
+
+  
             `;
         });
     </script>
