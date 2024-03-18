@@ -9,45 +9,48 @@
   <h1>User Role</h1>
   <p id="userRole"></p>
   <script type="module">
-    // Import necessary functions
-    import { determineRoleAndFetchDetails } from './js/roleDetermination.js';
-    import { showError } from './js/uiHelpers.js'; // Assuming showError displays an error message
+    import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 
-    async function requestUserAccount() {
-      try {
-        const { ethereum } = window;
-        if (ethereum) {
-          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-          return accounts[0];
-        } else {
-          showError("Please install a wallet to connect.");
-          return null;
-        }
-      } catch (error) {
-        console.error("Error requesting user account:", error);
-        showError("An error occurred while connecting to the wallet.");
-        return null;
-      }
+// Initialize provider and contract instance
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const contract = new ethers.Contract(contractAddress, contractABI, provider);
+
+// Function to get vesting details for the user
+async function getVestingDetails() {
+    try {
+        // Call the appropriate smart contract functions to get vesting details
+        const vestingAmount = await contract.getVestingAmount();
+        const startTime = await contract.getStartTime();
+        const cliffDuration = await contract.getCliffDuration();
+        // Get other vesting details as needed...
+
+        // Return the retrieved details
+        return {
+            vestingAmount,
+            startTime,
+            cliffDuration,
+            // Add other details here...
+        };
+    } catch (error) {
+        console.error('Error getting vesting details:', error);
+        throw error; // Rethrow the error for handling in the caller function
     }
+}
 
-    async function showUserRole() {
-      const userAddress = await requestUserAccount();
-      if (userAddress) {
-        try {
-          const roleDetails = await determineRoleAndFetchDetails(userAddress);
-          if (roleDetails) {
-            document.getElementById('userRole').textContent = roleDetails.role;
-          } else {
-            showError("Unable to determine user role.");
-          }
-        } catch (error) {
-          console.error("Error fetching user role:", error);
-          showError("An error occurred. Please try again later.");
-        }
-      }
-    }
+// Function to display vesting details on the HTML page
+function displayVestingDetails(details) {
+    // Update HTML elements with the retrieved vesting details
+    document.getElementById('vestingAmount').textContent = `Vesting Amount: ${details.vestingAmount}`;
+    document.getElementById('startTime').textContent = `Start Time: ${new Date(details.startTime * 1000).toLocaleString()}`;
+    document.getElementById('cliffDuration').textContent = `Cliff Duration: ${details.cliffDuration} seconds`;
+    // Update other HTML elements as needed...
+}
 
-    showUserRole();
+// Call the function to get vesting details and update the HTML page
+getVestingDetails()
+    .then(displayVestingDetails)
+    .catch(error => showError(error.message)); // Handle any errors
+
   </script>
 </body>
 </html>
