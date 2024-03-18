@@ -1,5 +1,5 @@
 // Import necessary modules
-import { vestingFunctions } from './contractInteractions.js';
+import { vestingFunctions, treasuryFunctions } from './contractInteractions.js';
 
 export async function determineRoleAndFetchDetails(userAddress) {
     try {
