@@ -534,45 +534,9 @@ async function countNFTs(userAddress) {
   }
 }
 
-export default countNFTs;
-
-/* // Get NFT details for a given user address
-export async function getNFTDetails(userAddress) {
-  try {
-    const nftDetailsList = [];
-
-    // Get the total number of NFTs owned by the user
-    const nftBalance = await nftContract.balanceOf(userAddress);
-
-    // Iterate through each NFT owned by the user
-    for (let i = 0; i < nftBalance.toNumber(); i++) {
-      // Assuming you have a function to get the token ID by index (specific to your contract)
-      const tokenId = await getNFTByOwnerIndex(userAddress, i); // Replace with your function
-
-      // If a valid token ID is retrieved, proceed
-      if (tokenId) {
-        const tokenURI = await nftContract.tokenURI(tokenId);
-
-        // Optionally fetch metadata from the tokenURI if it's a URL to a JSON file
-        const metadataResponse = await fetch(tokenURI);
-        const metadata = await metadataResponse.json();
-
-        nftDetailsList.push({
-          tokenId,
-          tokenURI,
-          metadata,
-        });
-      } else {
-        console.warn(`Failed to retrieve token ID for index ${i}.`);
-      }
-    }
-
-    return nftDetailsList;
-  } catch (error) {
-    console.error('Error fetching NFT details:', error);
-    throw error; // Allows the calling function to handle the error
-  }
-} */
+export async function countNFTs(userAddress) {
+  // ... function implementation ...
+}
 
 
 // Example of fetching user address and counting NFTs
