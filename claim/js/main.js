@@ -18,7 +18,7 @@ async function main() {
       document.getElementById('userDetails').style.display = 'block';
       document.getElementById('vestingDetails').style.display = 'block';
 
-      switch(roleDetails.role) {
+      switch (roleDetails.role) {
         case "Treasury":
           const treasuryDetails = await treasuryFunctions.getTreasuryWallet();
           document.getElementById('treasuryWallet').textContent = `Treasury Wallet Address: ${treasuryDetails.walletAddress}`;
@@ -32,20 +32,21 @@ async function main() {
           break;
       }
     } else {
-      document.getElementById('treasuryDetails').style.display = 'none';
+      // Update userRole to indicate role not found
+      document.getElementById('userRole').textContent = 'Role not found';
     }
 
     const nftCount = await countNFTs(userAddress);
     const totalPLRTClaimable = parseInt(nftCount) * 20000;
     console.log("Total PLRT claimable:", totalPLRTClaimable);
-    
+
     const totalPLRTClaimableElement = document.getElementById('totalPLRTAclaimable');
     if (totalPLRTClaimableElement) {
-        totalPLRTClaimableElement.textContent = `Total PLRT Claimable: ${totalPLRTClaimable}`;
+      totalPLRTClaimableElement.textContent = `Total PLRT Claimable: ${totalPLRTClaimable}`;
     }
 
     if (totalPLRTClaimable > 0) {
-        document.getElementById('claimTokensButton').style.display = 'block';
+      document.getElementById('claimTokensButton').style.display = 'block';
     }
   } catch (error) {
     console.error('Error in main function:', error);
