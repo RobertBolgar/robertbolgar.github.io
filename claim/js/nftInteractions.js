@@ -1,5 +1,7 @@
-// Assuming you're using a library like web3.js
-const web3 = new Web3(window.ethereum); // Assuming user has connected their wallet
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
+
+// Connect to Ethereum provider (e.g., MetaMask)
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 // Replace "NFT_CONTRACT_ADDRESS" with the actual contract address
 const NFT_CONTRACT_ADDRESS = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9"; 
