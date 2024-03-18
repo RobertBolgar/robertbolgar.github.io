@@ -2,33 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PLRT Vesting Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>User Role</title>
 </head>
 <body>
-    <div id="content" style="max-width: 800px; margin: auto;">
-        <!-- Wallet Connection Section -->
-        <div id="walletConnection">
-            <button id="connectWalletButton">Connect Wallet</button>
-        </div>
+    <h1>User Role</h1>
+    <div id="userRole">Role: Loading...</div>
 
-        <!-- User Details Section -->
-        <div id="userDetails" style="display: none;">
-            <h2>User Role: <span id="userRole">Loading...</span></h2>
-            <p id="userAddress">Your Connected Wallet Address: </p>
-        </div>
-
-        <!-- Error Display Section -->
-        <div id="errorDisplay" style="color: red; display: none;"></div>
-    </div>
-
-    <script type="module" src="js/main.js"></script>
-    <script>
+    <script type="module">
+        // Function to update the displayed role based on the connected wallet
         async function updateUserRole() {
-            const userDetailsDiv = document.getElementById('userDetails');
-            const userRoleSpan = document.getElementById('userRole');
-            const userAddressP = document.getElementById('userAddress');
-
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
@@ -44,26 +26,24 @@
                 const role = await contract.determineRole(address);
 
                 // Update the user role in the UI
-                userRoleSpan.textContent = role;
-                userDetailsDiv.style.display = 'block';
-                userAddressP.textContent = `Your Connected Wallet Address: ${address}`;
+                const userRoleElement = document.getElementById('userRole');
+                userRoleElement.textContent = `Role: ${role}`;
             } catch (error) {
                 console.error('Error determining user role:', error);
-                userRoleSpan.textContent = 'Error determining user role';
+                const userRoleElement = document.getElementById('userRole');
+                userRoleElement.textContent = 'Role: Error';
             }
         }
 
-        document.getElementById('connectWalletButton').addEventListener('click', async () => {
+        // Event listener for connecting the wallet and updating the user role
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // Connect to MetaMask wallet
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
-                // Once connected, update the user role
                 await updateUserRole();
             } catch (error) {
                 console.error('Error connecting wallet:', error);
-                const errorDisplayDiv = document.getElementById('errorDisplay');
-                errorDisplayDiv.textContent = 'Error connecting wallet';
-                errorDisplayDiv.style.display = 'block';
+                const userRoleElement = document.getElementById('userRole');
+                userRoleElement.textContent = 'Role: Error';
             }
         });
     </script>
