@@ -514,7 +514,11 @@ const abi = [
   }
 ];
 
-const nftContract = new web3.eth.Contract(NFT_CONTRACT_ADDRESS, abi); // Replace abi with your actual ABI
+
+
+// Instantiate NFT contract
+const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi);
+
 
 async function countNFTs(userAddress) {
   try {
