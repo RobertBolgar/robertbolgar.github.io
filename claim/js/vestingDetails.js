@@ -1,5 +1,7 @@
 import { showDetails, showError } from './uiHelpers.js';
 
+import { showDetails, showError } from './uiHelpers.js';
+
 export function displayVestingDetailsForRole(roleDetails) {
     if (!roleDetails) {
         showError("Unable to determine role or fetch details.");
@@ -15,21 +17,22 @@ export function displayVestingDetailsForRole(roleDetails) {
 
     showDetails(details);
 
-    // Customize display based on the role
-    switch (role) {
-        case 'Team Member':
+    // Additional logic to customize the display based on the role
+    switch (role.toLowerCase()) {
+        case 'teammember': // Ensure this matches the role name fetched from the smart contract
             // Customize display for team members
             break;
-        case 'Private Sale NFT Holder':
+        case 'privatesalenftholder': // Ensure this matches the role name fetched from the smart contract
             // Customize display for private sale NFT holders
             break;
-        case 'Treasury':
+        case 'treasury': // Ensure this matches the role name fetched from the smart contract
             // Customize display for treasury
             break;
         default:
-            // Handle unrecognized roles
+            console.log("Role does not have a specific details section to display.");
             break;
     }
 }
+
 
 
