@@ -2,6 +2,7 @@ import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.
 import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js';
 
 let contract; // Define contract variable here
+let nftContract; // Define nftContract variable here
 
 export async function initContracts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -30,7 +31,7 @@ export async function sendPLRTToContract(plrtAmount) {
     }
 }
 
-const vestingFunctions = {
+export const vestingFunctions = {
     getTeamMemberVestingDetails: async (address) => {
         try {
             return await contract.getTeamMemberVestingDetails(address);
@@ -57,7 +58,7 @@ const vestingFunctions = {
     }
 };
 
-const treasuryFunctions = {
+export const treasuryFunctions = {
     getTreasuryWallet: async () => {
         try {
             return await contract.treasuryWallet();
