@@ -1,12 +1,8 @@
-// Import necessary modules
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js';
 
-// Initialize contract variables
-let contract;
-let nftContract;
+let contract; // Define contract variable here
 
-// Initialize contracts function
 export async function initContracts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
@@ -73,5 +69,5 @@ export const treasuryFunctions = {
     // Additional treasury-related functions can be added here as needed.
 };
 
-// Initialize contracts upon application start or user wallet connection.
-initContracts().catch(console.error);
+// Export the contract variable along with other functions and variables
+export { contract, initContracts, initiateVestingForNFTHolder, claimTokens, sendPLRTToContract, vestingFunctions, treasuryFunctions };
