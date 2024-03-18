@@ -2,6 +2,7 @@ import { showDetails, showError } from './uiHelpers.js';
 import { vestingFunctions, treasuryFunctions } from './contractInteractions.js';
 
 export async function displayVestingDetailsForRole(roleDetails) {
+    // Assuming showError and showDetails are already defined and handle general error/display logic
     if (!roleDetails) {
         showError("Unable to determine role or fetch details.");
         return;
@@ -14,30 +15,36 @@ export async function displayVestingDetailsForRole(roleDetails) {
         return;
     }
 
-    showDetails(details);
+    showDetails(details); // Show general details applicable to all roles
 
-    // Directly integrate display logic for each role within this function
+    // Handle specific role-based display logic
     switch (role) {
         case 'Team Member':
             const teamMemberDetails = details.teamMember;
-            // Directly integrated logic to display team member details
             console.log('Displaying Team Member Details:', teamMemberDetails);
-            // Replace console.log with actual DOM manipulation or UI update logic
+            // Directly manipulate the DOM to display team member details
+            document.getElementById('teamMemberDetails').textContent = JSON.stringify(teamMemberDetails);
+            document.getElementById('teamMemberDetails').style.display = 'block';
             break;
+
         case 'Private Sale NFT Holder':
             const privateSaleNFTDetails = details.privateSaleNFT;
-            // Directly integrated logic to display private sale NFT holder details
             console.log('Displaying Private Sale NFT Details:', privateSaleNFTDetails);
-            // Replace console.log with actual DOM manipulation or UI update logic
+            // Directly manipulate the DOM to display private sale NFT details
+            document.getElementById('privateSaleDetails').textContent = JSON.stringify(privateSaleNFTDetails);
+            document.getElementById('privateSaleDetails').style.display = 'block';
             break;
+
         case 'Treasury':
-            const treasuryDetails = await treasuryFunctions.getTreasuryWallet();
-            // Directly integrated logic to display treasury details
+            // Assuming details contains treasury-specific information
+            const treasuryDetails = details.treasury;
             console.log('Displaying Treasury Details:', treasuryDetails);
-            // Replace console.log with actual DOM manipulation or UI update logic
+            // Directly manipulate the DOM to display treasury details
+            // Update this with actual IDs and logic relevant to your application
+            document.getElementById('treasuryDetails').textContent = JSON.stringify(treasuryDetails);
+            document.getElementById('treasuryDetails').style.display = 'block';
             break;
-        default:
-            console.log("Role does not have a specific details section to display.");
-            break;
+
+        // Additional cases for other roles...
     }
 }
