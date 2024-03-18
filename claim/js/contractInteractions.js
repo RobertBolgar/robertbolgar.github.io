@@ -1,9 +1,12 @@
+// Import necessary modules
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 import { contractABI, contractAddress, nftContractABI, nftContractAddress } from './contractConfig.js';
 
+// Initialize contract variables
 let contract;
 let nftContract;
 
+// Initialize contracts function
 export async function initContracts() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
