@@ -1,56 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Role Test Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLRT Vesting</title>
 </head>
 <body>
-  <h1>User Role</h1>
-  <p id="userRole"></p>
-  <script type="module">
-    import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
+    <h1>PLRT Vesting</h1>
+    <div id="walletInfo"></div>
 
-// Initialize provider and contract instance
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
-// Function to get vesting details for the user
-async function getVestingDetails() {
-    try {
-        // Call the appropriate smart contract functions to get vesting details
-        const vestingAmount = await contract.getVestingAmount();
-        const startTime = await contract.getStartTime();
-        const cliffDuration = await contract.getCliffDuration();
-        // Get other vesting details as needed...
-
-        // Return the retrieved details
-        return {
-            vestingAmount,
-            startTime,
-            cliffDuration,
-            // Add other details here...
-        };
-    } catch (error) {
-        console.error('Error getting vesting details:', error);
-        throw error; // Rethrow the error for handling in the caller function
-    }
-}
-
-// Function to display vesting details on the HTML page
-function displayVestingDetails(details) {
-    // Update HTML elements with the retrieved vesting details
-    document.getElementById('vestingAmount').textContent = `Vesting Amount: ${details.vestingAmount}`;
-    document.getElementById('startTime').textContent = `Start Time: ${new Date(details.startTime * 1000).toLocaleString()}`;
-    document.getElementById('cliffDuration').textContent = `Cliff Duration: ${details.cliffDuration} seconds`;
-    // Update other HTML elements as needed...
-}
-
-// Call the function to get vesting details and update the HTML page
-getVestingDetails()
-    .then(displayVestingDetails)
-    .catch(error => showError(error.message)); // Handle any errors
-
-  </script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
