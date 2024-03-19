@@ -1,5 +1,4 @@
 
-
 // Contract address and ABI
 const contractABI = [
 	{
@@ -675,7 +674,7 @@ const contractABI = [
 const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
 
 // Instantiate contract
-const provider = new ethers.providers.Web3Provider(window.ethereum);
+const provider = new ethers.providers.JsonRpcProvider();
 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
 // Get user's wallet address
