@@ -4,117 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PLRT Vesting</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js"></script>
 </head>
 <body>
     <h1>PLRT Vesting</h1>
     <div id="walletInfo"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
     <script>
         let web3;
+        let ethersProvider;
 
-        // Initialize Web3
         async function initWeb3() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
+                ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
                 try {
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                 } catch (error) {
                     console.error("User denied account access");
                     document.getElementById('walletInfo').innerHTML = '<p>Please connect your Ethereum wallet to access vesting details.</p>';
-                    return false; // Indicate failure to initialize Web3
+                    return false;
                 }
             } else if (window.web3) {
                 web3 = new Web3(window.web3.currentProvider);
+                ethersProvider = new ethers.providers.Web3Provider(window.web3.currentProvider);
             } else {
                 console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
                 document.getElementById('walletInfo').innerHTML = '<p>Please install MetaMask or a compatible Ethereum wallet to access vesting details.</p>';
-                return false; // Indicate failure to initialize Web3
+                return false;
             }
-            return true; // Indicate successful Web3 initialization
+            return true;
         }
 
-        // Contract address and ABI
-        const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
-         
-        async function loadContract(abi) {
-            const contract = new web3.eth.Contract(abi, contractAddress);
-            return contract;
+        const NFT_CONTRACT_ADDRESS = "0x7CbCC978336624be38Ce0c52807aEbf119081EA9";
+
+        async function findNFTsAndCalculatePLRT() {
+            const signer = ethersProvider.getSigner();
+            const response = await fetch('abi_nft.json');
+            const abi = await response.json();
+            const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi, signer);
+            const userAddress = await signer.getAddress();
+            const balance = await nftContract.balanceOf(userAddress);
+            return balance.toNumber(); // Assuming balance fits within a safe integer range
         }
 
         async function main() {
             const web3Initialized = await initWeb3();
-            if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
+            if (!web3Initialized) return;
 
             let abi = await fetch('abi.json').then(response => response.json()).catch(error => {
                 console.error('Error loading ABI:', error);
                 document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
-                throw new Error('Failed to load ABI'); // Stop execution if ABI could not be loaded
+                return;
             });
 
-            const contract = await loadContract(abi);
-
+            const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa';
+            const contract = new web3.eth.Contract(abi, contractAddress);
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
+            // Additional contract interactions here
 
-            const treasuryWallet = await contract.methods.treasuryWallet().call();
-            const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
-            const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
-            const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
+            const nftCount = await findNFTsAndCalculatePLRT();
+            const plrtEquivalent = nftCount * 20000; // Assuming each NFT is worth 20,000 PLRT
 
-            let vestingDetailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
-		
-            // Display team member vesting data
-            if (teamMemberDetails[0] > 0) {
-                vestingDetailsHTML += `
-                    <div>
-                        <h3>Team Member Vesting Details:</h3>
-                        <p>Total Allocation: ${teamMemberDetails[0]}</p>
-                        <p>Claimed Amount: ${teamMemberDetails[1]}</p>
-                        <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-                    </div>
-                `;
-            }
+            // Modify your existing HTML update logic to include NFT details
+            let detailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
+            detailsHTML += `<div>
+                <h3>NFT Details:</h3>
+                <p>NFTs Owned: ${nftCount}</p>
+                <p>PLRT Equivalent: ${plrtEquivalent}</p>
+            </div>`;
 
-            // Display private sale NFT vesting data
-            if (privateSaleNFTDetails[0] > 0) {
-                vestingDetailsHTML += `
-                    <div>
-                        <h3>Private Sale NFT Vesting Details:</h3>
-                        <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
-                        <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
-                        <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-                    </div>
-                `;
-            }
-
-            // Display treasury vesting data only if the connected wallet is the treasury wallet
-            if (userAddress.toLowerCase() === treasuryWallet.toLowerCase()) {
-                if (treasuryDetails[0] > 0) {
-                    vestingDetailsHTML += `
-                        <div>
-                            <h3>Treasury Vesting Details:</h3>
-                            <p>Total Allocation: ${treasuryDetails[0]}</p>
-                            <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                            <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-                        </div>
-                    `;
-                }
-            }
-
-            // If none of the vesting details have a non-zero allocation, display a message
-            if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && (treasuryDetails[0] === 0 || userAddress.toLowerCase() !== treasuryWallet.toLowerCase())) {
-                vestingDetailsHTML = '<p>The connected wallet does not have any vesting details.</p>';
-            }
-
-            document.getElementById('walletInfo').innerHTML = vestingDetailsHTML;
-
+            document.getElementById('walletInfo').innerHTML = detailsHTML;
         }
 
         main().catch(console.error);
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js" type="module"></script>
-    <script type="module" src="findNFTs.js"></script> <!-- Point to your external JS file -->
 </body>
 </html>
