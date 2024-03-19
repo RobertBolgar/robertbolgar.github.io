@@ -41,6 +41,34 @@
             return contract;
         }
 
+        // findNFTsAndCalculatePLRT function
+        async function findNFTsAndCalculatePLRT(userAddress, contract) {
+            // Check if the user is a Private Sale NFT holder
+            const isPrivateSaleHolder = await contract.methods.isPrivateSaleNFTHolder(userAddress).call();
+
+            if (isPrivateSaleHolder) {
+                // Fetch NFT details only if the user is a Private Sale NFT holder
+                const balance = await contract.methods.balanceOf(userAddress).call();
+
+                // Each NFT is worth 20,000 PLRT
+                const plrtEquivalent = balance * 20000;
+
+                // Display the results on the webpage
+                const walletInfoDiv = document.getElementById('walletInfo');
+                walletInfoDiv.innerHTML += `<div>
+                    <h3>Private Sale NFT Vesting Details:</h3>
+                    <p>NFTs Owned: ${balance}</p>
+                    <p>PLRT Equivalent: ${plrtEquivalent.toLocaleString()} PLRT</p>
+                </div>`;
+            } else {
+                // If the user is not a Private Sale NFT holder, display a message
+                const walletInfoDiv = document.getElementById('walletInfo');
+                walletInfoDiv.innerHTML += `<div>
+                    <p>You are not recognized as a holder of a Private Sale NFT.</p>
+                </div>`;
+            }
+        }
+
         async function main() {
             const web3Initialized = await initWeb3();
             if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
@@ -57,8 +85,8 @@
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
 
-            // Call findNFTsAndCalculatePLRT from findNFTs.js
-            await findNFTsAndCalculatePLRT(userAddress, contract); // Pass contract object
+            // Call findNFTsAndCalculatePLRT
+            await findNFTsAndCalculatePLRT(userAddress, contract);
 
             const treasuryWallet = await contract.methods.treasuryWallet().call();
             const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
@@ -115,7 +143,5 @@
 
         main().catch(console.error);
     </script>
-
-    <script type="module" src="findNFTs.js"></script> <!-- Point to your external JS file -->
 </body>
 </html>
