@@ -35,82 +35,83 @@
             return true; // Indicate successful Web3 initialization
         }
 
-        async function loadContract(abi) {
-    const contract = new web3.eth.Contract(abi, contractAddress);
-    return contract;
-}
+        // Load contract function
+        async function loadContract(abi, contractAddress) {
+            const contract = new web3.eth.Contract(abi, contractAddress);
+            return contract;
+        }
 
         async function main() {
-    const web3Initialized = await initWeb3();
-    if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
+            const web3Initialized = await initWeb3();
+            if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
 
-    let abi = await fetch('abi.json').then(response => response.json()).catch(error => {
-        console.error('Error loading ABI:', error);
-        document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
-        throw new Error('Failed to load ABI'); // Stop execution if ABI could not be loaded
-    });
+            let abi = await fetch('abi.json').then(response => response.json()).catch(error => {
+                console.error('Error loading ABI:', error);
+                document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
+                throw new Error('Failed to load ABI'); // Stop execution if ABI could not be loaded
+            });
 
-  
+            const contractAddress = "0xB4308847b8060CB63463aa96bBbbbB23e958aeFa"; // Replace with your contract address
+            const contract = await loadContract(abi, contractAddress);
 
-    const accounts = await web3.eth.getAccounts();
-    const userAddress = accounts[0];
+            const accounts = await web3.eth.getAccounts();
+            const userAddress = accounts[0];
 
-    // Call findNFTsAndCalculatePLRT from findNFTs.js
-    await findNFTsAndCalculatePLRT(userAddress); // This line is added here
+            // Call findNFTsAndCalculatePLRT from findNFTs.js
+            await findNFTsAndCalculatePLRT(userAddress, contract); // Pass contract object
 
-    const treasuryWallet = await contract.methods.treasuryWallet().call();
-    const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
-    const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
-    const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
+            const treasuryWallet = await contract.methods.treasuryWallet().call();
+            const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
+            const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
+            const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
 
-    let vestingDetailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
+            let vestingDetailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
 
-    // Display team member vesting data
-    if (teamMemberDetails[0] > 0) {
-        vestingDetailsHTML += `
-            <div>
-                <h3>Team Member Vesting Details:</h3>
-                <p>Total Allocation: ${teamMemberDetails[0]}</p>
-                <p>Claimed Amount: ${teamMemberDetails[1]}</p>
-                <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-            </div>
-        `;
-    }
+            // Display team member vesting data
+            if (teamMemberDetails[0] > 0) {
+                vestingDetailsHTML += `
+                    <div>
+                        <h3>Team Member Vesting Details:</h3>
+                        <p>Total Allocation: ${teamMemberDetails[0]}</p>
+                        <p>Claimed Amount: ${teamMemberDetails[1]}</p>
+                        <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
+                    </div>
+                `;
+            }
 
-    // Display private sale NFT vesting data
-    if (privateSaleNFTDetails[0] > 0) {
-        vestingDetailsHTML += `
-            <div>
-                <h3>Private Sale NFT Vesting Details:</h3>
-                <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
-                <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
-                <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-            </div>
-        `;
-    }
+            // Display private sale NFT vesting data
+            if (privateSaleNFTDetails[0] > 0) {
+                vestingDetailsHTML += `
+                    <div>
+                        <h3>Private Sale NFT Vesting Details:</h3>
+                        <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
+                        <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
+                        <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
+                    </div>
+                `;
+            }
 
-    // Display treasury vesting data only if the connected wallet is the treasury wallet
-    if (userAddress.toLowerCase() === treasuryWallet.toLowerCase()) {
-        if (treasuryDetails[0] > 0) {
-            vestingDetailsHTML += `
-                <div>
-                    <h3>Treasury Vesting Details:</h3>
-                    <p>Total Allocation: ${treasuryDetails[0]}</p>
-                    <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                    <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-                </div>
-            `;
+            // Display treasury vesting data only if the connected wallet is the treasury wallet
+            if (userAddress.toLowerCase() === treasuryWallet.toLowerCase()) {
+                if (treasuryDetails[0] > 0) {
+                    vestingDetailsHTML += `
+                        <div>
+                            <h3>Treasury Vesting Details:</h3>
+                            <p>Total Allocation: ${treasuryDetails[0]}</p>
+                            <p>Claimed Amount: ${treasuryDetails[1]}</p>
+                            <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // If none of the vesting details have a non-zero allocation, display a message
+            if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && (treasuryDetails[0] === 0 || userAddress.toLowerCase() !== treasuryWallet.toLowerCase())) {
+                vestingDetailsHTML = '<p>The connected wallet does not have any vesting details.</p>';
+            }
+
+            document.getElementById('walletInfo').innerHTML = vestingDetailsHTML;
         }
-    }
-
-    // If none of the vesting details have a non-zero allocation, display a message
-    if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && (treasuryDetails[0] === 0 || userAddress.toLowerCase() !== treasuryWallet.toLowerCase())) {
-        vestingDetailsHTML = '<p>The connected wallet does not have any vesting details.</p>';
-    }
-
-    document.getElementById('walletInfo').innerHTML = vestingDetailsHTML;
-}
-
 
         main().catch(console.error);
     </script>
