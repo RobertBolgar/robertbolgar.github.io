@@ -8,7 +8,6 @@
 <body>
     <h1>PLRT Vesting</h1>
     <div id="walletInfo"></div>
-    <div id="messageInfo"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
     <script>
@@ -22,11 +21,15 @@
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                 } catch (error) {
                     console.error("User denied account access");
+                    document.getElementById('walletInfo').innerHTML = '<p>Please connect your Ethereum wallet to access vesting details.</p>';
+                    return;
                 }
             } else if (window.web3) {
                 web3 = new Web3(window.web3.currentProvider);
             } else {
                 console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+                document.getElementById('walletInfo').innerHTML = '<p>Please install MetaMask or a compatible Ethereum wallet to access vesting details.</p>';
+                return;
             }
         }
 
@@ -711,71 +714,60 @@
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
 
-            // Get vesting details for the user
+            // Get team member vesting details
             const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
+            // Get private sale NFT vesting details
             const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
+            // Get treasury vesting details
             const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
 
-            // Display vesting data
-            document.getElementById('walletInfo').innerHTML = `
-                <h2>Wallet Address: ${userAddress}</h2>
+            let vestingDetailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
 
-                <div>
-                    <h3>Team Member Vesting Details:</h3>
-                    <p>Total Allocation: ${teamMemberDetails[0]}</p>
-                    <p>Claimed Amount: ${teamMemberDetails[1]}</p>
-                    <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-                </div>
+            // Display team member vesting data
+            if (teamMemberDetails[0] > 0) {
+                vestingDetailsHTML += `
+                    <div>
+                        <h3>Team Member Vesting Details:</h3>
+                        <p>Total Allocation: ${teamMemberDetails[0]}</p>
+                        <p>Claimed Amount: ${teamMemberDetails[1]}</p>
+                        <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
+                    </div>
+                `;
+            }
 
-                <div>
-                    <h3>Private Sale NFT Vesting Details:</h3>
-                    <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
-                    <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
-                    <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-                </div>
+            // Display private sale NFT vesting data
+            if (privateSaleNFTDetails[0] > 0) {
+                vestingDetailsHTML += `
+                    <div>
+                        <h3>Private Sale NFT Vesting Details:</h3>
+                        <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
+                        <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
+                        <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
+                    </div>
+                `;
+            }
 
-                <div>
-                    <h3>Treasury Vesting Details:</h3>
-                    <p>Total Allocation: ${treasuryDetails[0]}</p>
-                    <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                    <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-                </div>
-            `;
+            // Display treasury vesting data
+            if (treasuryDetails[0] > 0) {
+                vestingDetailsHTML += `
+                    <div>
+                        <h3>Treasury Vesting Details:</h3>
+                        <p>Total Allocation: ${treasuryDetails[0]}</p>
+                        <p>Claimed Amount: ${treasuryDetails[1]}</p>
+                        <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+                    </div>
+                `;
+            }
+
+            // If none of the vesting details have a non-zero allocation, display a message
+            if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && treasuryDetails[0] === 0) {
+                vestingDetailsHTML = '<p>The connected wallet does not have any vesting details.</p>';
+            }
+
+            document.getElementById('walletInfo').innerHTML = vestingDetailsHTML;
         }
 
         main().catch(console.error);
-
-        // Send a message to the Ethereum blockchain
-        async function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-
-            if (!message) {
-                document.getElementById('messageInfo').innerHTML = '<p>Please enter a message.</p>';
-                return;
-            }
-
-            try {
-                const accounts = await web3.eth.getAccounts();
-                const userAddress = accounts[0];
-
-                // Replace the following code with your logic to send the message
-                // to the Ethereum blockchain using the connected account
-                console.log(`Message from ${userAddress}: ${message}`);
-
-                document.getElementById('messageInfo').innerHTML = '<p>Message sent successfully!</p>';
-                messageInput.value = '';
-            } catch (error) {
-                console.error(error);
-                document.getElementById('messageInfo').innerHTML = '<p>Error sending message.</p>';
-            }
-        }
     </script>
-
-    <div>
-        <h3>Send a Message</h3>
-        <input type="text" id="messageInput" placeholder="Enter a message">
-        <button onclick="sendMessage()">Send</button>
-    </div>
 </body>
 </html>
