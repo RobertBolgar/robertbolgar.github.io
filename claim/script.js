@@ -1,5 +1,4 @@
-// Import ethers from CDN or local installation
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
+
 
 // Contract address and ABI
 const contractABI = [
