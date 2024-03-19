@@ -42,54 +42,69 @@
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
     }
         function initializeApp() {
-            // Fetch ABI from external JSON file
-            fetch('abi.json')
-                .then(response => response.json())
-                .then(abi => {
-                    // Contract address
-                    const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
+    // Fetch ABI from external JSON file
+    fetch('abi.json')
+        .then(response => response.json())
+        .then(abi => {
+            // Contract address
+            const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
 
-                    // Instantiate contract
-                    const contract = new web3.eth.Contract(abi, contractAddress);
+            // Instantiate contract
+            const contract = new web3.eth.Contract(abi, contractAddress);
 
-                    // Get user's wallet address
-                    web3.eth.getAccounts().then(async function(accounts) {
-                        const userAddress = accounts[0];
+            // Get user's wallet address
+            web3.eth.getAccounts().then(async function(accounts) {
+                const userAddress = accounts[0];
+                const walletInfoDiv = document.getElementById('walletInfo');
+                walletInfoDiv.innerHTML = `<h2>Wallet Address: ${userAddress}</h2>`; // Display wallet address
 
-                        // Get vesting details for the user
-                        const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
-                        const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
-                        const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
+                // Check group membership and display relevant vesting details
+                const isTeamMember = await contract.methods.isTeamMember(userAddress).call();
+                const isPrivateSaleNFTHolder = await contract.methods.isPrivateSaleNFTHolder(userAddress).call();
+                const treasuryWalletAddress = await contract.methods.treasuryWallet().call();
+                const isTreasury = userAddress.toLowerCase() === treasuryWalletAddress.toLowerCase();
 
-                        // Display vesting data
-                        document.getElementById('walletInfo').innerHTML = `
-                            <h2>Wallet Address: ${userAddress}</h2>
+                if (isTeamMember) {
+                    const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
+                    walletInfoDiv.innerHTML += `
+                        <div>
+                            <h3>Team Member Vesting Details:</h3>
+                            <p>Total Allocation: ${teamMemberDetails[0]}</p>
+                            <p>Claimed Amount: ${teamMemberDetails[1]}</p>
+                            <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
+                        </div>`;
+                }
 
-                            <div>
-                                <h3>Team Member Vesting Details:</h3>
-                                <p>Total Allocation: ${teamMemberDetails[0]}</p>
-                                <p>Claimed Amount: ${teamMemberDetails[1]}</p>
-                                <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-                            </div>
+                if (isPrivateSaleNFTHolder) {
+                    const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
+                    walletInfoDiv.innerHTML += `
+                        <div>
+                            <h3>Private Sale NFT Vesting Details:</h3>
+                            <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
+                            <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
+                            <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
+                        </div>`;
+                }
 
-                            <div>
-                                <h3>Private Sale NFT Vesting Details:</h3>
-                                <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
-                                <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
-                                <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-                            </div>
+                if (isTreasury) {
+                    const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
+                    walletInfoDiv.innerHTML += `
+                        <div>
+                            <h3>Treasury Vesting Details:</h3>
+                            <p>Total Allocation: ${treasuryDetails[0]}</p>
+                            <p>Claimed Amount: ${treasuryDetails[1]}</p>
+                            <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+                        </div>`;
+                }
 
-                            <div>
-                                <h3>Treasury Vesting Details:</h3>
-                                <p>Total Allocation: ${treasuryDetails[0]}</p>
-                                <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                                <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-                            </div>
-                        `;
-                    });
-                })
-                .catch(error => console.error('Error fetching ABI:', error));
-        }
-    </script>
+                // If the wallet doesn't belong to any group
+                if (!isTeamMember && !isPrivateSaleNFTHolder && !isTreasury) {
+                    walletInfoDiv.innerHTML += `<p>You do not have vesting details associated with any group.</p>`;
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching ABI:', error));
+}
+</script>
 </body>
 </html>
