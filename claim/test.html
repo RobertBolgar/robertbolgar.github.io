@@ -35,6 +35,11 @@
             return true; // Indicate successful Web3 initialization
         }
 
+        async function loadContract(abi) {
+    const contract = new web3.eth.Contract(abi, contractAddress);
+    return contract;
+}
+
         async function main() {
     const web3Initialized = await initWeb3();
     if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
@@ -45,7 +50,7 @@
         throw new Error('Failed to load ABI'); // Stop execution if ABI could not be loaded
     });
 
-    const contract = await loadContract(abi);
+  
 
     const accounts = await web3.eth.getAccounts();
     const userAddress = accounts[0];
