@@ -45,10 +45,6 @@
                 .then(abi => {
         const contract = new web3.eth.Contract(abi, contractAddress);
 
-
-            // Instantiate contract
-            const contract = new web3.eth.Contract(contractABI, contractAddress);
-
             // Get user's wallet address
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
