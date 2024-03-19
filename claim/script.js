@@ -1,7 +1,3 @@
-// Import ethers from CDN or local installation
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
-
-
 // Initialize Web3
 if (window.ethereum) {
     window.web3 = new Web3(window.ethereum);
@@ -11,6 +7,7 @@ if (window.ethereum) {
 } else {
     console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
 }
+
 
 // Contract address and ABI
 
