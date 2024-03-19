@@ -1,5 +1,5 @@
 // Import ethers from CDN or local installation
-import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.0.34/dist/ethers.min.js';
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.0.35/dist/ethers.min.js';
 
 // Contract address and ABI
 const contractABI = [
