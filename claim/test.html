@@ -118,10 +118,6 @@
 
             document.getElementById('walletInfo').innerHTML = vestingDetailsHTML;
 
-	.catch(error => {
-                    console.error('Error loading ABI:', error);
-                    document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
-                });
         }
 
         main().catch(console.error);
