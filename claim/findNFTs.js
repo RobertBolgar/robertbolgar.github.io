@@ -1,7 +1,7 @@
 // Assuming ethers is already included in your HTML
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js';
 
-async function findNFTsAndCalculatePLRT() {
+async function findNFTsAndCalculatePLRT(userAddress) {
     // Connect to Ethereum provider (e.g., MetaMask)
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
@@ -18,23 +18,30 @@ async function findNFTsAndCalculatePLRT() {
     // Instantiate the NFT contract
     const nftContract = new ethers.Contract(NFT_CONTRACT_ADDRESS, abi, signer);
 
-    // Get the user's address and fetch the NFT count
-    const userAddress = await signer.getAddress();
-    const balance = await nftContract.balanceOf(userAddress);
+    // Check if the user is a Private Sale NFT holder
+    const isPrivateSaleHolder = await nftContract.isPrivateSaleNFTHolder(userAddress);
 
-    // Each NFT is worth 20,000 PLRT
-    const plrtEquivalent = balance.toNumber() * 20000;
+    if (isPrivateSaleHolder) {
+        // Fetch NFT details only if the user is a Private Sale NFT holder
+        const balance = await nftContract.balanceOf(userAddress);
 
-    // Display the results on the webpage
-    const walletInfoDiv = document.getElementById('walletInfo');
-    walletInfoDiv.innerHTML += `<div>
-        <h3>Private Sale NFT Group Details:</h3>
-        <p>NFTs Owned: ${balance.toString()}</p>
-        <p>PLRT Equivalent: ${plrtEquivalent.toLocaleString()} PLRT</p>
-    </div>`;
+        // Each NFT is worth 20,000 PLRT
+        const plrtEquivalent = balance.toNumber() * 20000;
+
+        // Display the results on the webpage
+        const walletInfoDiv = document.getElementById('walletInfo');
+        walletInfoDiv.innerHTML += `<div>
+            <h3>Private Sale NFT Vesting Details:</h3>
+            <p>NFTs Owned: ${balance.toString()}</p>
+            <p>PLRT Equivalent: ${plrtEquivalent.toLocaleString()} PLRT</p>
+        </div>`;
+    } else {
+        // If the user is not a Private Sale NFT holder, display a message
+        const walletInfoDiv = document.getElementById('walletInfo');
+        walletInfoDiv.innerHTML += `<div>
+            <p>You are not recognized as a holder of a Private Sale NFT.</p>
+        </div>`;
+    }
 }
 
-findNFTsAndCalculatePLRT().catch(error => {
-    console.error("Error finding NFTs or calculating PLRT:", error);
-    document.getElementById('walletInfo').innerHTML += '<p>Error loading NFT details or calculating PLRT equivalent.</p>';
-});
+export { findNFTsAndCalculatePLRT };
