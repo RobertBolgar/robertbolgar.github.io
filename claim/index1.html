@@ -21,6 +21,22 @@
             console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
         }
 
+        // Define showElement function
+        function showElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = 'block';
+            }
+        }
+
+        // Define hideElement function
+        function hideElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
+
         // Contract address and ABI
         const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
         const contractABI = [
@@ -692,7 +708,7 @@
 	}
 ]; 
 
-        // Instantiate contract
+         // Instantiate contract
         const contract = new web3.eth.Contract(contractABI, contractAddress);
 
         // Get user's wallet address
@@ -704,56 +720,30 @@
             const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
             const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
 
-// Function to show team-related elements
-function showTeamElements() {
-    showElement("teamSection");
-    hideElement("privateSaleNFTSection");
-    hideElement("treasurySection");
-}
-
-// Function to show private sale NFT-related elements
-function showPrivateSaleNFTElements() {
-    showElement("privateSaleNFTSection");
-    hideElement("teamSection");
-    hideElement("treasurySection");
-}
-
-// Function to show treasury-related elements
-function showTreasuryElements() {
-    showElement("treasurySection");
-    hideElement("teamSection");
-    hideElement("privateSaleNFTSection");
-}
-
-
-		
-
             // Display vesting data
             document.getElementById('walletInfo').innerHTML = `
                 <h2>Wallet Address: ${userAddress}</h2>
 
-		<div id="teamSection">
-   		<h3>Team Member Vesting Details:</h3>
-                <p>Total Allocation: ${teamMemberDetails[0]}</p>
-                <p>Claimed Amount: ${teamMemberDetails[1]}</p>
-                <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
-</div>
+                <div id="teamSection">
+                    <h3>Team Member Vesting Details:</h3>
+                    <p>Total Allocation: ${teamMemberDetails[0]}</p>
+                    <p>Claimed Amount: ${teamMemberDetails[1]}</p>
+                    <p>Remaining Claimable Amount: ${teamMemberDetails[2]}</p>
+                </div>
 
-		<div id="privateSaleNFTSection">
-    		<h3>Private Sale NFT Vesting Details:</h3>
-                <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
-                <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
-                <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
-</div>
+                <div id="privateSaleNFTSection">
+                    <h3>Private Sale NFT Vesting Details:</h3>
+                    <p>Total Allocation: ${privateSaleNFTDetails[0]}</p>
+                    <p>Claimed Amount: ${privateSaleNFTDetails[1]}</p>
+                    <p>Remaining Claimable Amount: ${privateSaleNFTDetails[2]}</p>
+                </div>
 
-		<div id="treasurySection">
-     		<h3>Treasury Vesting Details:</h3>
-                <p>Total Allocation: ${treasuryDetails[0]}</p>
-                <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-</div>
-
-  
+                <div id="treasurySection">
+                    <h3>Treasury Vesting Details:</h3>
+                    <p>Total Allocation: ${treasuryDetails[0]}</p>
+                    <p>Claimed Amount: ${treasuryDetails[1]}</p>
+                    <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+                </div>
             `;
         });
     </script>
