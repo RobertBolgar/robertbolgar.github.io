@@ -41,9 +41,21 @@
             await initWeb3();
 
 	fetch('abi.json')
-                .then(response => response.json())
-                .then(abi => {
+    .then(response => response.json())
+    .then(async abi => { // Marking this function as async
         const contract = new web3.eth.Contract(abi, contractAddress);
+
+        // Now it's safe to use `await` since we are inside an async function
+        const accounts = await web3.eth.getAccounts();
+        const userAddress = accounts[0];
+
+        // Continue with other async operations
+        // Remember to handle errors appropriately
+    })
+    .catch(error => {
+        console.error('Error loading ABI:', error);
+        document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
+    });
 
             // Get user's wallet address
             const accounts = await web3.eth.getAccounts();
