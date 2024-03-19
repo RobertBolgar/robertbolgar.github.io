@@ -1,7 +1,7 @@
-
+// Import ethers from CDN or local installation
+import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.0.34/dist/ethers.min.js';
 
 // Contract address and ABI
-
 const contractABI = [
 	{
 		"inputs": [
@@ -671,16 +671,21 @@ const contractABI = [
 	}
 ];
 
+
+
 const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
 
 // Instantiate contract
-const contract = new web3.eth.Contract(contractABI, contractAddress);
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
 // Get user's wallet address
-web3.eth.getAccounts().then(async function(accounts) {
-    const userAddress = accounts[0];
+async function getUserAddress() {
+    const accounts = await provider.send('eth_requestAccounts', []);
+    return accounts[0];
+}
 
-    // Function to show an element by its ID
+// Function to show an element by its ID
 function showElement(id) {
     const element = document.getElementById(id);
     if (element) {
@@ -717,11 +722,11 @@ function showTreasuryElements() {
     hideElement("privateSaleNFTSection");
 }
 
-
-    // Get vesting details for the user
-    const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
-    const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
-    const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
+// Get user's wallet address and display vesting data
+getUserAddress().then(async (userAddress) => {
+    const teamMemberDetails = await contract.getTeamMemberVestingDetails(userAddress);
+    const privateSaleNFTDetails = await contract.getPrivateSaleNFTVestingDetails(userAddress);
+    const treasuryDetails = await contract.getTreasuryVestingDetails();
 
     // Display vesting data
     document.getElementById('walletInfo').innerHTML = `
@@ -749,3 +754,4 @@ function showTreasuryElements() {
         </div>
     `;
 });
+
