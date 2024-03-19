@@ -10,6 +10,7 @@
     <div id="walletInfo"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js" type="module"></script> <!-- Load ethers.js as a module -->
     <script>
         let web3;
 
@@ -34,14 +35,6 @@
             return true; // Indicate successful Web3 initialization
         }
 
-        // Contract address and ABI
-        const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
-         
-        async function loadContract(abi) {
-            const contract = new web3.eth.Contract(abi, contractAddress);
-            return contract;
-        }
-
         async function main() {
             const web3Initialized = await initWeb3();
             if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
@@ -56,6 +49,9 @@
 
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
+
+            // Call findNFTsAndCalculatePLRT from findNFTs.js
+            await findNFTsAndCalculatePLRT(userAddress);
 
             const treasuryWallet = await contract.methods.treasuryWallet().call();
             const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
@@ -114,7 +110,6 @@
         main().catch(console.error);
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.esm.min.js" type="module"></script>
     <script type="module" src="findNFTs.js"></script> <!-- Point to your external JS file -->
 </body>
 </html>
