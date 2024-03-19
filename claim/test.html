@@ -22,57 +22,48 @@
                 } catch (error) {
                     console.error("User denied account access");
                     document.getElementById('walletInfo').innerHTML = '<p>Please connect your Ethereum wallet to access vesting details.</p>';
-                    return;
+                    return false; // Indicate failure to initialize Web3
                 }
             } else if (window.web3) {
                 web3 = new Web3(window.web3.currentProvider);
             } else {
                 console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
                 document.getElementById('walletInfo').innerHTML = '<p>Please install MetaMask or a compatible Ethereum wallet to access vesting details.</p>';
-                return;
+                return false; // Indicate failure to initialize Web3
             }
+            return true; // Indicate successful Web3 initialization
         }
 
         // Contract address and ABI
         const contractAddress = '0xB4308847b8060CB63463aa96bBbbbB23e958aeFa'; // Replace with your contract address
          
+        async function loadContract(abi) {
+            const contract = new web3.eth.Contract(abi, contractAddress);
+            return contract;
+        }
 
         async function main() {
-            await initWeb3();
+            const web3Initialized = await initWeb3();
+            if (!web3Initialized) return; // Stop execution if Web3 could not be initialized
 
-	fetch('abi.json')
-    .then(response => response.json())
-    .then(async abi => { // Marking this function as async
-        const contract = new web3.eth.Contract(abi, contractAddress);
+            let abi = await fetch('abi.json').then(response => response.json()).catch(error => {
+                console.error('Error loading ABI:', error);
+                document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
+                throw new Error('Failed to load ABI'); // Stop execution if ABI could not be loaded
+            });
 
-        // Now it's safe to use `await` since we are inside an async function
-        const accounts = await web3.eth.getAccounts();
-        const userAddress = accounts[0];
+            const contract = await loadContract(abi);
 
-        // Continue with other async operations
-        // Remember to handle errors appropriately
-    })
-    .catch(error => {
-        console.error('Error loading ABI:', error);
-        document.getElementById('walletInfo').innerHTML = '<p>Error loading contract ABI.</p>';
-    });
-
-            // Get user's wallet address
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
 
-            // Get treasury wallet address
             const treasuryWallet = await contract.methods.treasuryWallet().call();
-
-            // Get team member vesting details
             const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
-            // Get private sale NFT vesting details
             const privateSaleNFTDetails = await contract.methods.getPrivateSaleNFTVestingDetails(userAddress).call();
-            // Get treasury vesting details
             const treasuryDetails = await contract.methods.getTreasuryVestingDetails().call();
 
             let vestingDetailsHTML = `<h2>Wallet Address: ${userAddress}</h2>`;
-
+		
             // Display team member vesting data
             if (teamMemberDetails[0] > 0) {
                 vestingDetailsHTML += `
