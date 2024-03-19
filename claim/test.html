@@ -714,6 +714,9 @@
             const accounts = await web3.eth.getAccounts();
             const userAddress = accounts[0];
 
+            // Get treasury wallet address
+            const treasuryWallet = await contract.methods.treasuryWallet().call();
+
             // Get team member vesting details
             const teamMemberDetails = await contract.methods.getTeamMemberVestingDetails(userAddress).call();
             // Get private sale NFT vesting details
@@ -747,20 +750,22 @@
                 `;
             }
 
-            // Display treasury vesting data
-            if (treasuryDetails[0] > 0) {
-                vestingDetailsHTML += `
-                    <div>
-                        <h3>Treasury Vesting Details:</h3>
-                        <p>Total Allocation: ${treasuryDetails[0]}</p>
-                        <p>Claimed Amount: ${treasuryDetails[1]}</p>
-                        <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
-                    </div>
-                `;
+            // Display treasury vesting data only if the connected wallet is the treasury wallet
+            if (userAddress.toLowerCase() === treasuryWallet.toLowerCase()) {
+                if (treasuryDetails[0] > 0) {
+                    vestingDetailsHTML += `
+                        <div>
+                            <h3>Treasury Vesting Details:</h3>
+                            <p>Total Allocation: ${treasuryDetails[0]}</p>
+                            <p>Claimed Amount: ${treasuryDetails[1]}</p>
+                            <p>Remaining Claimable Amount: ${treasuryDetails[2]}</p>
+                        </div>
+                    `;
+                }
             }
 
             // If none of the vesting details have a non-zero allocation, display a message
-            if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && treasuryDetails[0] === 0) {
+            if (teamMemberDetails[0] === 0 && privateSaleNFTDetails[0] === 0 && (treasuryDetails[0] === 0 || userAddress.toLowerCase() !== treasuryWallet.toLowerCase())) {
                 vestingDetailsHTML = '<p>The connected wallet does not have any vesting details.</p>';
             }
 
